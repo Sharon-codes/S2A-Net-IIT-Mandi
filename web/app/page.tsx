@@ -14,9 +14,9 @@ export default function Home() {
     <div className="flex flex-col gap-16 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero Section */}
       <section className="flex flex-col items-center text-center max-w-4xl mx-auto gap-6 pt-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border text-xs font-mono text-primary-dark shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-border text-xs font-mono text-primary-dark shadow-xs">
           <Activity className="w-3.5 h-3.5 text-accent-green" />
-          <span>Scientific Research Paper & Model Release</span>
+          <span>IIT Mandi Research Initiative &bull; Supervised by Dr. Deepak Raina</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-main tracking-tight leading-tight">
@@ -27,7 +27,7 @@ export default function Home() {
         </h1>
 
         <p className="text-lg text-text-muted max-w-2xl leading-relaxed">
-          Predicting 3D internal organ centroids and spatial uncertainty directly from optical surface scans using deep multi-scale point cross-attention decoders and frozen Ridge canonical alignment.
+          Predicting 3D internal organ centroids and spatial uncertainty directly from optical surface scans using deep multi-scale point cross-attention decoders and frozen Ridge canonical alignment. Developed at <strong>IIT Mandi</strong> by <strong>Khushi Mhamane</strong> &amp; <strong>Sharon Melhi</strong>.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -39,16 +39,16 @@ export default function Home() {
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            href="/method"
+            href="/validation"
             className="px-6 py-3 rounded-lg bg-white hover:bg-background border border-border text-text-main font-semibold text-base shadow-xs transition-colors"
           >
-            Architecture & Methods
+            Validation &amp; Ablations
           </Link>
           <Link
-            href="/targets"
+            href="/team"
             className="px-6 py-3 rounded-lg bg-white hover:bg-background border border-border text-text-main font-semibold text-base shadow-xs transition-colors"
           >
-            104 Target Catalog
+            Meet the Team
           </Link>
         </div>
       </section>

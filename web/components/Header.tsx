@@ -23,8 +23,8 @@ export function Header() {
     { name: "3D Demo", href: "/demo" },
     { name: "Methodology", href: "/method" },
     { name: "Target Catalog", href: "/targets" },
-    { name: "Validation", href: "/validation" },
-    { name: "About", href: "/about" },
+    { name: "Validation & Ablations", href: "/validation" },
+    { name: "Team", href: "/team" },
   ];
 
   return (
