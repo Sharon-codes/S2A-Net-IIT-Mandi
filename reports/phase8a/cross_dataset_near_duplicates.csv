@@ -1,0 +1,2 @@
+audit_type,source_1,case_1,source_2,case_2,similarity_metric,verdict
+NONE,N/A,N/A,N/A,N/A,N/A,ZERO_DUPLICATES_DETECTED

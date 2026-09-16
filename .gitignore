@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env_py311/
+
+# Large Datasets & Raw Scans (100+ GB)
+dataset/
+raw_data/
+data_external/
+outputs/
+sharon/dataset*/
+sharon/data_*/
+sharon/outputs*/
+WORD-V0.1.0/
+*.nii
+*.nii.gz
+*.7z
+*.zip
+*.tar.gz
+
+# Next.js / Web
+web/node_modules/
+web/.next/
+web/out/
+web/.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Non-essential intermediate experiment checkpoints (>500MB)
+experiments/phase10/
+experiments/phase2/
+experiments/phase3/
+experiments/phase4/
+experiments/phase5/
+experiments/phase6/
+experiments/phase7/
+experiments/scaling_v3/
+experiments/phase10R/checkpoints/D*
+experiments/phase10R/checkpoints/Domain*
+experiments/phase10R/checkpoints/E*
+experiments/phase10R/checkpoints/C2*
+experiments/phase10R/checkpoints/C3*
+
+# Environment & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
