@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { createHumanMannequin } from "@/utils/mannequinBuilder";
+import { Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
 
 export interface TargetPrediction {
   target: string;
@@ -21,6 +23,17 @@ interface ThreeViewerProps {
   coordinateFrame?: "canonical" | "world";
 }
 
+/**
+ * Maps medical CT coordinates (X: Lat, Y: AP, Z: Height)
+ * to standard Three.js upright coordinates:
+ * - Three.js X = med[0] (Right + / Left -)
+ * - Three.js Y = med[2] (Height: Head + / Feet -)
+ * - Three.js Z = med[1] (Anterior + / Posterior -)
+ */
+function toThreeCoord(med: [number, number, number]): [number, number, number] {
+  return [med[0], med[2], med[1]];
+}
+
 export function ThreeViewer({
   surfacePoints,
   predictions,
@@ -34,15 +47,18 @@ export function ThreeViewer({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const pointsMeshRef = useRef<THREE.Points | null>(null);
   const targetGroupRef = useRef<THREE.Group | null>(null);
+  const mannequinGroupRef = useRef<THREE.Group | null>(null);
   const reqIdRef = useRef<number | null>(null);
 
-  const [hoveredPin, setHoveredPin] = useState<string | null>(null);
+  const [showMannequin, setShowMannequin] = useState(true);
+  const [showPoints, setShowPoints] = useState(true);
+  const [activePinHover, setActivePinHover] = useState<string | null>(null);
 
-  // Manual orbit controls variables
+  // Manual orbit controls variables (Spherical coordinates)
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
-  const cameraSphericalRef = useRef({ radius: 800, theta: Math.PI / 4, phi: Math.PI / 3 });
-  const targetCenterRef = useRef(new THREE.Vector3(0, 0, 0));
+  const cameraSphericalRef = useRef({ radius: 950, theta: Math.PI / 4, phi: Math.PI / 2.3 });
+  const targetCenterRef = useRef(new THREE.Vector3(0, 100, 0)); // Center camera on mid-torso
 
   const updateCamera = () => {
     if (!cameraRef.current) return;
@@ -62,35 +78,46 @@ export function ThreeViewer({
     const height = container.clientHeight;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf5f5f0);
+    scene.background = new THREE.Color(0xf6f7f2);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000);
+    camera.up.set(0, 1, 0); // Y is UP
     cameraRef.current = camera;
     updateCamera();
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
     rendererRef.current = renderer;
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // Studio Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    dirLight.position.set(200, 500, 300);
-    scene.add(dirLight);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.65);
+    dirLight1.position.set(300, 600, 400);
+    scene.add(dirLight1);
 
-    // Grid Floor
-    const gridHelper = new THREE.GridHelper(800, 20, 0xc4cabe, 0xe2e5dc);
-    gridHelper.position.y = -350;
+    const dirLight2 = new THREE.DirectionalLight(0xced8c6, 0.4);
+    dirLight2.position.set(-300, -200, -300);
+    scene.add(dirLight2);
+
+    // Grid Floor below feet
+    const gridHelper = new THREE.GridHelper(1000, 24, 0xb8c2ad, 0xdce2d5);
+    gridHelper.position.y = -520;
     scene.add(gridHelper);
 
-    // Group for target pins
+    // 1. Mannequin Group
+    const mannequin = createHumanMannequin();
+    scene.add(mannequin);
+    mannequinGroupRef.current = mannequin;
+
+    // 2. Anatomical Target Pins Group
     const targetGroup = new THREE.Group();
     scene.add(targetGroup);
     targetGroupRef.current = targetGroup;
@@ -102,7 +129,7 @@ export function ThreeViewer({
     };
     animate();
 
-    // Mouse Controls
+    // Mouse Navigation Controls
     const onMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true;
       previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
@@ -113,10 +140,10 @@ export function ThreeViewer({
       const deltaX = e.clientX - previousMousePositionRef.current.x;
       const deltaY = e.clientY - previousMousePositionRef.current.y;
 
-      cameraSphericalRef.current.theta -= deltaX * 0.008;
+      cameraSphericalRef.current.theta -= deltaX * 0.007;
       cameraSphericalRef.current.phi = Math.max(
         0.05,
-        Math.min(Math.PI - 0.05, cameraSphericalRef.current.phi - deltaY * 0.008)
+        Math.min(Math.PI - 0.05, cameraSphericalRef.current.phi - deltaY * 0.007)
       );
 
       previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
@@ -130,8 +157,8 @@ export function ThreeViewer({
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       cameraSphericalRef.current.radius = Math.max(
-        100,
-        Math.min(2500, cameraSphericalRef.current.radius + e.deltaY * 0.6)
+        200,
+        Math.min(2200, cameraSphericalRef.current.radius + e.deltaY * 0.75)
       );
       updateCamera();
     };
@@ -162,7 +189,14 @@ export function ThreeViewer({
     };
   }, []);
 
-  // Update Surface Point Cloud
+  // Toggle Mannequin visibility
+  useEffect(() => {
+    if (mannequinGroupRef.current) {
+      mannequinGroupRef.current.visible = showMannequin;
+    }
+  }, [showMannequin]);
+
+  // Update Surface Point Cloud (Floating points around mannequin)
   useEffect(() => {
     if (!sceneRef.current) return;
     const scene = sceneRef.current;
@@ -174,35 +208,32 @@ export function ThreeViewer({
       pointsMeshRef.current = null;
     }
 
-    if (!surfacePoints || surfacePoints.length === 0) return;
+    if (!surfacePoints || surfacePoints.length === 0 || !showPoints) return;
 
     const count = surfacePoints.length;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
-    // Compute bounding box to center target camera
-    let minZ = Infinity, maxZ = -Infinity;
     for (let i = 0; i < count; i++) {
       const p = surfacePoints[i];
-      positions[i * 3 + 0] = p[0];
-      positions[i * 3 + 1] = p[1];
-      positions[i * 3 + 2] = p[2];
+      // Map medical (X, Y, Z) to Three.js upright (X: X, Y: Z, Z: Y)
+      const [tx, ty, tz] = toThreeCoord([p[0], p[1], p[2]]);
+      positions[i * 3 + 0] = tx;
+      positions[i * 3 + 1] = ty;
+      positions[i * 3 + 2] = tz;
 
-      if (p[2] < minZ) minZ = p[2];
-      if (p[2] > maxZ) maxZ = p[2];
-
-      // Sage/Olive gradient depending on Z height
-      colors[i * 3 + 0] = 0.42; // R
-      colors[i * 3 + 1] = 0.48; // G
-      colors[i * 3 + 2] = 0.38; // B
+      // Subtle sage/olive gradient
+      colors[i * 3 + 0] = 0.38; // R
+      colors[i * 3 + 1] = 0.46; // G
+      colors[i * 3 + 2] = 0.32; // B
     }
 
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 3.5,
+      size: 3.2,
       vertexColors: true,
       transparent: true,
       opacity: 0.85,
@@ -211,14 +242,13 @@ export function ThreeViewer({
     const pointsMesh = new THREE.Points(geometry, material);
     scene.add(pointsMesh);
     pointsMeshRef.current = pointsMesh;
-  }, [surfacePoints]);
+  }, [surfacePoints, showPoints]);
 
-  // Update Anatomical Target Pins & Uncertainty Halos
+  // Update Target Centroid Pins & Uncertainty Halos
   useEffect(() => {
     if (!targetGroupRef.current) return;
     const group = targetGroupRef.current;
 
-    // Clear old pins
     while (group.children.length > 0) {
       const child = group.children[0] as any;
       if (child.geometry) child.geometry.dispose();
@@ -229,105 +259,138 @@ export function ThreeViewer({
     if (!predictions) return;
 
     Object.entries(predictions).forEach(([name, pred]) => {
-      const coords = coordinateFrame === "world" ? pred.centroid_input_world_mm : pred.centroid_canonical_mm;
+      const rawCoords = coordinateFrame === "world" ? pred.centroid_input_world_mm : pred.centroid_canonical_mm;
+      const [tx, ty, tz] = toThreeCoord(rawCoords);
       const isSelected = selectedTarget === name;
 
-      // Color scheme based on uncertainty level
-      let pinColor = 0x4e774a; // Low uncertainty (green)
-      if (pred.uncertainty_level === "moderate") pinColor = 0xc88a2d; // Amber
-      if (pred.uncertainty_level === "high") pinColor = 0xb34a3e; // Red
+      let pinColor = 0x4e774a; // Low unc
+      if (pred.uncertainty_level === "moderate") pinColor = 0xc88a2d;
+      if (pred.uncertainty_level === "high") pinColor = 0xb34a3e;
+      if (isSelected) pinColor = 0x1f241b;
 
-      if (isSelected) pinColor = 0x1f241b; // Highlight selected
-
-      // 1. Target Core Sphere
-      const sphereGeo = new THREE.SphereGeometry(isSelected ? 9 : 6, 24, 24);
+      // 1. Organ Centroid Glowing Sphere
+      const sphereGeo = new THREE.SphereGeometry(isSelected ? 11 : 8, 24, 24);
       const sphereMat = new THREE.MeshStandardMaterial({
         color: pinColor,
-        roughness: 0.2,
-        metalness: 0.5,
+        roughness: 0.15,
+        metalness: 0.6,
+        emissive: pinColor,
+        emissiveIntensity: isSelected ? 0.4 : 0.15,
       });
       const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
-      sphereMesh.position.set(coords[0], coords[1], coords[2]);
-      sphereMesh.userData = { targetName: name };
+      sphereMesh.position.set(tx, ty, tz);
       group.add(sphereMesh);
 
-      // 2. Uncertainty Radius Halo (Wireframe Sphere)
-      const radius = Math.max(8, pred.uncertainty_mm);
+      // 2. Wireframe Uncertainty Radius Sphere
+      const radius = Math.max(9, pred.uncertainty_mm);
       const haloGeo = new THREE.SphereGeometry(radius, 16, 16);
       const haloMat = new THREE.MeshBasicMaterial({
         color: pinColor,
         wireframe: true,
         transparent: true,
-        opacity: isSelected ? 0.45 : 0.2,
+        opacity: isSelected ? 0.5 : 0.25,
       });
       const haloMesh = new THREE.Mesh(haloGeo, haloMat);
-      haloMesh.position.set(coords[0], coords[1], coords[2]);
+      haloMesh.position.set(tx, ty, tz);
       group.add(haloMesh);
 
-      // 3. Drop indicator line to bottom plane
+      // 3. Drop Indicator Stalk to Base Plane
       const lineMat = new THREE.LineBasicMaterial({
         color: pinColor,
         transparent: true,
-        opacity: 0.4,
+        opacity: 0.35,
       });
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(coords[0], coords[1], coords[2]),
-        new THREE.Vector3(coords[0], -350, coords[2]),
+        new THREE.Vector3(tx, ty, tz),
+        new THREE.Vector3(tx, -520, tz),
       ]);
       const line = new THREE.Line(lineGeo, lineMat);
       group.add(line);
     });
   }, [predictions, selectedTarget, coordinateFrame]);
 
-  const resetView = (preset: "front" | "side" | "top" | "iso") => {
-    if (preset === "front") {
-      cameraSphericalRef.current = { radius: 800, theta: 0, phi: Math.PI / 2 };
-    } else if (preset === "side") {
-      cameraSphericalRef.current = { radius: 800, theta: Math.PI / 2, phi: Math.PI / 2 };
-    } else if (preset === "top") {
-      cameraSphericalRef.current = { radius: 800, theta: 0, phi: 0.05 };
+  const setViewPreset = (preset: "iso" | "coronal_front" | "coronal_back" | "sagittal" | "axial") => {
+    if (preset === "coronal_front") {
+      // Front AP: theta = 0, phi = 90 deg
+      cameraSphericalRef.current = { radius: 950, theta: 0, phi: Math.PI / 2 };
+    } else if (preset === "coronal_back") {
+      // Back PA: theta = 180 deg, phi = 90 deg
+      cameraSphericalRef.current = { radius: 950, theta: Math.PI, phi: Math.PI / 2 };
+    } else if (preset === "sagittal") {
+      // Side: theta = 90 deg, phi = 90 deg
+      cameraSphericalRef.current = { radius: 950, theta: Math.PI / 2, phi: Math.PI / 2 };
+    } else if (preset === "axial") {
+      // Top down: phi = small
+      cameraSphericalRef.current = { radius: 1050, theta: 0, phi: 0.08 };
     } else {
-      cameraSphericalRef.current = { radius: 800, theta: Math.PI / 4, phi: Math.PI / 3 };
+      // Perspective
+      cameraSphericalRef.current = { radius: 950, theta: Math.PI / 4, phi: Math.PI / 2.4 };
     }
     updateCamera();
   };
 
   return (
-    <div className="relative w-full h-full min-h-[500px] rounded-xl overflow-hidden border border-border bg-[#F5F5F0]">
+    <div className="relative w-full h-full min-h-[520px] rounded-xl overflow-hidden border border-border bg-[#F6F7F2] shadow-inner">
       {/* 3D Canvas Mounting Element */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Preset Viewport Buttons */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/90 backdrop-blur px-2 py-1.5 rounded-lg border border-border shadow-sm text-xs font-medium text-text-muted z-10">
+      {/* Preset Viewport Buttons Top Bar */}
+      <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-lg border border-border shadow-xs text-xs font-medium text-text-muted z-10">
         <span className="text-[10px] uppercase font-mono px-1">View:</span>
         <button
-          onClick={() => resetView("iso")}
+          onClick={() => setViewPreset("iso")}
           className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
         >
           Perspective
         </button>
         <button
-          onClick={() => resetView("front")}
+          onClick={() => setViewPreset("coronal_front")}
           className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Coronal (AP)
+          Front (AP)
         </button>
         <button
-          onClick={() => resetView("side")}
+          onClick={() => setViewPreset("coronal_back")}
           className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Sagittal
+          Back (PA)
         </button>
         <button
-          onClick={() => resetView("top")}
+          onClick={() => setViewPreset("sagittal")}
           className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Axial
+          Side (Lat)
+        </button>
+        <button
+          onClick={() => setViewPreset("axial")}
+          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+        >
+          Top (Axial)
         </button>
       </div>
 
-      {/* Legend & Navigation Helper */}
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-sm text-xs text-text-muted flex flex-col gap-1 z-10">
+      {/* Visibility Toggles Top-Left */}
+      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-lg border border-border shadow-xs text-xs font-medium text-text-muted z-10">
+        <button
+          onClick={() => setShowMannequin(!showMannequin)}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
+            showMannequin ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
+          }`}
+        >
+          <span>🧍 Mannequin</span>
+        </button>
+        <button
+          onClick={() => setShowPoints(!showPoints)}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
+            showPoints ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
+          }`}
+        >
+          <span>✨ Surface Cloud</span>
+        </button>
+      </div>
+
+      {/* Legend Bottom-Left */}
+      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-xs text-xs text-text-muted flex flex-col gap-1 z-10">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-accent-green" />
@@ -343,7 +406,7 @@ export function ThreeViewer({
           </div>
         </div>
         <span className="text-[10px] text-text-muted/80">
-          Rotate: Drag left-click | Zoom: Mouse wheel | Scale: mm
+          Rotate: Drag mouse | Zoom: Scroll wheel | Upright Canonical Frame
         </span>
       </div>
     </div>

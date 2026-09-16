@@ -38,7 +38,7 @@ export function Header() {
             <div>
               <span className="font-bold text-primary-dark">Surface2Anatomy</span>
               <span className="text-xs text-text-muted ml-2 font-mono px-1.5 py-0.5 rounded bg-background border border-border">
-                v1.2-104T
+                CAIR &bull; IIT Mandi
               </span>
             </div>
           </Link>

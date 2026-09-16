@@ -161,14 +161,22 @@ const ALL_CATEGORIES: Record<string, CategoryData> = {
   },
 };
 
+import { TargetBodyMap } from "@/components/TargetBodyMap";
+
 export default function TargetsPage() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>("all");
+  const [selectedPin, setSelectedPin] = useState<string | null>(null);
 
   const totalTargetsCount = Object.values(ALL_CATEGORIES).reduce(
     (acc, cat) => acc + cat.targets.length,
     0
   );
+
+  const handlePinSelect = (organName: string) => {
+    setSelectedPin(organName);
+    setQuery(organName.replace(/_/g, " "));
+  };
 
   const filteredCategories = Object.entries(ALL_CATEGORIES).filter(([key]) => {
     if (selectedCat !== "all" && selectedCat !== key) return false;
@@ -178,11 +186,17 @@ export default function TargetsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold text-text-main">Comprehensive 104 Anatomical Target Catalog</h1>
+        <h1 className="text-3xl font-bold text-text-main">104 Anatomical Target Catalog</h1>
         <p className="text-sm text-text-muted mt-2 max-w-3xl leading-relaxed">
-          Complete indexed directory of 104 internal organs, skeletal landmarks, major vessels, and musculature. Queryable via text search, voice recognition, or REST API slot indices.
+          Interactive 3D body map and complete directory of 104 internal anatomical organs, skeletal vertebrae, major vessels, and musculature. Orbit 360° around the mannequin to view anterior, posterior (spine/kidneys), and lateral landmarks.
         </p>
       </div>
+
+      {/* Interactive 3D Mannequin Body Map */}
+      <TargetBodyMap
+        onSelectTarget={handlePinSelect}
+        selectedTarget={selectedPin}
+      />
 
       {/* Filter & Search Bar */}
       <div className="bg-white p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-3 items-center justify-between shadow-xs">

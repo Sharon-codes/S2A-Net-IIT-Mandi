@@ -1,18 +1,23 @@
 <div align="center">
 
-<img src="assets/iit_mandi_logo.png" alt="IIT Mandi Logo" width="160" />
+<p align="center">
+  <img src="assets/cair_logo.png" alt="CAIR IIT Mandi Logo" height="110" />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/iit_mandi_logo.png" alt="IIT Mandi Logo" height="95" />
+</p>
 
 # Surface2Anatomy (S2A-Net)
 ### 3D Internal Anatomy Localization from External Body Surface Geometry
 
+**Centre for Artificial Intelligence and Robotics (CAIR)**  
 **Indian Institute of Technology Mandi (IIT Mandi)**  
-*School of Computing & Electrical Engineering | Biomedical Imaging & Scientific AI Research*
+*School of Computing & Electrical Engineering | Advanced Biomedical Perception & Surgical AI*
 
-[![Live Demo](https://img.shields.io/badge/Vercel_Live_Demo-web--self--theta--51.vercel.app-66734b?style=for-the-badge&logo=vercel)](https://web-self-theta-51.vercel.app)
+[![Live 3D Web Platform](https://img.shields.io/badge/Vercel_Live_Platform-web--self--theta--51.vercel.app-66734b?style=for-the-badge&logo=vercel)](https://web-self-theta-51.vercel.app)
+[![Hugging Face Weights](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Published%20Weights-yellow?style=for-the-badge)](https://huggingface.co/SharonMelhi/S2A-Net-Weights)
 [![License: MIT](https://img.shields.io/badge/License-MIT-465133?style=for-the-badge)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![PyTorch 2.3](https://img.shields.io/badge/PyTorch-2.3-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
-[![Hugging Face Weights](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Weights%20%26%20Checkpoints-yellow?style=for-the-badge)](https://huggingface.co/SharonMelhi/Surface2Anatomy-Weights)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 
 </div>
@@ -21,13 +26,13 @@
 
 ## 👥 Project Team & Academic Supervision
 
-This research and software platform was developed for and conducted at the **Indian Institute of Technology Mandi (IIT Mandi)**:
+This research and software platform was developed by research interns at the **Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)**:
 
-- **Khushi Mhamane** — *Project Contributor & Researcher, Indian Institute of Technology Mandi*
-- **Sharon Melhi** — *Project Contributor & Researcher, Indian Institute of Technology Mandi*
+- **Khushi Mhamane** — *Project Lead & Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi*
+- **Sharon Melhi** — *Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi*
 
 ### Under the Academic Supervision of:
-- **Dr. Deepak Raina** — *Assistant Professor, School of Computing & Electrical Engineering, Indian Institute of Technology Mandi (IIT Mandi)*
+- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR) & School of Computing & Electrical Engineering, Indian Institute of Technology Mandi (IIT Mandi)*
 
 ---
 
