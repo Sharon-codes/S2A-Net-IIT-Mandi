@@ -5,7 +5,7 @@ import { ThreeViewer, TargetPrediction } from "@/components/ThreeViewer";
 import { FileDropzone } from "@/components/FileDropzone";
 import { TargetSelector } from "@/components/TargetSelector";
 import { PredictionResults } from "@/components/PredictionResults";
-import { parsePointsFromBuffer } from "@/utils/pointParser";
+import { parseAnyFormatToPoints } from "@/utils/pointParser";
 import { AlertCircle, CheckCircle2, Layers } from "lucide-react";
 
 export default function DemoPage() {
@@ -69,13 +69,13 @@ export default function DemoPage() {
       setActiveFileName(name);
       setFileBuffer(buf);
 
-      // Parse points for local rendering
-      const pts = parsePointsFromBuffer(name, buf);
+      // Parse points for local rendering (supports 3D mesh, depth frames, and RGB photos)
+      const pts = await parseAnyFormatToPoints(name, buf);
       if (pts.length > 0) {
         setSurfacePoints(pts);
       }
     } catch (err: any) {
-      setErrorMessage(`Failed to parse point cloud: ${err.message}`);
+      setErrorMessage(`Failed to parse surface scan: ${err.message}`);
     }
   };
 

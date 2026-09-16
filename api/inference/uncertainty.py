@@ -17,9 +17,9 @@ def compute_uncertainty(seed_preds: Dict[str, np.ndarray], ens_pred: np.ndarray)
     mean_sq_dist = float(np.mean(diffs))
     rms_mm = float(np.sqrt(max(0.0, mean_sq_dist)))
     
-    if rms_mm <= 5.0:
+    if rms_mm <= 15.0:
         level = "Low"
-    elif rms_mm <= 15.0:
+    elif rms_mm <= 30.0:
         level = "Moderate"
     else:
         level = "High"

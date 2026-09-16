@@ -175,7 +175,13 @@ export default function TargetsPage() {
 
   const handlePinSelect = (organName: string) => {
     setSelectedPin(organName);
-    setQuery(organName.replace(/_/g, " "));
+    // Smoothly scroll to target card without overwriting global search query
+    setTimeout(() => {
+      const el = document.getElementById(`target-card-${organName}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 80);
   };
 
   const handleSystemFilterFrom3D = (sys: string | null) => {
@@ -216,6 +222,25 @@ export default function TargetsPage() {
         onSelectSystemFilter={handleSystemFilterFrom3D}
       />
 
+      {/* Active Pin Focus HUD if selected */}
+      {selectedPin && (
+        <div className="bg-white p-4 rounded-xl border border-primary/30 shadow-xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs text-text-muted">Focused Landmark:</span>
+            <span className="text-sm font-bold text-slate-900 capitalize">
+              {selectedPin.replace(/_/g, " ")}
+            </span>
+          </div>
+          <button
+            onClick={() => setSelectedPin(null)}
+            className="text-xs font-medium px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+          >
+            Clear Landmark Focus
+          </button>
+        </div>
+      )}
+
       {/* Filter & Search Bar */}
       <div className="bg-white p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-3 items-center justify-between shadow-xs">
         <div className="relative w-full sm:w-80">
@@ -225,8 +250,16 @@ export default function TargetsPage() {
             placeholder="Search organs or synonyms (e.g. liver, aorta, brain)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border bg-background/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-border bg-background/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
           />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-bold"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
@@ -284,32 +317,41 @@ export default function TargetsPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {matchingTargets.map((t) => (
-                  <div
-                    key={`${t.name}-${t.slot}`}
-                    className="p-3 rounded-lg border border-border bg-background/30 flex flex-col justify-between gap-2 hover:bg-background/60 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-text-main capitalize">
-                        {t.name.replace(/_/g, " ")}
-                      </span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white border border-border text-text-muted">
-                        Slot #{t.slot}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1">
-                      {t.synonyms.map((s) => (
-                        <span
-                          key={s}
-                          className="text-[10px] px-1.5 py-0.5 rounded bg-white border border-border/80 text-text-muted"
-                        >
-                          {s}
+                {matchingTargets.map((t) => {
+                  const isFocused = selectedPin === t.name;
+                  return (
+                    <div
+                      id={`target-card-${t.name}`}
+                      key={`${t.name}-${t.slot}`}
+                      onClick={() => setSelectedPin(t.name)}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                        isFocused
+                          ? "border-primary bg-primary/5 ring-2 ring-primary/30 shadow-md"
+                          : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-xs"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-sm text-slate-900 capitalize">
+                          {t.name.replace(/_/g, " ")}
                         </span>
-                      ))}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+                          Slot #{t.slot}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1">
+                        {t.synonyms.map((s) => (
+                          <span
+                            key={s}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-slate-50 border border-slate-200/80 text-slate-500"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );

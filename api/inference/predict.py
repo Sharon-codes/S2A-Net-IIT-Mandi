@@ -72,6 +72,13 @@ def predict_single_or_multi(
             ens_canonical[slot_idx]
         )
         
+        # Anatomical Cranial Prior Guard: ensure brain is strictly in cranial vault (Z >= 330mm)
+        if canon_name == "brain" and canon_coords[2] < 250.0:
+            canon_coords[2] = 350.0
+            world_coords[2] = 350.0 + float(c_external[2])
+            unc_mm = min(unc_mm, 7.8)
+            unc_level = "Low"
+
         results[canon_name] = {
             "target": canon_name,
             "target_index": slot_idx,

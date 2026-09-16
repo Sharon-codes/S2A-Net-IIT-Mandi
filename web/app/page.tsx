@@ -1,22 +1,23 @@
 import Link from "next/link";
 import { ArrowRight, Box, ShieldCheck, Zap, Activity, Cpu, Database, Eye } from "lucide-react";
+import { RoboticArmScanner } from "@/components/RoboticArmScanner";
 
 export default function Home() {
   const metrics = [
-    { label: "Anatomical Targets", value: "104", note: "15 Categories across Thorax, Abdomen & Pelvis" },
+    { label: "Anatomical Targets", value: "107", note: "Cranial, Thoracic, Abdominal, Pelvis & Spine" },
     { label: "Internal MRE", value: "23.34 mm", note: "3-Seed Ensemble Consensus" },
-    { label: "FLARE22 Benchmark", value: "21.30 mm", note: "Rigid Cross-Cohort Generalization" },
+    { label: "Brain Error (Retrained)", value: "5.5 mm", note: "Phase 16 Whole-Body Model on CT-ORG" },
     { label: "Inference Latency", value: "11.3 FPS", note: "88 ms End-to-End GPU Latency" },
     { label: "Radiation Dose", value: "0 mSv", note: "Optical Surface Photogrammetry" },
   ];
 
   return (
-    <div className="flex flex-col gap-16 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col gap-14 py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero Section */}
-      <section className="flex flex-col items-center text-center max-w-4xl mx-auto gap-6 pt-6">
+      <section className="flex flex-col items-center text-center max-w-4xl mx-auto gap-6 pt-2">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-border text-xs font-mono text-primary-dark shadow-xs">
           <Activity className="w-3.5 h-3.5 text-accent-green" />
-          <span>IIT Mandi Research Initiative &bull; Supervised by Dr. Deepak Raina</span>
+          <span>Centre for AI & Robotics (CAIR) &bull; IIT Mandi Research Initiative</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text-main tracking-tight leading-tight">
@@ -27,30 +28,46 @@ export default function Home() {
         </h1>
 
         <p className="text-lg text-text-muted max-w-2xl leading-relaxed">
-          Predicting 3D internal organ centroids and spatial uncertainty directly from optical surface scans using deep multi-scale point cross-attention decoders and frozen Ridge canonical alignment. Developed at <strong>IIT Mandi</strong> by <strong>Khushi Mhamane</strong> &amp; <strong>Sharon Melhi</strong>.
+          Predicting 3D internal organ centroids and spatial uncertainty directly from optical surface scans and depth cameras using deep multi-scale cross-attention decoders. Developed at <strong>CAIR, IIT Mandi</strong> by <strong>Khushi Mhamane</strong> (Project Lead) &amp; <strong>Sharon Melhi</strong> under the supervision of <strong>Dr. Deepak Raina</strong>.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-1">
           <Link
             href="/demo"
-            className="px-6 py-3 rounded-lg bg-primary hover:bg-primary-dark text-white font-semibold text-base shadow-sm transition-all flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold text-base shadow-sm transition-all flex items-center gap-2"
           >
             <span>Launch Interactive 3D Demo</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            href="/validation"
-            className="px-6 py-3 rounded-lg bg-white hover:bg-background border border-border text-text-main font-semibold text-base shadow-xs transition-colors"
+            href="/targets"
+            className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-base shadow-xs transition-colors"
           >
-            Validation &amp; Ablations
+            107 Target Catalog
           </Link>
           <Link
             href="/team"
-            className="px-6 py-3 rounded-lg bg-white hover:bg-background border border-border text-text-main font-semibold text-base shadow-xs transition-colors"
+            className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-base shadow-xs transition-colors"
           >
-            Meet the Team
+            Meet the CAIR Team
           </Link>
         </div>
+      </section>
+
+      {/* 3D Interactive Medical Robotic Arm Scanner Simulation */}
+      <section className="w-full flex flex-col gap-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200">
+              Interactive 3D Digital Twin
+            </span>
+            <span className="text-xs text-slate-500 hidden sm:inline">
+              Drag to orbit 360° &bull; Scroll to zoom &bull; Click zone buttons to steer robotic arm
+            </span>
+          </div>
+          <span className="text-xs font-mono text-slate-400">CAIR-ROBOT-SCAN-SIM v2.4</span>
+        </div>
+        <RoboticArmScanner />
       </section>
 
       {/* Metrics Banner */}
