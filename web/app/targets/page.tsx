@@ -178,6 +178,14 @@ export default function TargetsPage() {
     setQuery(organName.replace(/_/g, " "));
   };
 
+  const handleSystemFilterFrom3D = (sys: string | null) => {
+    if (!sys || sys === "all") {
+      setSelectedCat("all");
+    } else {
+      setSelectedCat(sys);
+    }
+  };
+
   const filteredCategories = Object.entries(ALL_CATEGORIES).filter(([key]) => {
     if (selectedCat !== "all" && selectedCat !== key) return false;
     return true;
@@ -186,16 +194,26 @@ export default function TargetsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold text-text-main">104 Anatomical Target Catalog</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
+            107 Canonical Landmarks Active
+          </span>
+          <span className="text-xs font-mono text-slate-500">
+            Cranial • Thorax • Spine • Abdomen • Pelvis • Skeleton
+          </span>
+        </div>
+        <h1 className="text-3xl font-bold text-text-main mt-2">107 Anatomical Target Catalog</h1>
         <p className="text-sm text-text-muted mt-2 max-w-3xl leading-relaxed">
-          Interactive 3D body map and complete directory of 104 internal anatomical organs, skeletal vertebrae, major vessels, and musculature. Orbit 360° around the mannequin to view anterior, posterior (spine/kidneys), and lateral landmarks.
+          Interactive 3D body map and complete scientific directory of 107 internal anatomical targets, including cranial vault (Brain, Skull), cervical/thoracic/lumbar spine vertebrae, major cardiovascular vessels, visceral organs, and musculature. Orbit 360° around the mannequin to view all anterior and posterior landmarks.
         </p>
       </div>
 
-      {/* Interactive 3D Mannequin Body Map */}
+      {/* Interactive 3D Mannequin Body Map with all 107 targets */}
       <TargetBodyMap
         onSelectTarget={handlePinSelect}
         selectedTarget={selectedPin}
+        activeSystemFilter={selectedCat === "all" ? null : selectedCat}
+        onSelectSystemFilter={handleSystemFilterFrom3D}
       />
 
       {/* Filter & Search Bar */}

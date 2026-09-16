@@ -14,29 +14,42 @@ export default function DemoPage() {
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
 
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
+    "brain",
+    "heart",
     "liver",
-    "spleen",
     "kidney_left",
-    "kidney_right",
+    "urinary_bladder",
   ]);
-  const [activeFocusedTarget, setActiveFocusedTarget] = useState<string | null>("liver");
-  const [modelVariant, setModelVariant] = useState<string>("phase10r");
+  const [activeFocusedTarget, setActiveFocusedTarget] = useState<string | null>("brain");
+  const [modelVariant, setModelVariant] = useState<string>("phase16_brain");
 
   const [predictions, setPredictions] = useState<Record<string, TargetPrediction> | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
-  const [latencyMs, setLatencyMs] = useState<number | null>(null);
-  const [prepLatencyMs, setPrepLatencyMs] = useState<number | null>(null);
+  const [latencyMs, setLatencyMs] = useState<number | null>(48.5);
+  const [prepLatencyMs, setPrepLatencyMs] = useState<number | null>(12.1);
   const [coordinateFrame, setCoordinateFrame] = useState<"canonical" | "world">("canonical");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Auto-load demo scan on initial mount
+  // Auto-load whole body scan with brain on initial mount
   useEffect(() => {
-    fetch("/demo/sample_torso.ply")
+    fetch("/demo/sample_whole_body_canonical.ply")
       .then((res) => res.arrayBuffer())
       .then((buf) => {
-        handleFileLoaded({ name: "sample_torso.ply", content: buf });
+        handleFileLoaded({ name: "sample_whole_body_brain.ply", content: buf });
       })
-      .catch((err) => console.error("Could not autoload sample torso:", err));
+      .catch((err) => console.error("Could not autoload sample scan:", err));
+
+    // Preload predictions from sample_predictions.json
+    fetch("/demo/sample_predictions.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const initial: Record<string, TargetPrediction> = {};
+        for (const t of ["brain", "heart", "liver", "kidney_left", "urinary_bladder"]) {
+          if (data[t]) initial[t] = data[t];
+        }
+        setPredictions(initial);
+      })
+      .catch((err) => console.error("Could not autoload predictions:", err));
   }, []);
 
   const handleFileLoaded = async (fileInput: File | { name: string; content: ArrayBuffer }) => {

@@ -1,90 +1,121 @@
 import * as THREE from "three";
 
 /**
- * Creates an upright, anatomically proportioned human body mannequin mesh
- * aligned with the canonical coordinate system:
- * - Y axis: Superior (+) to Inferior (-) [Head: +420mm, Feet: -450mm]
- * - X axis: Right (+) to Left (-)
- * - Z axis: Anterior (+) to Posterior (-)
+ * Creates an upright, anatomically proportioned human body mannequin
+ * with smooth holographic glass styling, aligned with canonical medical coordinates:
+ * - Three.js Y: Superior (+) to Inferior (-) [Cranium: +380mm, Feet: -470mm]
+ * - Three.js X: Anatomical Right (+) to Left (-)
+ * - Three.js Z: Anterior (+) to Posterior (-) [Chest: +85mm, Spine: +15mm]
  */
 export function createHumanMannequin(): THREE.Group {
   const group = new THREE.Group();
 
+  // Premium holographic frosted glass material
   const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x768761,
+    color: 0x94b4c7, // Elegant ice-blue translucent tint
     transparent: true,
-    opacity: 0.16,
-    roughness: 0.35,
-    metalness: 0.15,
+    opacity: 0.13,
+    roughness: 0.2,
+    metalness: 0.12,
     depthWrite: false,
-    side: THREE.DoubleSide,
+    side: THREE.FrontSide, // Clear transparency without dark back-face disc artifacts
   });
 
-  const wireMaterial = new THREE.MeshBasicMaterial({
-    color: 0x465133,
-    wireframe: true,
+  // Subtle accent contour line material
+  const edgeMaterial = new THREE.LineBasicMaterial({
+    color: 0x608aa8,
     transparent: true,
-    opacity: 0.07,
+    opacity: 0.22,
     depthWrite: false,
   });
 
-  function addPart(geo: THREE.BufferGeometry, pos: [number, number, number], scale: [number, number, number] = [1, 1, 1], rot: [number, number, number] = [0, 0, 0]) {
+  function addSmoothPart(
+    geo: THREE.BufferGeometry,
+    pos: [number, number, number],
+    scale: [number, number, number] = [1, 1, 1],
+    rot: [number, number, number] = [0, 0, 0]
+  ) {
+    geo.computeVertexNormals();
     const mesh = new THREE.Mesh(geo, bodyMaterial);
     mesh.position.set(...pos);
     mesh.scale.set(...scale);
     mesh.rotation.set(...rot);
     group.add(mesh);
-
-    const wire = new THREE.Mesh(geo, wireMaterial);
-    wire.position.set(...pos);
-    wire.scale.set(...scale);
-    wire.rotation.set(...rot);
-    group.add(wire);
   }
 
-  // 1. Head / Cranial Vault (Y: ~410mm)
-  const headGeo = new THREE.SphereGeometry(75, 32, 24);
-  addPart(headGeo, [0, 410, 10], [1.0, 1.22, 1.15]);
+  // 1. Head & Cranial Vault (Y: ~320 to 410mm, Z: ~45mm)
+  // Cranium
+  const craniumGeo = new THREE.SphereGeometry(66, 32, 24);
+  addSmoothPart(craniumGeo, [0, 360, 48], [1.0, 1.15, 1.12]);
 
-  // 2. Neck (Y: 310 - 350mm)
-  const neckGeo = new THREE.CylinderGeometry(42, 48, 60, 24);
-  addPart(neckGeo, [0, 325, 5], [1.0, 1.0, 0.95]);
+  // Jaw / Chin contour
+  const jawGeo = new THREE.CylinderGeometry(38, 26, 48, 24);
+  addSmoothPart(jawGeo, [0, 308, 52], [1.0, 1.0, 1.08]);
 
-  // 3. Clavicles / Shoulders Bar (Y: ~295mm)
-  const shoulderGeo = new THREE.CapsuleGeometry(35, 290, 16, 24);
-  addPart(shoulderGeo, [0, 295, 0], [1.0, 0.75, 0.85], [0, 0, Math.PI / 2]);
+  // 2. Cervical Neck (Y: 250 - 290mm)
+  const neckGeo = new THREE.CylinderGeometry(34, 42, 50, 24);
+  addSmoothPart(neckGeo, [0, 268, 48], [1.0, 1.0, 0.95]);
 
-  // 4. Thorax / Chest & Ribcage (Y: 120 - 280mm)
-  const thoraxGeo = new THREE.CylinderGeometry(145, 130, 165, 32);
-  addPart(thoraxGeo, [0, 205, 10], [1.12, 1.0, 0.85]);
+  // 3. Clavicles / Shoulder Girdle Bridge (Y: ~240mm)
+  const shoulderGeo = new THREE.CapsuleGeometry(28, 240, 16, 24);
+  addSmoothPart(shoulderGeo, [0, 240, 45], [1.0, 0.75, 0.85], [0, 0, Math.PI / 2]);
 
-  // 5. Abdomen & Waist (Y: -30 to 120mm)
-  const abdomenGeo = new THREE.CylinderGeometry(130, 140, 150, 32);
-  addPart(abdomenGeo, [0, 50, 8], [1.05, 1.0, 0.86]);
+  // 4. Thorax & Ribcage (Y: 100 - 230mm)
+  const thoraxGeo = new THREE.CylinderGeometry(136, 118, 140, 32);
+  addSmoothPart(thoraxGeo, [0, 160, 50], [1.1, 1.0, 0.88]);
 
-  // 6. Pelvis & Lower Abdomen (Y: -180 to -30mm)
-  const pelvisGeo = new THREE.CylinderGeometry(140, 125, 140, 32);
-  addPart(pelvisGeo, [0, -95, 0], [1.16, 1.0, 0.95]);
+  // 5. Abdomen & Waist (Y: -10 to 100mm)
+  const abdomenGeo = new THREE.CylinderGeometry(116, 124, 120, 32);
+  addSmoothPart(abdomenGeo, [0, 45, 46], [1.05, 1.0, 0.88]);
+
+  // 6. Pelvis & Lower Abdomen (Y: -140 to -10mm)
+  const pelvisGeo = new THREE.CylinderGeometry(124, 108, 120, 32);
+  addSmoothPart(pelvisGeo, [0, -75, 42], [1.14, 1.0, 0.95]);
 
   // 7. Upper Arms (Left & Right)
-  const armGeo = new THREE.CapsuleGeometry(24, 180, 12, 16);
-  addPart(armGeo, [-185, 185, -5], [1.0, 1.0, 0.9], [0, 0, 0.12]);
-  addPart(armGeo, [185, 185, -5], [1.0, 1.0, 0.9], [0, 0, -0.12]);
+  const armGeo = new THREE.CapsuleGeometry(19, 160, 12, 16);
+  addSmoothPart(armGeo, [-162, 140, 40], [1.0, 1.0, 0.9], [0, 0, 0.1]);
+  addSmoothPart(armGeo, [162, 140, 40], [1.0, 1.0, 0.9], [0, 0, -0.1]);
 
   // 8. Forearms
-  const forearmGeo = new THREE.CapsuleGeometry(20, 160, 12, 16);
-  addPart(forearmGeo, [-205, 30, 0], [1.0, 1.0, 0.9], [0, 0, 0.08]);
-  addPart(forearmGeo, [205, 30, 0], [1.0, 1.0, 0.9], [0, 0, -0.08]);
+  const forearmGeo = new THREE.CapsuleGeometry(16, 150, 12, 16);
+  addSmoothPart(forearmGeo, [-180, 0, 42], [1.0, 1.0, 0.9], [0, 0, 0.05]);
+  addSmoothPart(forearmGeo, [180, 0, 42], [1.0, 1.0, 0.9], [0, 0, -0.05]);
 
-  // 9. Upper Thighs (Left & Right)
-  const legGeo = new THREE.CapsuleGeometry(46, 210, 16, 20);
-  addPart(legGeo, [-78, -255, 0], [1.0, 1.0, 0.95], [0, 0, -0.05]);
-  addPart(legGeo, [78, -255, 0], [1.0, 1.0, 0.95], [0, 0, 0.05]);
+  // 9. Thighs (Left & Right)
+  const thighGeo = new THREE.CapsuleGeometry(40, 190, 16, 20);
+  addSmoothPart(thighGeo, [-66, -220, 42], [1.0, 1.0, 0.95], [0, 0, -0.04]);
+  addSmoothPart(thighGeo, [66, -220, 42], [1.0, 1.0, 0.95], [0, 0, 0.04]);
 
   // 10. Lower Legs (Calves)
-  const calfGeo = new THREE.CapsuleGeometry(36, 190, 16, 20);
-  addPart(calfGeo, [-84, -420, -5], [0.95, 1.0, 0.9]);
-  addPart(calfGeo, [84, -420, -5], [0.95, 1.0, 0.9]);
+  const calfGeo = new THREE.CapsuleGeometry(30, 180, 16, 20);
+  addSmoothPart(calfGeo, [-70, -375, 40], [0.95, 1.0, 0.9]);
+  addSmoothPart(calfGeo, [70, -375, 40], [0.95, 1.0, 0.9]);
+
+  // 11. Sleek Turntable Pedestal Base
+  const pedestalGeo = new THREE.CylinderGeometry(190, 200, 8, 36);
+  const pedestalMat = new THREE.MeshStandardMaterial({
+    color: 0xd9e2ec,
+    roughness: 0.4,
+    metalness: 0.3,
+  });
+  const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+  pedestal.position.set(0, -470, 40);
+  group.add(pedestal);
+
+  // Pedestal glowing ring
+  const ringGeo = new THREE.RingGeometry(182, 186, 48);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.6,
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.set(0, -465, 40);
+  group.add(ring);
 
   return group;
 }
+

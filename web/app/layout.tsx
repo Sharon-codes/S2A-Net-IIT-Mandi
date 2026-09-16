@@ -16,7 +16,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen bg-background text-text-main antialiased selection:bg-primary/20 selection:text-primary-dark">
-        <DisclaimerBanner />
         <Header />
         <main className="flex-grow">{children}</main>
         <footer className="border-t border-border bg-white py-8 mt-12 text-sm text-text-muted">

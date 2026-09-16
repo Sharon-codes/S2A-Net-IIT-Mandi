@@ -215,18 +215,59 @@ export function ThreeViewer({
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
+    // Check bounding box to ensure point cloud is aligned with canonical frame
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+
     for (let i = 0; i < count; i++) {
       const p = surfacePoints[i];
+      if (p[0] < minX) minX = p[0];
+      if (p[0] > maxX) maxX = p[0];
+      if (p[1] < minY) minY = p[1];
+      if (p[1] > maxY) maxY = p[1];
+      if (p[2] < minZ) minZ = p[2];
+      if (p[2] > maxZ) maxZ = p[2];
+    }
+
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2; // Medical AP
+    const midZ = (minZ + maxZ) / 2; // Medical SI
+
+    // If point cloud has large uncentered scanner offset in canonical mode, align to canonical center
+    const offsetX = (coordinateFrame === "canonical" && Math.abs(midX) > 40) ? midX : 0;
+    const offsetY = (coordinateFrame === "canonical" && (midY > 120 || midY < -40)) ? (midY - 45) : 0;
+    const offsetZ = (coordinateFrame === "canonical" && (midZ > 200 || midZ < -150)) ? (midZ - 40) : 0;
+
+    for (let i = 0; i < count; i++) {
+      const p = surfacePoints[i];
+      const cx = p[0] - offsetX;
+      const cy = p[1] - offsetY;
+      const cz = p[2] - offsetZ;
+
       // Map medical (X, Y, Z) to Three.js upright (X: X, Y: Z, Z: Y)
-      const [tx, ty, tz] = toThreeCoord([p[0], p[1], p[2]]);
+      const [tx, ty, tz] = toThreeCoord([cx, cy, cz]);
       positions[i * 3 + 0] = tx;
       positions[i * 3 + 1] = ty;
       positions[i * 3 + 2] = tz;
 
-      // Subtle sage/olive gradient
-      colors[i * 3 + 0] = 0.38; // R
-      colors[i * 3 + 1] = 0.46; // G
-      colors[i * 3 + 2] = 0.32; // B
+      // Luminous scientific gradient: Head (bright cyan) -> Torso (sky blue) -> Lower (slate)
+      if (ty > 260) {
+        // Head / Brain / Cranium region
+        colors[i * 3 + 0] = 0.22; // R
+        colors[i * 3 + 1] = 0.74; // G
+        colors[i * 3 + 2] = 0.97; // B (Bright Cyan #38bdf8)
+      } else if (ty > 60) {
+        // Thorax & Upper Abdomen
+        colors[i * 3 + 0] = 0.35;
+        colors[i * 3 + 1] = 0.65;
+        colors[i * 3 + 2] = 0.85;
+      } else {
+        // Pelvis & Lower Extremities
+        colors[i * 3 + 0] = 0.45;
+        colors[i * 3 + 1] = 0.58;
+        colors[i * 3 + 2] = 0.72;
+      }
     }
 
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -242,7 +283,7 @@ export function ThreeViewer({
     const pointsMesh = new THREE.Points(geometry, material);
     scene.add(pointsMesh);
     pointsMeshRef.current = pointsMesh;
-  }, [surfacePoints, showPoints]);
+  }, [surfacePoints, showPoints, coordinateFrame]);
 
   // Update Target Centroid Pins & Uncertainty Halos
   useEffect(() => {

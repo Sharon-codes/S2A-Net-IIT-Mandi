@@ -38,13 +38,17 @@ export function FileDropzone({ onFileLoaded, isLoading, activeFileName }: FileDr
     }
   };
 
-  const loadDemoScan = async () => {
+  const loadDemoScan = async (type: "whole_body" | "torso" = "whole_body") => {
     try {
-      const res = await fetch("/demo/sample_torso.ply");
-      if (!res.ok) throw new Error("Failed to load sample torso");
+      const filename =
+        type === "whole_body"
+          ? "sample_whole_body_canonical.ply"
+          : "sample_torso_canonical.ply";
+      const res = await fetch(`/demo/${filename}`);
+      if (!res.ok) throw new Error(`Failed to load ${filename}`);
       const buffer = await res.arrayBuffer();
       onFileLoaded({
-        name: "sample_torso.ply",
+        name: type === "whole_body" ? "sample_whole_body_brain.ply" : "sample_torso.ply",
         content: buffer,
       });
     } catch (err) {
@@ -59,11 +63,11 @@ export function FileDropzone({ onFileLoaded, isLoading, activeFileName }: FileDr
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-3 ${
+        className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-3 ${
           isDragOver
             ? "border-primary bg-primary/5"
             : activeFileName
-            ? "border-accent-green/40 bg-accent-green/5"
+            ? "border-emerald-500/40 bg-emerald-50/20"
             : "border-border bg-white hover:border-primary/50"
         }`}
       >
@@ -75,35 +79,45 @@ export function FileDropzone({ onFileLoaded, isLoading, activeFileName }: FileDr
           onChange={handleFileChange}
         />
 
-        <div className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-primary">
+        <div className="w-11 h-11 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700">
           {isLoading ? (
-            <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+            <RefreshCw className="w-5 h-5 animate-spin text-primary" />
           ) : activeFileName ? (
-            <CheckCircle className="w-6 h-6 text-accent-green" />
+            <CheckCircle className="w-5 h-5 text-emerald-600" />
           ) : (
-            <Upload className="w-6 h-6" />
+            <Upload className="w-5 h-5 text-slate-600" />
           )}
         </div>
 
         <div>
-          <p className="text-sm font-semibold text-text-main">
+          <p className="text-sm font-semibold text-slate-900">
             {activeFileName ? `Loaded: ${activeFileName}` : "Drag & drop patient 3D surface scan"}
           </p>
-          <p className="text-xs text-text-muted mt-1">
-            Supports <span className="font-mono text-primary-dark">.PLY, .PCD, .OBJ, .STL, .XYZ, .NPY</span> (Human scale: mm, cm, or m)
+          <p className="text-xs text-slate-500 mt-0.5">
+            Supports <span className="font-mono text-slate-700">.PLY, .OBJ, .STL, .XYZ, .NPY</span> (mm, cm, or m)
           </p>
         </div>
 
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              loadDemoScan();
+              loadDemoScan("whole_body");
             }}
-            className="px-3 py-1 text-xs font-medium rounded-md bg-background hover:bg-border text-primary-dark border border-border transition-colors shadow-sm"
+            className="px-2.5 py-1 text-xs font-semibold rounded-md bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition-colors shadow-2xs"
           >
-            ⚡ Load Pre-aligned Sample Torso
+            ⚡ Whole-Body Scan (with Brain & Head)
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              loadDemoScan("torso");
+            }}
+            className="px-2.5 py-1 text-xs font-medium rounded-md bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors shadow-2xs"
+          >
+            Torso Scan (TotalSegmentator)
           </button>
         </div>
       </div>
