@@ -28,7 +28,7 @@ export function Header() {
 
   const navLinks = [
     { name: "3D Demo", href: "/demo" },
-    { name: "Targets (111)", href: "/targets" },
+    { name: "Targets (121)", href: "/targets" },
     { name: "Methodology", href: "/method" },
     { name: "Validation", href: "/validation" },
     { name: "Team", href: "/team" },
