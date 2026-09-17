@@ -128,34 +128,53 @@ export function TargetBodyMap({
       const isSel = selectedTarget === pin.id;
       const isFilteredOut = systemFilter !== null && pin.system !== systemFilter;
 
-      const sphereGeo = new THREE.SphereGeometry(isSel ? 7.5 : 5.0, 16, 16);
+      // When selected: RADIANT GOLD / AMBER (0xFFB800) with glowing pulsating emissive!
+      const sphereGeo = new THREE.SphereGeometry(isSel ? 8.5 : 5.0, 20, 20);
       const sphereMat = new THREE.MeshStandardMaterial({
-        color: isSel ? 0xffffff : pin.color,
-        emissive: isSel ? 0x38bdf8 : pin.color,
-        emissiveIntensity: isSel ? 1.0 : isFilteredOut ? 0.08 : 0.65,
+        color: isSel ? 0xffb800 : pin.color,
+        emissive: isSel ? 0xffaa00 : pin.color,
+        emissiveIntensity: isSel ? 1.6 : isFilteredOut ? 0.08 : 0.65,
         roughness: 0.15,
-        metalness: 0.4,
+        metalness: 0.5,
         transparent: true,
         opacity: isFilteredOut ? 0.2 : 0.95,
       });
 
       const mesh = new THREE.Mesh(sphereGeo, sphereMat);
       mesh.position.set(tx, ty, tz);
-      mesh.userData = { pinData: pin };
+      mesh.userData = {
+        pinData: pin,
+        isPulsing: isSel,
+      };
       scene.add(mesh);
       pinMeshes.push(mesh);
 
-      // Selected organ highlight halo
+      // Selected organ highlight: Radiant 3D expanding shockwave & billboard halo
       if (isSel) {
-        const haloGeo = new THREE.RingGeometry(9, 12, 24);
+        // 1. Expanding radiating golden beacon shockwave
+        const beaconGeo = new THREE.SphereGeometry(14, 18, 18);
+        const beaconMat = new THREE.MeshBasicMaterial({
+          color: 0xffb800,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.85,
+        });
+        const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+        beaconMesh.position.set(tx, ty, tz);
+        beaconMesh.userData = { isBeacon: true };
+        scene.add(beaconMesh);
+
+        // 2. Billboarded Golden Ring Halo
+        const haloGeo = new THREE.RingGeometry(11, 15, 32);
         const haloMat = new THREE.MeshBasicMaterial({
-          color: 0x38bdf8,
+          color: 0xffd700,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.9,
         });
         const halo = new THREE.Mesh(haloGeo, haloMat);
         halo.position.set(tx, ty, tz);
+        halo.userData = { isHalo: true };
         scene.add(halo);
       }
     });
@@ -164,10 +183,39 @@ export function TargetBodyMap({
     // Animation Loop
     const animate = () => {
       reqIdRef.current = requestAnimationFrame(animate);
+      const time = performance.now() * 0.001;
+
       if (autoRotateRef.current && !isDraggingRef.current) {
         cameraSphericalRef.current.theta += 0.0035;
         updateCamera();
       }
+
+      // Golden pulsing and radiating shockwave for selected pin
+      scene.traverse((child: any) => {
+        if (child.userData?.isPulsing) {
+          const pulse = (Math.sin(time * 5.5) + 1.0) * 0.5; // 0 to 1
+          if (child.material && child.material.emissiveIntensity !== undefined) {
+            child.material.emissiveIntensity = 1.2 + 1.4 * pulse;
+          }
+          const s = 1.0 + 0.2 * pulse;
+          child.scale.set(s, s, s);
+        }
+        if (child.userData?.isBeacon) {
+          const beaconPhase = (time * 1.5) % 1.0;
+          const bScale = 1.0 + beaconPhase * 2.2;
+          child.scale.set(bScale, bScale, bScale);
+          if (child.material) {
+            child.material.opacity = Math.max(0, (1.0 - beaconPhase) * 0.85);
+          }
+        }
+        if (child.userData?.isHalo) {
+          child.quaternion.copy(camera.quaternion);
+          const haloPulse = (Math.sin(time * 4.0) + 1.0) * 0.5;
+          const hScale = 1.0 + 0.15 * haloPulse;
+          child.scale.set(hScale, hScale, 1);
+        }
+      });
+
       renderer.render(scene, camera);
     };
     animate();
@@ -322,10 +370,17 @@ export function TargetBodyMap({
       if (!container || !camera || !renderer) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w <= 0 || h <= 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
+
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(container);
+
     window.addEventListener("resize", handleResize);
 
     container.addEventListener("mousedown", onMouseDown);
@@ -339,6 +394,7 @@ export function TargetBodyMap({
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
+      resizeObserver.disconnect();
       container.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
@@ -383,6 +439,8 @@ export function TargetBodyMap({
     setSystemFilter(next);
     if (onSelectSystemFilter) onSelectSystemFilter(next);
   };
+
+  const selectedPinData = ALL_ATLAS_TARGETS.find((p) => p.id === selectedTarget);
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -445,6 +503,19 @@ export function TargetBodyMap({
           />
         </div>
 
+        {/* Selected Target Golden HUD Pill (when not hovering another pin) */}
+        {selectedPinData && !hoveredPin && (
+          <div className="absolute top-3 left-3 flex items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-150px)]">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] ring-2 ring-amber-400/50 animate-pulse shrink-0" />
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="font-bold text-slate-900 truncate capitalize">{selectedPinData.name}</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-semibold shrink-0">
+                #{selectedPinData.slot}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Floating Hover Card Top-Left */}
         {hoveredPin && (
           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-2 sm:px-4 sm:py-3 rounded-2xl border border-slate-200 shadow-lg text-xs flex flex-col gap-1 z-10 pointer-events-none animate-fadeIn max-w-[240px] sm:max-w-sm">
@@ -468,10 +539,12 @@ export function TargetBodyMap({
         )}
 
         {/* Informative Footer Badge */}
-        <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-2xl border border-slate-200 shadow-xs text-[11px] sm:text-xs text-slate-600 z-10 flex items-center gap-2">
-          <Compass className="w-4 h-4 text-primary shrink-0" />
-          <span>
-            <strong>121 Anatomical Targets:</strong> 3D pins show canonical coordinates including female reproductive structures. Drag to orbit 360°.
+        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-auto bg-white/95 backdrop-blur px-2.5 sm:px-3 py-1.5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs text-[10px] sm:text-xs text-slate-600 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-none">
+          <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0" />
+          <span className="truncate sm:whitespace-normal">
+            <strong className="text-slate-900">121 Targets:</strong>{" "}
+            <span className="hidden sm:inline">Canonical 3D landmark coordinates. </span>
+            Drag to orbit 360°
           </span>
         </div>
       </div>

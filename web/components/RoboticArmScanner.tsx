@@ -545,14 +545,22 @@ export function RoboticArmScanner() {
       if (!container || !camera || !renderer) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w <= 0 || h <= 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
+
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(container);
+
     window.addEventListener("resize", handleResize);
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
+      resizeObserver.disconnect();
       container.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
@@ -576,38 +584,38 @@ export function RoboticArmScanner() {
   };
 
   return (
-    <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[540px] rounded-3xl overflow-hidden border border-slate-200 bg-slate-50/50 shadow-lg select-none">
+    <div className="relative w-full h-[460px] sm:h-[500px] lg:h-[540px] rounded-3xl overflow-hidden border border-slate-200 bg-slate-50/50 shadow-lg select-none">
       <div
         ref={mountRef}
         className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
       />
 
       {/* Top HUD Overlay: Live Telemetry & CAIR Medical Robotics Status */}
-      <div className="absolute top-3 left-3 right-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2 pointer-events-none z-10">
+      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex flex-col sm:flex-row sm:items-start justify-between gap-1.5 sm:gap-2 pointer-events-none z-10">
         {/* Left Telemetry Box */}
-        <div className="flex flex-col gap-1 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-slate-200 shadow-sm pointer-events-auto max-w-xs">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide">
-              CAIR Autonomous Scanner
+        <div className="flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs sm:shadow-sm pointer-events-auto sm:max-w-xs">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide">
+              CAIR Scanner
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
+          <div className="hidden sm:flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
             <Cpu className="w-3 h-3 text-sky-600 shrink-0" />
             <span>6-DOF Articulated Kinematics</span>
           </div>
-          <div className="text-[11px] sm:text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span>Target:</span>
+          <div className="text-[10px] sm:text-xs font-semibold text-slate-800 flex items-center gap-1 shrink-0">
+            <Activity className="w-3 h-3 text-primary shrink-0" />
+            <span className="hidden sm:inline">Target:</span>
             <span className="text-primary font-bold">{activeTargetLock}</span>
           </div>
         </div>
 
         {/* Right Steer Buttons */}
-        <div className="flex flex-wrap items-center gap-1 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-2xl border border-slate-200 shadow-sm pointer-events-auto text-xs font-medium text-slate-700 self-start">
+        <div className="flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 sm:px-2.5 sm:py-1.5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs sm:shadow-sm pointer-events-auto text-xs font-medium text-slate-700 overflow-x-auto no-scrollbar max-w-full">
           <button
             onClick={() => setIsAutoScanning(!isAutoScanning)}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl font-semibold text-xs transition-all ${
+            className={`flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl font-semibold text-[11px] sm:text-xs shrink-0 transition-all ${
               isAutoScanning
                 ? "bg-primary text-white shadow-xs"
                 : "bg-slate-100 hover:bg-slate-200 text-slate-800"
@@ -621,51 +629,51 @@ export function RoboticArmScanner() {
             ) : (
               <>
                 <Play className="w-3 h-3" />
-                <span>Auto Sweep</span>
+                <span>Auto</span>
               </>
             )}
           </button>
 
-          <div className="h-3 w-px bg-slate-200 mx-0.5 hidden sm:block" />
+          <div className="h-3 w-px bg-slate-200 mx-0.5 shrink-0" />
 
           {/* Quick Zone Presets */}
           <button
             onClick={() => setPresetZone("head")}
-            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg hover:bg-slate-100 text-[11px] transition-colors shrink-0"
           >
             Head
           </button>
           <button
             onClick={() => setPresetZone("chest")}
-            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg hover:bg-slate-100 text-[11px] transition-colors shrink-0"
           >
             Chest
           </button>
           <button
             onClick={() => setPresetZone("abdomen")}
-            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg hover:bg-slate-100 text-[11px] transition-colors shrink-0"
           >
             Abdomen
           </button>
           <button
             onClick={() => setPresetZone("pelvis")}
-            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg hover:bg-slate-100 text-[11px] transition-colors shrink-0"
           >
-            Pelvis (Uterus)
+            Pelvis
           </button>
         </div>
       </div>
 
       {/* Bottom Overlay: Non-Invasive Optical Scanning Guarantee */}
-      <div className="absolute bottom-3 left-3 right-3 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-3 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-2 rounded-2xl border border-slate-200 shadow-sm z-10 text-[11px] sm:text-xs text-slate-600 pointer-events-none">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            <strong>Zero Radiation:</strong> Optical laser & depth scanning replaces ionizing CT with surface geometry photogrammetry.
+      <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex items-center justify-between gap-1.5 sm:gap-3 bg-white/95 backdrop-blur-md px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs sm:shadow-sm z-10 text-[10px] sm:text-xs text-slate-600 pointer-events-none">
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+          <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
+          <span className="truncate">
+            <strong className="text-slate-900">Zero Radiation:</strong> Optical 3D surface scanning replaces ionizing CT.
           </span>
         </div>
-        <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 whitespace-nowrap">
-          <span>CAIR &bull; IIT Mandi</span>
+        <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 whitespace-nowrap shrink-0">
+          <span>IIT Mandi</span>
         </div>
       </div>
     </div>

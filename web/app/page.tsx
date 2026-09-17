@@ -65,7 +65,7 @@ export default function Home() {
               Drag to orbit 360° &bull; Scroll to zoom &bull; Click zone buttons to steer robotic arm
             </span>
           </div>
-          <span className="text-xs font-mono text-slate-400">CAIR-ROBOT-SCAN-SIM v2.4</span>
+          <span className="text-xs font-mono text-slate-400 hidden sm:inline">CAIR-ROBOT-SCAN-SIM v2.4</span>
         </div>
         <RoboticArmScanner />
       </section>

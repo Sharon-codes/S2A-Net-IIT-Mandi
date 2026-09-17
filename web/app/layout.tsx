@@ -107,8 +107,8 @@ export default function RootLayout({
                   </li>
                   <li>
                     <div className="font-medium text-text-main">Dr. Deepak Raina <span className="text-[10px] font-mono text-text-muted">(Supervisor)</span></div>
-                    <a href="mailto:deepak@iitmandi.ac.in" className="text-accent-green hover:underline font-mono text-[11px]">
-                      deepak@iitmandi.ac.in
+                    <a href="mailto:deepakraina@iitmandi.ac.in" className="text-accent-green hover:underline font-mono text-[11px]">
+                      deepakraina@iitmandi.ac.in
                     </a>
                   </li>
                 </ul>

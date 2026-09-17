@@ -320,10 +320,10 @@ export default function DemoPage() {
 
       {/* MOBILE LAYOUT: Viewer → Inputs → Results (stacked vertically)
           DESKTOP LAYOUT: Left inputs | Center viewer | Right results */}
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-5 items-stretch lg:items-start w-full">
 
         {/* LEFT PANEL: Input & Setup — on mobile shows BELOW the 3D viewer */}
-        <div className="lg:col-span-3 xl:col-span-3 flex flex-col gap-3 order-2 lg:order-1">
+        <div className="w-full lg:col-span-3 xl:col-span-3 flex flex-col gap-3 order-2 lg:order-1">
           <FileDropzone
             onFileLoaded={handleFileLoaded}
             isLoading={false}
@@ -349,7 +349,7 @@ export default function DemoPage() {
         </div>
 
         {/* CENTER: 3D ThreeViewer — appears FIRST on mobile (order-1) */}
-        <div className="lg:col-span-5 xl:col-span-6 order-1 lg:order-2 h-[380px] sm:h-[500px] lg:h-[740px] lg:sticky lg:top-20">
+        <div className="w-full lg:col-span-5 xl:col-span-6 order-1 lg:order-2 h-[420px] sm:h-[500px] lg:h-[740px] lg:sticky lg:top-20">
           <ThreeViewer
             surfacePoints={surfacePoints}
             predictions={predictions}
@@ -362,7 +362,7 @@ export default function DemoPage() {
         </div>
 
         {/* RIGHT: Predicted Organ Locations */}
-        <div className="lg:col-span-4 xl:col-span-3 order-3 w-full h-[420px] sm:h-[560px] lg:h-[740px] lg:sticky lg:top-20">
+        <div className="w-full lg:col-span-4 xl:col-span-3 order-3 h-[420px] sm:h-[560px] lg:h-[740px] lg:sticky lg:top-20">
           <PredictionResults
             predictions={predictions}
             selectedTarget={activeFocusedTarget}

@@ -271,10 +271,16 @@ export function ThreeViewer({
       if (!container || !renderer || !camera) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w <= 0 || h <= 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
+
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(container);
 
     // Touch Controls for Mobile Devices
     let initialPinchDist = 0;
@@ -335,6 +341,7 @@ export function ThreeViewer({
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
+      resizeObserver.disconnect();
       container.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);

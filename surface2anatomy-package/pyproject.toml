@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "surface2anatomy"
-version = "0.1.1"
+version = "0.1.2"
 description = "Target-conditioned 3D internal anatomy localization from external body surface geometry."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,7 +12,10 @@ license = { text = "Apache-2.0" }
 authors = [
     { name = "Khushi Mhamane", email = "khushimhamane@gmail.com" },
     { name = "Sharon Melhi", email = "sharonmelhi365@gmail.com" },
-    { name = "Deepak Raina", email = "deepak@iitmandi.ac.in" }
+    { name = "Deepak Raina", email = "deepakraina@iitmandi.ac.in" }
+]
+maintainers = [
+    { name = "Khushi Mhamane", email = "khushimhamane@gmail.com" }
 ]
 keywords = [
     "deep-learning", "pytorch", "point-cloud", "medical-imaging",

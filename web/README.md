@@ -35,7 +35,7 @@ This research and software platform was formulated and developed by research int
 - **Sharon Melhi** — *Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi* &bull; [sharonmelhi365@gmail.com](mailto:sharonmelhi365@gmail.com)
 
 ### Under the Academic Supervision of:
-- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)* &bull; [deepak@iitmandi.ac.in](mailto:deepak@iitmandi.ac.in)
+- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)* &bull; [deepakraina@iitmandi.ac.in](mailto:deepakraina@iitmandi.ac.in)
 
 ---
 

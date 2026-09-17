@@ -156,10 +156,10 @@ export default function TeamPage() {
                 Assistant Professor &bull; CAIR, IIT Mandi
               </p>
               <a
-                href="mailto:deepak@iitmandi.ac.in"
+                href="mailto:deepakraina@iitmandi.ac.in"
                 className="text-[11px] text-accent-green hover:underline font-mono mt-1 inline-block"
               >
-                deepak@iitmandi.ac.in
+                deepakraina@iitmandi.ac.in
               </a>
             </div>
 
