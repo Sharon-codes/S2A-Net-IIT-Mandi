@@ -1,0 +1,333 @@
+{
+  "input_file": "sample_male_body.ply",
+  "c_external_mm": [
+    3.3124,
+    48.7208,
+    98.8589
+  ],
+  "num_points_raw": 4096,
+  "detected_unit": "millimeters",
+  "model_variant": "phase16_brain",
+  "results": {
+    "liver": {
+      "target": "liver",
+      "target_index": 4,
+      "centroid_canonical_mm": [
+        51.16,
+        69.32,
+        -46.4
+      ],
+      "centroid_input_world_mm": [
+        54.47,
+        118.04,
+        52.46
+      ],
+      "uncertainty_mm": 52.73,
+      "seed_predictions_mm": {
+        "42": [
+          42.46,
+          73.25,
+          -82.34
+        ],
+        "43": [
+          57.39,
+          78.73,
+          -83.21
+        ],
+        "44": [
+          53.62,
+          55.96,
+          26.35
+        ]
+      }
+    },
+    "spleen": {
+      "target": "spleen",
+      "target_index": 0,
+      "centroid_canonical_mm": [
+        -90.26,
+        23.26,
+        -55.14
+      ],
+      "centroid_input_world_mm": [
+        -86.95,
+        71.98,
+        43.72
+      ],
+      "uncertainty_mm": 36.88,
+      "seed_predictions_mm": {
+        "42": [
+          -87.78,
+          21.9,
+          -88.55
+        ],
+        "43": [
+          -95.32,
+          31.44,
+          -72.0
+        ],
+        "44": [
+          -87.69,
+          16.45,
+          -4.87
+        ]
+      }
+    },
+    "heart": {
+      "target": "heart",
+      "target_index": 50,
+      "centroid_canonical_mm": [
+        -26.86,
+        86.75,
+        87.48
+      ],
+      "centroid_input_world_mm": [
+        -23.55,
+        135.47,
+        186.33
+      ],
+      "uncertainty_mm": 51.22,
+      "seed_predictions_mm": {
+        "42": [
+          -31.67,
+          88.63,
+          121.98
+        ],
+        "43": [
+          -28.3,
+          93.85,
+          15.97
+        ],
+        "44": [
+          -20.62,
+          77.78,
+          124.48
+        ]
+      }
+    },
+    "brain": {
+      "target": "brain",
+      "target_index": 89,
+      "centroid_canonical_mm": [
+        -27.85,
+        -14.65,
+        597.36
+      ],
+      "centroid_input_world_mm": [
+        -24.53,
+        34.07,
+        696.22
+      ],
+      "uncertainty_mm": 102.73,
+      "seed_predictions_mm": {
+        "42": [
+          -24.4,
+          6.8,
+          534.12
+        ],
+        "43": [
+          -47.73,
+          -61.23,
+          733.2
+        ],
+        "44": [
+          -11.41,
+          10.48,
+          524.77
+        ]
+      }
+    },
+    "kidney_left": {
+      "target": "kidney_left",
+      "target_index": 2,
+      "centroid_canonical_mm": [
+        -67.12,
+        25.12,
+        -158.3
+      ],
+      "centroid_input_world_mm": [
+        -63.81,
+        73.84,
+        -59.44
+      ],
+      "uncertainty_mm": 11.15,
+      "seed_predictions_mm": {
+        "42": [
+          -63.44,
+          25.27,
+          -163.4
+        ],
+        "43": [
+          -74.44,
+          29.7,
+          -165.99
+        ],
+        "44": [
+          -63.48,
+          20.38,
+          -145.5
+        ]
+      }
+    },
+    "kidney_right": {
+      "target": "kidney_right",
+      "target_index": 1,
+      "centroid_canonical_mm": [
+        59.36,
+        28.82,
+        -202.48
+      ],
+      "centroid_input_world_mm": [
+        62.67,
+        77.54,
+        -103.62
+      ],
+      "uncertainty_mm": 7.88,
+      "seed_predictions_mm": {
+        "42": [
+          60.28,
+          26.42,
+          -204.68
+        ],
+        "43": [
+          54.71,
+          35.07,
+          -194.94
+        ],
+        "44": [
+          63.09,
+          24.97,
+          -207.82
+        ]
+      }
+    },
+    "pancreas": {
+      "target": "pancreas",
+      "target_index": 6,
+      "centroid_canonical_mm": [
+        -19.3,
+        81.89,
+        -131.7
+      ],
+      "centroid_input_world_mm": [
+        -15.99,
+        130.61,
+        -32.84
+      ],
+      "uncertainty_mm": 32.93,
+      "seed_predictions_mm": {
+        "42": [
+          -19.68,
+          81.19,
+          -140.05
+        ],
+        "43": [
+          -22.71,
+          89.42,
+          -166.37
+        ],
+        "44": [
+          -15.51,
+          75.05,
+          -88.67
+        ]
+      }
+    },
+    "stomach": {
+      "target": "stomach",
+      "target_index": 5,
+      "centroid_canonical_mm": [
+        -50.42,
+        83.36,
+        -75.78
+      ],
+      "centroid_input_world_mm": [
+        -47.1,
+        132.08,
+        23.07
+      ],
+      "uncertainty_mm": 54.12,
+      "seed_predictions_mm": {
+        "42": [
+          -52.39,
+          79.29,
+          -137.17
+        ],
+        "43": [
+          -48.33,
+          97.99,
+          -82.4
+        ],
+        "44": [
+          -50.53,
+          72.79,
+          -7.78
+        ]
+      }
+    },
+    "prostate": {
+      "target": "prostate",
+      "target_index": 21,
+      "centroid_canonical_mm": [
+        -2.56,
+        42.2,
+        -614.68
+      ],
+      "centroid_input_world_mm": [
+        0.76,
+        90.92,
+        -515.82
+      ],
+      "uncertainty_mm": 30.05,
+      "seed_predictions_mm": {
+        "42": [
+          -3.97,
+          47.3,
+          -611.52
+        ],
+        "43": [
+          -6.34,
+          47.61,
+          -651.51
+        ],
+        "44": [
+          2.64,
+          31.69,
+          -581.01
+        ]
+      }
+    },
+    "urinary_bladder": {
+      "target": "urinary_bladder",
+      "target_index": 20,
+      "centroid_canonical_mm": [
+        1.03,
+        67.72,
+        -586.81
+      ],
+      "centroid_input_world_mm": [
+        4.34,
+        116.44,
+        -487.95
+      ],
+      "uncertainty_mm": 21.85,
+      "seed_predictions_mm": {
+        "42": [
+          4.21,
+          67.25,
+          -597.02
+        ],
+        "43": [
+          -3.51,
+          73.48,
+          -606.01
+        ],
+        "44": [
+          2.4,
+          62.44,
+          -557.39
+        ]
+      }
+    }
+  }
+}
