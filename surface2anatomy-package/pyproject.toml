@@ -10,9 +10,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
 authors = [
-    { name = "Deepak Raina", email = "deepak@iitmandi.ac.in" },
+    { name = "Khushi Mhamane", email = "khushimhamane@gmail.com" },
     { name = "Sharon Melhi", email = "sharonmelhi365@gmail.com" },
-    { name = "Khushi Mhamane", email = "khushimhamane@gmail.com" }
+    { name = "Deepak Raina", email = "deepak@iitmandi.ac.in" }
 ]
 keywords = [
     "deep-learning", "pytorch", "point-cloud", "medical-imaging",

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Box, ShieldCheck, Zap, Activity, Cpu, Database, Eye } from "lucide-react";
+import { ArrowRight, Box, ShieldCheck, Zap, Activity, Cpu, Database, Eye, Package, Github, Terminal, ExternalLink } from "lucide-react";
 import { RoboticArmScanner } from "@/components/RoboticArmScanner";
 
 export default function Home() {
@@ -173,6 +173,146 @@ export default function Home() {
               </tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      {/* Open Source Ecosystem: PyPI, Hugging Face, GitHub */}
+      <section className="bg-white rounded-2xl border border-border p-6 md:p-8 flex flex-col gap-6 shadow-xs">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
+              <Package className="w-3.5 h-3.5" />
+              <span>Official Python Release</span>
+            </div>
+            <h2 className="text-2xl font-bold text-text-main">Open Source Package &amp; Checkpoints</h2>
+            <p className="text-sm text-text-muted mt-1">
+              Surface2Anatomy is packaged for production and research environments with zero placeholder weights.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <a
+              href="https://pypi.org/project/surface2anatomy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-2"
+            >
+              <Package className="w-4 h-4" />
+              <span>PyPI Package</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+            </a>
+
+            <a
+              href="https://huggingface.co/spaces/Sharon-codes/surface2anatomy-backend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-semibold shadow-xs transition-all flex items-center gap-2"
+            >
+              <span>🤗</span>
+              <span>Hugging Face Space</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+            </a>
+
+            <a
+              href="https://github.com/Sharon-codes/S2A-Net-IIT-Mandi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-2"
+            >
+              <Github className="w-4 h-4" />
+              <span>GitHub Repo</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+            </a>
+          </div>
+        </div>
+
+        {/* Code installation preview */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-slate-950 text-slate-100 rounded-xl p-4 font-mono text-xs flex flex-col justify-between border border-slate-800">
+            <div>
+              <div className="text-slate-400 text-[11px] mb-2 flex items-center gap-2">
+                <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Installation via PyPI</span>
+              </div>
+              <div className="bg-slate-900 rounded-lg p-3 text-emerald-400 font-semibold select-all">
+                pip install surface2anatomy
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-4">
+              Installs frozen PointNet++ multi-scale encoder, cross-attention decoders, and Ridge alignment models.
+            </p>
+          </div>
+
+          <div className="bg-slate-950 text-slate-100 rounded-xl p-4 font-mono text-xs flex flex-col justify-between border border-slate-800">
+            <div>
+              <div className="text-slate-400 text-[11px] mb-2 flex items-center gap-2">
+                <Terminal className="w-3.5 h-3.5 text-sky-400" />
+                <span>Python Quickstart</span>
+              </div>
+              <pre className="text-slate-300 text-[11px] leading-relaxed overflow-x-auto select-all">
+{`from surface2anatomy import SurfaceAnatomyModel
+
+model = SurfaceAnatomyModel.from_pretrained()
+result = model.predict("patient_surface.ply", target="spleen")
+print(result.centroid_mm)  # (-61.2, 34.8, 105.4)`}
+              </pre>
+            </div>
+            <div className="text-[11px] text-slate-400 mt-2">
+              Weights cached automatically to standard user cache with SHA256 integrity verification.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Academic Citation Block */}
+      <section className="bg-white rounded-2xl border border-border p-6 md:p-8 flex flex-col gap-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-bold text-text-main">Citation &amp; Academic Attribution</h2>
+            <p className="text-xs text-text-muted mt-0.5">
+              If you utilize Surface2Anatomy (S2A-Net) or its algorithmic formulations in academic research, please cite:
+            </p>
+          </div>
+          <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 shrink-0">
+            BibTeX
+          </span>
+        </div>
+
+        {/* Authors Highlight */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div>
+            <span className="font-semibold text-text-main">Khushi Mhamane</span>
+            <span className="text-[10px] font-mono text-primary uppercase ml-1 font-bold">(Project Lead)</span>
+            <div className="text-[11px] font-mono text-accent-green">
+              <a href="mailto:khushimhamane@gmail.com" className="hover:underline">khushimhamane@gmail.com</a>
+            </div>
+          </div>
+          <div>
+            <span className="font-semibold text-text-main">Sharon Melhi</span>
+            <span className="text-[10px] font-mono text-text-muted ml-1">(Research Intern)</span>
+            <div className="text-[11px] font-mono text-accent-green">
+              <a href="mailto:sharonmelhi365@gmail.com" className="hover:underline">sharonmelhi365@gmail.com</a>
+            </div>
+          </div>
+          <div>
+            <span className="font-semibold text-text-main">Dr. Deepak Raina</span>
+            <span className="text-[10px] font-mono text-text-muted ml-1">(Supervisor)</span>
+            <div className="text-[11px] font-mono text-accent-green">
+              <a href="mailto:deepak@iitmandi.ac.in" className="hover:underline">deepak@iitmandi.ac.in</a>
+            </div>
+          </div>
+        </div>
+
+        {/* BibTeX Code Card */}
+        <div className="relative">
+          <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto select-all leading-relaxed border border-slate-800">
+{`@article{mhamane2026surface2anatomy,
+  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
+  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
+  journal={arXiv preprint},
+  year={2026}
+}`}
+          </pre>
         </div>
       </section>
     </div>

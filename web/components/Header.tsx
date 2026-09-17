@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Sparkles, Menu, X, Cpu } from "lucide-react";
+import { Sparkles, Menu, X, Cpu, Github, Package, ExternalLink } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
@@ -36,7 +36,7 @@ export function Header() {
 
   return (
     <header className="w-full bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         {/* Left: Brand Identity & CAIR IIT Mandi Crest */}
         <div className="flex items-center gap-3 shrink-0">
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -80,9 +80,43 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right: Desktop Actions & Mobile Menu Button */}
-        <div className="flex items-center gap-2.5">
-          <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border border-slate-200 bg-slate-50 text-slate-600">
+        {/* Right: External Resource Links, Status & Demo CTA */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* External Links: PyPI, Hugging Face, GitHub */}
+          <div className="hidden lg:flex items-center gap-1.5 border-r border-slate-200 pr-2">
+            <a
+              href="https://pypi.org/project/surface2anatomy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="PyPI Package: pip install surface2anatomy"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-mono font-medium text-slate-700 hover:text-primary hover:bg-slate-100 border border-slate-200 transition-colors"
+            >
+              <Package className="w-3.5 h-3.5 text-primary" />
+              <span>PyPI</span>
+            </a>
+            <a
+              href="https://huggingface.co/spaces/Sharon-codes/surface2anatomy-backend"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Hugging Face Space Backend"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-mono font-medium text-slate-700 hover:text-amber-700 hover:bg-amber-50 border border-slate-200 transition-colors"
+            >
+              <span>🤗</span>
+              <span>HF Space</span>
+            </a>
+            <a
+              href="https://github.com/Sharon-codes/S2A-Net-IIT-Mandi"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="GitHub Repository"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-mono font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-100 border border-slate-200 transition-colors"
+            >
+              <Github className="w-3.5 h-3.5 text-slate-800" />
+              <span>GitHub</span>
+            </a>
+          </div>
+
+          <div className="hidden xl:flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded-full border border-slate-200 bg-slate-50 text-slate-600">
             <span
               className={`w-2 h-2 rounded-full ${
                 apiOnline === true
@@ -150,9 +184,40 @@ export function Header() {
             })}
           </nav>
 
+          {/* Mobile Links for PyPI, HF, GitHub */}
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+            <a
+              href="https://pypi.org/project/surface2anatomy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-700 transition-colors"
+            >
+              <Package className="w-4 h-4 text-primary mb-1" />
+              <span>PyPI</span>
+            </a>
+            <a
+              href="https://huggingface.co/spaces/Sharon-codes/surface2anatomy-backend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-700 transition-colors"
+            >
+              <span className="text-base leading-none mb-1">🤗</span>
+              <span>HF Space</span>
+            </a>
+            <a
+              href="https://github.com/Sharon-codes/S2A-Net-IIT-Mandi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-700 transition-colors"
+            >
+              <Github className="w-4 h-4 text-slate-800 mb-1" />
+              <span>GitHub</span>
+            </a>
+          </div>
+
           <Link
             href="/demo"
-            className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-semibold shadow-xs transition-all flex items-center justify-center gap-2 mt-1"
+            className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-semibold shadow-xs transition-all flex items-center justify-center gap-2 mt-2"
           >
             <Sparkles className="w-4 h-4" />
             <span>Launch 3D Localization Demo</span>

@@ -77,3 +77,8 @@ experiments/phase10R/checkpoints/C3*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Hugging Face Space local checkpoint cache
+hf_space/checkpoints/*.pt
+hf_space/checkpoints/*.joblib
+

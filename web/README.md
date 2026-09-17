@@ -13,12 +13,14 @@
 **Indian Institute of Technology Mandi (IIT Mandi)**  
 *Advanced Biomedical Perception & Surgical Robotics*
 
+[![PyPI version](https://img.shields.io/pypi/v/surface2anatomy.svg?style=for-the-badge&logo=pypi&logoColor=white)](https://pypi.org/project/surface2anatomy/)
 [![Live 3D Web Platform](https://img.shields.io/badge/Vercel_Live_Platform-web--self--theta--51.vercel.app-66734b?style=for-the-badge&logo=vercel)](https://web-self-theta-51.vercel.app)
+[![Hugging Face Space](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Space_Backend-ffcc00?style=for-the-badge)](https://huggingface.co/spaces/Sharon-codes/surface2anatomy-backend)
 [![Hugging Face Weights (CAIR IIT Mandi)](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-IITMandiResearch-yellow?style=for-the-badge)](https://huggingface.co/IITMandiResearch/Surface2Anatomy-Weights)
 [![Hugging Face Checkpoints](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-SharonMelhi-blue?style=for-the-badge)](https://huggingface.co/SharonMelhi/S2A-Net-Weights)
-[![License: MIT](https://img.shields.io/badge/License-MIT-465133?style=for-the-badge)](LICENSE)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![PyTorch 2.3](https://img.shields.io/badge/PyTorch-2.3-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-465133?style=for-the-badge)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 
 </div>
@@ -27,13 +29,13 @@
 
 ## 👥 Project Team & Academic Supervision
 
-This research and software platform was developed by research interns at the **Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)**:
+This research and software platform was formulated and developed by research interns at the **Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)**:
 
-- **Khushi Mhamane** — *Project Lead & Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi*
-- **Sharon Melhi** — *Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi*
+- **Khushi Mhamane** — *Project Lead & Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi* &bull; [khushimhamane@gmail.com](mailto:khushimhamane@gmail.com)
+- **Sharon Melhi** — *Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi* &bull; [sharonmelhi365@gmail.com](mailto:sharonmelhi365@gmail.com)
 
 ### Under the Academic Supervision of:
-- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)*
+- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)* &bull; [deepak@iitmandi.ac.in](mailto:deepak@iitmandi.ac.in)
 
 ---
 
@@ -131,8 +133,55 @@ ckpt = hf_hub_download(
 
 ---
 
+## 🐍 Python Package (`surface2anatomy`)
+
+The official Python package is published on PyPI:
+
+```bash
+pip install surface2anatomy
+```
+
+### Quickstart
+
+```python
+from surface2anatomy import SurfaceAnatomyModel
+
+# Load frozen multi-seed ensemble
+model = SurfaceAnatomyModel.from_pretrained(device="cuda")
+
+# Run inference on patient surface geometry
+result = model.predict("patient_scan.ply", target="spleen")
+
+print(f"Centroid (mm): {result.centroid_mm}")
+print(f"Uncertainty (mm): {result.uncertainty_mm:.2f}")
+```
+
+- **PyPI**: [https://pypi.org/project/surface2anatomy/](https://pypi.org/project/surface2anatomy/)
+- **Documentation**: [https://github.com/Sharon-codes/S2A-Net-IIT-Mandi#readme](https://github.com/Sharon-codes/S2A-Net-IIT-Mandi#readme)
+
+---
+
 ## 🏛️ Institutional Affiliation
 
 **Centre for Artificial Intelligence and Robotics (CAIR)**  
 **Indian Institute of Technology Mandi (IIT Mandi)**  
 Kamand Campus, Mandi &mdash; 175005, Himachal Pradesh, India.
+
+---
+
+## 📜 Citation
+
+```bibtex
+@article{mhamane2026surface2anatomy,
+  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
+  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
+  journal={arXiv preprint},
+  year={2026}
+}
+```
+
+---
+
+## 📄 License
+
+Apache 2.0 License. See [LICENSE](LICENSE) for details.

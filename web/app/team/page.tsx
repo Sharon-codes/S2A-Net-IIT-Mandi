@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { User, Award, GraduationCap, Building2, Cpu, Sparkles } from "lucide-react";
+import { User, Award, GraduationCap, Building2, Cpu, Sparkles, Package, Github, ExternalLink } from "lucide-react";
 
 export default function TeamPage() {
   return (
@@ -35,46 +35,9 @@ export default function TeamPage() {
         </p>
       </div>
 
-      {/* 3-Column Team Grid: All 3 Members in ONE Single Line */}
+      {/* 3-Column Team Grid: Khushi Mhamane -> Sharon Melhi -> Dr. Deepak Raina */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-        {/* Card 1: Dr. Deepak Raina - Academic Project Supervisor */}
-        <div className="bg-white rounded-2xl border-2 border-primary/30 p-6 shadow-xs flex flex-col justify-between gap-4 relative">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
-                <img
-                  src="/team/deepak_raina.png"
-                  alt="Dr. Deepak Raina"
-                  className="w-full h-full object-cover object-top"
-                />
-              </div>
-              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark border border-primary/20 shrink-0">
-                Faculty Supervisor
-              </span>
-            </div>
-
-            <div>
-              <div className="text-[11px] font-mono text-accent-green font-semibold uppercase tracking-wider mb-0.5">
-                Academic Project Supervisor
-              </div>
-              <h2 className="text-xl font-bold text-text-main">Dr. Deepak Raina</h2>
-              <p className="text-xs font-medium text-primary-dark mt-0.5">
-                Assistant Professor &bull; CAIR, IIT Mandi
-              </p>
-            </div>
-
-            <p className="text-xs text-text-muted leading-relaxed">
-              Supervised the architectural formulation, medical coordinate system invariance, cross-attention mechanism design, and scientific validation paradigms for radiation-free internal organ localization.
-            </p>
-          </div>
-
-          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate">CAIR, IIT Mandi</span>
-          </div>
-        </div>
-
-        {/* Card 2: Khushi Mhamane - Project Lead */}
+        {/* Card 1: Khushi Mhamane - Project Lead */}
         <div className="bg-white rounded-2xl border-2 border-primary/40 p-6 shadow-xs flex flex-col justify-between gap-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-mono px-3 py-0.5 rounded-bl-lg font-semibold tracking-wider uppercase">
             Project Lead
@@ -90,7 +53,7 @@ export default function TeamPage() {
                 />
               </div>
               <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0 mr-16">
-                Lead Intern
+                Project Lead
               </span>
             </div>
 
@@ -102,6 +65,12 @@ export default function TeamPage() {
               <p className="text-xs font-medium text-primary-dark mt-0.5">
                 Research Intern &bull; CAIR, IIT Mandi
               </p>
+              <a
+                href="mailto:khushimhamane@gmail.com"
+                className="text-[11px] text-accent-green hover:underline font-mono mt-1 inline-block"
+              >
+                khushimhamane@gmail.com
+              </a>
             </div>
 
             <p className="text-xs text-text-muted leading-relaxed">
@@ -109,13 +78,15 @@ export default function TeamPage() {
             </p>
           </div>
 
-          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate">CAIR, IIT Mandi</span>
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">CAIR, IIT Mandi</span>
+            </div>
           </div>
         </div>
 
-        {/* Card 3: Sharon Melhi - Research Intern */}
+        {/* Card 2: Sharon Melhi - Research Intern */}
         <div className="bg-white rounded-2xl border-2 border-primary/30 p-6 shadow-xs flex flex-col justify-between gap-4 relative">
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
@@ -139,6 +110,12 @@ export default function TeamPage() {
               <p className="text-xs font-medium text-primary-dark mt-0.5">
                 Research Intern &bull; CAIR, IIT Mandi
               </p>
+              <a
+                href="mailto:sharonmelhi365@gmail.com"
+                className="text-[11px] text-accent-green hover:underline font-mono mt-1 inline-block"
+              >
+                sharonmelhi365@gmail.com
+              </a>
             </div>
 
             <p className="text-xs text-text-muted leading-relaxed">
@@ -146,9 +123,56 @@ export default function TeamPage() {
             </p>
           </div>
 
-          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
-            <span className="truncate">CAIR, IIT Mandi</span>
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">CAIR, IIT Mandi</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Dr. Deepak Raina - Academic Project Supervisor */}
+        <div className="bg-white rounded-2xl border-2 border-primary/30 p-6 shadow-xs flex flex-col justify-between gap-4 relative">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+                <img
+                  src="/team/deepak_raina.png"
+                  alt="Dr. Deepak Raina"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark border border-primary/20 shrink-0">
+                Faculty Supervisor
+              </span>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-mono text-accent-green font-semibold uppercase tracking-wider mb-0.5">
+                Academic Project Supervisor
+              </div>
+              <h2 className="text-xl font-bold text-text-main">Dr. Deepak Raina</h2>
+              <p className="text-xs font-medium text-primary-dark mt-0.5">
+                Assistant Professor &bull; CAIR, IIT Mandi
+              </p>
+              <a
+                href="mailto:deepak@iitmandi.ac.in"
+                className="text-[11px] text-accent-green hover:underline font-mono mt-1 inline-block"
+              >
+                deepak@iitmandi.ac.in
+              </a>
+            </div>
+
+            <p className="text-xs text-text-muted leading-relaxed">
+              Supervised the architectural formulation, medical coordinate system invariance, cross-attention mechanism design, and scientific validation paradigms for radiation-free internal organ localization.
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="truncate">CAIR, IIT Mandi</span>
+            </div>
           </div>
         </div>
       </div>
@@ -170,6 +194,60 @@ export default function TeamPage() {
             <span className="text-[11px] text-primary-dark mt-0.5">Specialized centre pioneering intelligent robotics, biomedical perception, and surgical autonomy.</span>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <a
+            href="https://pypi.org/project/surface2anatomy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-border text-xs font-mono text-slate-800 hover:text-primary transition-colors shadow-xs"
+          >
+            <Package className="w-3.5 h-3.5 text-primary" />
+            <span>PyPI</span>
+          </a>
+          <a
+            href="https://huggingface.co/spaces/Sharon-codes/surface2anatomy-backend"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-border text-xs font-mono text-slate-800 hover:text-amber-700 transition-colors shadow-xs"
+          >
+            <span>🤗</span>
+            <span>Hugging Face</span>
+          </a>
+          <a
+            href="https://github.com/Sharon-codes/S2A-Net-IIT-Mandi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-border text-xs font-mono text-slate-800 hover:text-slate-950 transition-colors shadow-xs"
+          >
+            <Github className="w-3.5 h-3.5 text-slate-800" />
+            <span>GitHub</span>
+          </a>
+        </div>
+      </div>
+
+      {/* Academic Citation Block */}
+      <div className="bg-white border border-border rounded-2xl p-6 flex flex-col gap-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="font-bold text-base text-text-main">Official Academic Citation</h3>
+            <p className="text-xs text-text-muted mt-0.5">
+              Please cite the following work when referencing the Surface2Anatomy framework or dataset artifacts:
+            </p>
+          </div>
+          <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 shrink-0">
+            BibTeX
+          </span>
+        </div>
+
+        <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto select-all leading-relaxed border border-slate-800">
+{`@article{mhamane2026surface2anatomy,
+  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
+  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
+  journal={arXiv preprint},
+  year={2026}
+}`}
+        </pre>
       </div>
     </div>
   );

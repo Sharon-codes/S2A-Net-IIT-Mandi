@@ -255,9 +255,9 @@ Evaluated across the locked held-out test cohort ($N=168$ subjects, Dataset V3):
 ## Citation
 
 ```bibtex
-@article{raina2026surface2anatomy,
+@article{mhamane2026surface2anatomy,
   title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
-  author={Raina, Deepak and Melhi, Sharon and Mhamane, Khushi},
+  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
   journal={arXiv preprint},
   year={2026}
 }
