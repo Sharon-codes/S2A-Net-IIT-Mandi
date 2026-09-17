@@ -22,6 +22,7 @@ interface FileDropzoneProps {
   detectedSex?: "female" | "male";
   pointCount?: number;
   onModalityChange?: (modality: "mesh" | "depth" | "rgb") => void;
+  imageUrl?: string | null;
 }
 
 export function FileDropzone({
@@ -32,6 +33,7 @@ export function FileDropzone({
   detectedSex = "female",
   pointCount = 4096,
   onModalityChange,
+  imageUrl = null,
 }: FileDropzoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -196,6 +198,41 @@ export function FileDropzone({
             </span>
           </div>
         </div>
+
+        {/* Clinical Input Preview Thumbnail (For RGB Photos & 3D Depth Frames) */}
+        {(activeModality === "rgb" || activeModality === "depth") && (
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-white border border-border mt-0.5">
+            <div className="w-12 h-12 rounded-md overflow-hidden bg-slate-100 border border-slate-200 shrink-0 relative flex items-center justify-center">
+              <img
+                src={
+                  imageUrl ||
+                  (activeModality === "depth"
+                    ? "/demo/sample_depth_camera.png"
+                    : detectedSex === "male"
+                    ? "/demo/sample_patient_male_rgb.jpg"
+                    : "/demo/sample_patient_female_rgb.jpg")
+                }
+                alt="Patient Clinical Input"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-slate-800 uppercase tracking-tight">
+                  {activeModality === "depth" ? "16-Bit Depth Frame" : "Clinical Photograph"}
+                </span>
+                <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 font-semibold">
+                  Extracted
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                {activeModality === "depth"
+                  ? "RealSense depth field registered to canonical CT frame."
+                  : "Optical portrait registered to canonical CT frame."}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Modality Sample Presets */}

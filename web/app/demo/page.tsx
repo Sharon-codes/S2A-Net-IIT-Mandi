@@ -333,6 +333,7 @@ export default function DemoPage() {
             detectedSex={patientSex === "male" ? "male" : "female"}
             pointCount={surfacePoints?.length ?? 4096}
             onModalityChange={setActiveModality}
+            imageUrl={patientImageUrl}
           />
 
           <TargetSelector

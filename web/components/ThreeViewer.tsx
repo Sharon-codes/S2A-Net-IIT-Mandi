@@ -60,6 +60,7 @@ export function ThreeViewer({
   const depthSensorGroupRef = useRef<THREE.Group | null>(null);
   const photoBillboardGroupRef = useRef<THREE.Group | null>(null);
   const imagePlaneMeshRef = useRef<THREE.Mesh | null>(null);
+  const textureLoadTokenRef = useRef<number>(0);
   const reqIdRef = useRef<number | null>(null);
 
   // Interaction & Display State
@@ -349,8 +350,9 @@ export function ThreeViewer({
   useEffect(() => {
     if (!sceneRef.current) return;
     const scene = sceneRef.current;
+    const currentToken = ++textureLoadTokenRef.current;
 
-    // Dispose old image plane
+    // Immediately dispose and remove any previous image plane mesh
     if (imagePlaneMeshRef.current) {
       scene.remove(imagePlaneMeshRef.current);
       imagePlaneMeshRef.current.geometry.dispose();
@@ -360,6 +362,7 @@ export function ThreeViewer({
       imagePlaneMeshRef.current = null;
     }
 
+    // Pure 3D mesh scans never render a 2D image billboard
     if (modality === "mesh") return;
 
     let textureUrl = imageUrl;
@@ -380,20 +383,56 @@ export function ThreeViewer({
     loader.load(
       textureUrl,
       (texture) => {
+        // Race condition guard: discard if token expired or scene was torn down
+        if (currentToken !== textureLoadTokenRef.current || !sceneRef.current) {
+          texture.dispose();
+          return;
+        }
+
         texture.colorSpace = THREE.SRGBColorSpace;
-        // Torso height ~ 720mm, width ~ 360mm
-        const planeGeo = new THREE.PlaneGeometry(360, 720);
+
+        // Anatomically calibrated dimensioning and vertical registration:
+        // - Female bust photo: head to breasts (height 360mm, center Y=+190mm, Z=-35mm)
+        // - Male torso photo: chin to thighs (height 500mm, center Y=-10mm, Z=-35mm)
+        // - Depth camera: full body from head to floor (height 840mm, center Y=-50mm, Z=-35mm)
+        let planeW = 380;
+        let planeH = 650;
+        let planeY = 40;
+
+        const isFemalePhoto =
+          patientSex === "female" && (modality === "rgb" || textureUrl.includes("female"));
+        const isMalePhoto =
+          patientSex === "male" && (modality === "rgb" || textureUrl.includes("male"));
+        const isDepth =
+          modality === "depth" || textureUrl.includes("depth");
+
+        if (isFemalePhoto) {
+          planeW = 360;
+          planeH = 360;
+          planeY = 190;
+        } else if (isMalePhoto) {
+          planeW = 400;
+          planeH = 500;
+          planeY = -10;
+        } else if (isDepth) {
+          planeW = 420;
+          planeH = 840;
+          planeY = -50;
+        }
+
+        const planeGeo = new THREE.PlaneGeometry(planeW, planeH);
         const planeMat = new THREE.MeshBasicMaterial({
           map: texture,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.94,
-          depthWrite: false, // Ensures point cloud particles and pins render cleanly on top!
+          opacity: 0.92,
+          depthWrite: false, // Ensures 3D point cloud particles and pins render cleanly on top
         });
+
         const planeMesh = new THREE.Mesh(planeGeo, planeMat);
-        planeMesh.position.set(0, 45, -35);
+        planeMesh.position.set(0, planeY, -35);
         planeMesh.visible = showImagePlane;
-        scene.add(planeMesh);
+        sceneRef.current.add(planeMesh);
         imagePlaneMeshRef.current = planeMesh;
       },
       undefined,
@@ -655,111 +694,114 @@ export function ThreeViewer({
       {/* 3D Canvas Mounting Element */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none flex-1" />
 
-      {/* Preset Viewport Buttons Top-Right */}
-      <div className="absolute top-3 right-3 flex flex-wrap max-w-[210px] sm:max-w-none justify-end items-center gap-1 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-text-muted z-10">
-        <span className="text-[10px] uppercase font-mono px-1 hidden sm:inline">View:</span>
-        <button
-          onClick={() => setViewPreset("iso")}
-          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
-        >
-          Perspective
-        </button>
-        <button
-          onClick={() => setViewPreset("coronal_front")}
-          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
-        >
-          Front
-        </button>
-        <button
-          onClick={() => setViewPreset("coronal_back")}
-          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
-        >
-          Back
-        </button>
-        <button
-          onClick={() => setViewPreset("sagittal")}
-          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
-        >
-          Side
-        </button>
-        <button
-          onClick={() => setViewPreset("axial")}
-          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
-        >
-          Top
-        </button>
-      </div>
+      {/* Unified Non-Colliding Top Controls Bar */}
+      <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 pointer-events-none z-10">
+        {/* Left: Modality & Layer Toggles */}
+        <div className="flex items-center gap-1 sm:gap-1.5 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-text-muted pointer-events-auto shrink-0">
+          {modality === "mesh" && (
+            <button
+              onClick={() => setShowMannequin(!showMannequin)}
+              className={`px-2 py-1 rounded-lg text-[11px] sm:text-xs transition-colors ${
+                showMannequin ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+              }`}
+              title="Toggle anatomical mannequin silhouette"
+            >
+              <span>🧍 Mannequin</span>
+            </button>
+          )}
+          {modality === "depth" && (
+            <>
+              <button
+                onClick={() => setShowImagePlane(!showImagePlane)}
+                className={`px-2 py-1 rounded-lg text-[11px] sm:text-xs transition-colors ${
+                  showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+                }`}
+                title="Toggle real 3D depth camera image frame"
+              >
+                <span>📹 Depth Frame</span>
+              </button>
+              <button
+                onClick={() => setShowSensorRig(!showSensorRig)}
+                className={`px-1.5 py-1 rounded-lg text-[11px] sm:text-xs transition-colors hidden sm:flex ${
+                  showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
+                }`}
+                title="Toggle Intel RealSense sensor frustum"
+              >
+                <span>📐 Sensor Rig</span>
+              </button>
+            </>
+          )}
+          {modality === "rgb" && (
+            <>
+              <button
+                onClick={() => setShowImagePlane(!showImagePlane)}
+                className={`px-2 py-1 rounded-lg text-[11px] sm:text-xs transition-colors ${
+                  showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+                }`}
+                title="Toggle real clinical patient photograph"
+              >
+                <span>📸 Patient Photo</span>
+              </button>
+              <button
+                onClick={() => setShowSensorRig(!showSensorRig)}
+                className={`px-1.5 py-1 rounded-lg text-[11px] sm:text-xs transition-colors hidden sm:flex ${
+                  showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
+                }`}
+                title="Toggle clinical studio frame guides"
+              >
+                <span>📐 Studio Frame</span>
+              </button>
+            </>
+          )}
 
-      {/* Modality & Visibility Toggles Top-Left */}
-      <div className="absolute top-3 left-3 flex flex-wrap max-w-[calc(100%-220px)] sm:max-w-none items-center gap-1 sm:gap-1.5 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
-        {modality === "mesh" ? (
           <button
-            onClick={() => setShowMannequin(!showMannequin)}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-              showMannequin ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+            onClick={() => setShowPoints(!showPoints)}
+            className={`px-2 py-1 rounded-lg text-[11px] sm:text-xs transition-colors ${
+              showPoints ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
             }`}
-            title="Toggle anatomical mannequin silhouette"
+            title="Toggle 4,096 surface point cloud"
           >
-            <span>🧍 Mannequin</span>
+            <span>✨ Cloud</span>
           </button>
-        ) : modality === "depth" ? (
-          <>
-            <button
-              onClick={() => setShowImagePlane(!showImagePlane)}
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-                showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
-              }`}
-              title="Toggle real 3D depth camera image frame"
-            >
-              <span>📹 Depth Frame</span>
-            </button>
-            <button
-              onClick={() => setShowSensorRig(!showSensorRig)}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-lg transition-colors hidden sm:flex ${
-                showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
-              }`}
-              title="Toggle Intel RealSense sensor frustum"
-            >
-              <span>📐 Sensor Rig</span>
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => setShowImagePlane(!showImagePlane)}
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-                showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
-              }`}
-              title="Toggle real clinical patient photograph"
-            >
-              <span>📸 Patient Photo</span>
-            </button>
-            <button
-              onClick={() => setShowSensorRig(!showSensorRig)}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-lg transition-colors hidden sm:flex ${
-                showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
-              }`}
-              title="Toggle clinical studio caliper guides"
-            >
-              <span>📐 Studio Frame</span>
-            </button>
-          </>
-        )}
+        </div>
 
-        <button
-          onClick={() => setShowPoints(!showPoints)}
-          className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-            showPoints ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
-          }`}
-          title="Toggle 4,096 surface point cloud"
-        >
-          <span>✨ Cloud</span>
-        </button>
+        {/* Right: Camera Orientation Presets */}
+        <div className="flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-text-muted pointer-events-auto shrink-0">
+          <span className="text-[10px] uppercase font-mono px-1 text-slate-400 hidden sm:inline">Cam:</span>
+          <button
+            onClick={() => setViewPreset("iso")}
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
+            title="3D Perspective View"
+          >
+            3D
+          </button>
+          <button
+            onClick={() => setViewPreset("coronal_front")}
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
+            title="Coronal Front View"
+          >
+            Front
+          </button>
+          <button
+            onClick={() => setViewPreset("sagittal")}
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
+            title="Sagittal Side View"
+          >
+            Side
+          </button>
+          <button
+            onClick={() => setViewPreset("axial")}
+            className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
+            title="Axial Top View"
+          >
+            Top
+          </button>
+        </div>
       </div>
 
-      {/* Selected Target Organ Focus HUD Pill (Appears when an organ is selected) */}
+      {/* Selected Target Organ Focus HUD Pill */}
       {selectedTarget && (
-        <div className="absolute top-14 left-3 flex flex-wrap items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-24px)]">
+        <div className="absolute top-14 left-2.5 flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-20px)]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
             <span className="font-bold text-slate-900 capitalize">

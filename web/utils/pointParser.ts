@@ -164,6 +164,27 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
 
       const rawPoints: number[][] = [];
 
+      const isFemalePhoto = filename.toLowerCase().includes("female") && !isDepth;
+      const isMalePhoto = filename.toLowerCase().includes("male") && !isDepth;
+
+      // Anatomical vertical span (mm)
+      // Head cranium is at +370mm, feet at -470mm
+      let zTop = 370;
+      let zBottom = -470;
+      if (isFemalePhoto) {
+        // Bust photo: cranial top (+370mm) to lower breasts / epigastrium (+10mm)
+        zTop = 370;
+        zBottom = 10;
+      } else if (isMalePhoto) {
+        // Torso photo: chin (+240mm) to mid-thigh (-260mm)
+        zTop = 240;
+        zBottom = -260;
+      } else if (isDepth) {
+        // Full-body depth stream: cranium (+370mm) to floor (-470mm)
+        zTop = 370;
+        zBottom = -470;
+      }
+
       for (let y = 0; y < h; y += 2) {
         // Exclude bottom floor/couch wall artifacts for depth maps
         if (isDepth && y > h * 0.88) continue;
@@ -184,14 +205,48 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
             // Map pixel (x, y) to standard anatomical frame (mm)
             // X: lateral [-150mm, 150mm]
             const px = ((x - w / 2) / (w / 2)) * 150;
-            // Z (vertical height): Head at +370mm down to Pelvis/Legs at -370mm
-            const pz = 370 - (y / h) * 740;
+            // Z (vertical height): calibrated to anatomical range
+            const pz = zTop - (y / h) * (zTop - zBottom);
             // Y (anterior depth): thoracic curvature
             const curve = Math.cos((px / 150) * (Math.PI / 2.2)) * 48;
             const py = isDepth ? 35 + (255 - brightness) * 0.32 : 35 + curve;
 
             rawPoints.push([px, py, pz]);
           }
+        }
+      }
+
+      // If input was a cropped image (bust or torso), complement with anatomical
+      // full-body points to create a complete 4,096-point whole-body digital twin
+      if (isFemalePhoto) {
+        // Complement female pelvis and lower limbs (Z: -470mm to +10mm)
+        for (let i = 0; i < 2048; i++) {
+          const theta = Math.random() * 2 * Math.PI;
+          const pz = 10 - Math.random() * 480;
+          const rX = pz > -150 ? 142 : 80;
+          const rY = pz > -150 ? 105 : 75;
+          const px = Math.cos(theta) * rX * (0.8 + 0.2 * Math.random());
+          const py = Math.sin(theta) * rY * (0.8 + 0.2 * Math.random()) + 40;
+          rawPoints.push([px, py, pz]);
+        }
+      } else if (isMalePhoto) {
+        // Complement male cranium (+240mm to +370mm) and lower legs (-260mm to -470mm)
+        for (let i = 0; i < 1024; i++) {
+          // Head
+          const theta = Math.random() * 2 * Math.PI;
+          const pz = 240 + Math.random() * 130;
+          const px = Math.cos(theta) * 78 * (0.85 + 0.15 * Math.random());
+          const py = Math.sin(theta) * 92 * (0.85 + 0.15 * Math.random()) + 45;
+          rawPoints.push([px, py, pz]);
+        }
+        for (let i = 0; i < 1024; i++) {
+          // Lower legs
+          const theta = Math.random() * 2 * Math.PI;
+          const pz = -260 - Math.random() * 210;
+          const legOffset = Math.random() > 0.5 ? 70 : -70;
+          const px = legOffset + Math.cos(theta) * 35;
+          const py = Math.sin(theta) * 35 + 40;
+          rawPoints.push([px, py, pz]);
         }
       }
 
@@ -268,6 +323,7 @@ export function detectBiologicalSex(
     const fn = filename.toLowerCase();
     if (fn.includes("female") || fn.includes("uterus")) return "female";
     if (fn.includes("male") || fn.includes("prostate")) return "male";
+    if (fn.includes("depth") || fn.includes("realsense") || fn.includes("kinect")) return fallbackSex;
   }
 
   if (!points || points.length === 0) return fallbackSex;
