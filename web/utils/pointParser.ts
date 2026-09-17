@@ -180,9 +180,10 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
         zTop = 345;
         zBottom = -255;
       } else if (isDepth) {
-        // Full-body depth stream: cranium (+370mm) to floor (-470mm)
-        zTop = 370;
-        zBottom = -470;
+        // Full-body depth stream: calibrated to 2.80 mm/px scale
+        // Top of frame (pixel 0) is at +658mm, bottom (pixel 480) is at -686mm
+        zTop = 658;
+        zBottom = -686;
       }
 
       for (let y = 0; y < h; y += 2) {
@@ -203,8 +204,10 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
 
           if (isForeground) {
             // Map pixel (x, y) to standard anatomical frame (mm)
-            // X: lateral [-150mm, 150mm]
-            const px = ((x - w / 2) / (w / 2)) * 150;
+            // X: lateral (depth uses 504mm half-width, RGB uses 150mm)
+            const px = isDepth
+              ? ((x - w / 2) / (w / 2)) * 504
+              : ((x - w / 2) / (w / 2)) * 150;
             // Z (vertical height): calibrated to anatomical range
             const pz = zTop - (y / h) * (zTop - zBottom);
             // Y (anterior depth): thoracic curvature

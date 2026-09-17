@@ -416,9 +416,9 @@ export function ThreeViewer({
           planeH = 600;
           planeY = 45;
         } else if (isDepth) {
-          planeW = 420;
-          planeH = 840;
-          planeY = -50;
+          planeW = 1008;
+          planeH = 1344;
+          planeY = -14;
         }
 
         const planeGeo = new THREE.PlaneGeometry(planeW, planeH);

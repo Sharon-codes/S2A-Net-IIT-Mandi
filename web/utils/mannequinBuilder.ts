@@ -129,19 +129,21 @@ export function createHumanMannequin(): THREE.Group {
 export function createDepthSensorRig(): THREE.Group {
   const group = new THREE.Group();
 
-  // 1. Depth Camera Sensor Body (Intel RealSense D435) mounted at [0, 100, 720]
-  const bodyGeo = new THREE.BoxGeometry(150, 36, 28);
+  // 1. Sleek, non-obstructive Depth Camera Sensor mounted elevated at [0, 480, 650]
+  const bodyGeo = new THREE.BoxGeometry(120, 24, 20);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: 0x465133,
     roughness: 0.4,
     metalness: 0.6,
+    transparent: true,
+    opacity: 0.75,
   });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
-  body.position.set(0, 100, 720);
+  body.position.set(0, 480, 650);
   group.add(body);
 
   // 2. Optical Lenses (IR projector + stereo depth sensors)
-  const lensGeo = new THREE.CylinderGeometry(8, 8, 6, 20);
+  const lensGeo = new THREE.CylinderGeometry(6, 6, 4, 16);
   const lensMat = new THREE.MeshStandardMaterial({
     color: 0x8b9a6d,
     roughness: 0.2,
@@ -152,33 +154,24 @@ export function createDepthSensorRig(): THREE.Group {
 
   const lensLeft = new THREE.Mesh(lensGeo, lensMat);
   lensLeft.rotation.x = Math.PI / 2;
-  lensLeft.position.set(-42, 100, 705);
+  lensLeft.position.set(-36, 480, 640);
   group.add(lensLeft);
 
   const lensRight = new THREE.Mesh(lensGeo, lensMat);
   lensRight.rotation.x = Math.PI / 2;
-  lensRight.position.set(42, 100, 705);
+  lensRight.position.set(36, 480, 640);
   group.add(lensRight);
 
   // 3. Subtle Optical Ray Frustum Pyramid (Soft olive lines, zero occlusion)
   const frustumPoints = [
-    new THREE.Vector3(0, 100, 700),
-    new THREE.Vector3(-160, 360, 90),
-    new THREE.Vector3(0, 100, 700),
-    new THREE.Vector3(160, 360, 90),
-    new THREE.Vector3(0, 100, 700),
-    new THREE.Vector3(160, -320, 90),
-    new THREE.Vector3(0, 100, 700),
-    new THREE.Vector3(-160, -320, 90),
-    // Patient plane perimeter guide
-    new THREE.Vector3(-160, 360, 90),
-    new THREE.Vector3(160, 360, 90),
-    new THREE.Vector3(160, 360, 90),
-    new THREE.Vector3(160, -320, 90),
-    new THREE.Vector3(160, -320, 90),
-    new THREE.Vector3(-160, -320, 90),
-    new THREE.Vector3(-160, -320, 90),
-    new THREE.Vector3(-160, 360, 90),
+    new THREE.Vector3(0, 480, 640),
+    new THREE.Vector3(-220, 360, 20),
+    new THREE.Vector3(0, 480, 640),
+    new THREE.Vector3(220, 360, 20),
+    new THREE.Vector3(0, 480, 640),
+    new THREE.Vector3(220, -480, 20),
+    new THREE.Vector3(0, 480, 640),
+    new THREE.Vector3(-220, -480, 20),
   ];
 
   const frustumGeo = new THREE.BufferGeometry().setFromPoints(frustumPoints);
