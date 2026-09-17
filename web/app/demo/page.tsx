@@ -212,13 +212,14 @@ export default function DemoPage() {
     try {
       const formData = new FormData();
       const blob = new Blob([fileBuffer]);
+      formData.append("surface_file", blob, activeFileName);
       formData.append("file", blob, activeFileName);
       formData.append("targets", selectedTargets.join(","));
+      formData.append("target", selectedTargets[0]);
       formData.append("model_variant", "phase16_brain");
       formData.append("sex", patientSex);
 
-      const endpoint = selectedTargets.length === 1 ? `${apiUrl}/predict` : `${apiUrl}/predict-multiple`;
-      const res = await fetch(endpoint, {
+      const res = await fetch(`${apiUrl}/predict-multiple`, {
         method: "POST",
         body: formData,
       });
@@ -229,7 +230,8 @@ export default function DemoPage() {
       }
 
       const data = await res.json();
-      setPredictions(data.results);
+      const results = data.results || (data.target ? { [data.target]: data } : {});
+      setPredictions(results);
       setLatencyMs(data.model_latency_ms);
       setPrepLatencyMs(data.preprocessing_latency_ms);
 

@@ -76,6 +76,7 @@ async def get_targets():
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(
     surface_file: Optional[UploadFile] = File(None),
+    file: Optional[UploadFile] = File(None),
     target: str = Form("spleen"),
     model_variant: str = Form("phase10r"),
     sex: str = Form("auto")
@@ -93,12 +94,13 @@ async def predict(
         )
     canon_name, target_idx = resolved
     
-    if surface_file is None:
+    input_file = surface_file or file
+    if input_file is None:
         raise HTTPException(status_code=400, detail="Missing required 3D surface file (.PLY, .OBJ, .STL, .PCD, .XYZ, .NPY).")
         
     try:
-        content = await surface_file.read()
-        prep = preprocess_surface_bytes(surface_file.filename, content)
+        content = await input_file.read()
+        prep = preprocess_surface_bytes(input_file.filename, content)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Preprocessing error: {str(e)}")
         
@@ -136,6 +138,7 @@ async def predict(
 @app.post("/predict-multiple", response_model=MultiPredictionResponse)
 async def predict_multiple(
     surface_file: Optional[UploadFile] = File(None),
+    file: Optional[UploadFile] = File(None),
     targets: str = Form("liver,spleen,kidney_left,kidney_right"),
     model_variant: str = Form("phase10r"),
     sex: str = Form("auto")
@@ -145,7 +148,8 @@ async def predict_multiple(
     """
     t_start = time.time()
     
-    if surface_file is None:
+    input_file = surface_file or file
+    if input_file is None:
         raise HTTPException(status_code=400, detail="Missing required 3D surface file (.PLY, .OBJ, .STL, .PCD, .XYZ, .NPY).")
         
     target_list = [t.strip() for t in targets.split(",") if t.strip()]
@@ -153,8 +157,8 @@ async def predict_multiple(
         target_list = ["liver", "spleen", "kidney_left", "kidney_right"]
         
     try:
-        content = await surface_file.read()
-        prep = preprocess_surface_bytes(surface_file.filename, content)
+        content = await input_file.read()
+        prep = preprocess_surface_bytes(input_file.filename, content)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Preprocessing error: {str(e)}")
         
