@@ -257,13 +257,37 @@ export async function parseAnyFormatToPoints(filename: string, buffer: ArrayBuff
  * Mathematically infers biological sex from patient surface point cloud geometry:
  * Measures pelvic bi-trochanteric width versus anterior-posterior depth
  * strictly following the paper's pelvic dimorphism classifier P(g=Female | S_pelvis).
+ * Also respects filename metadata and guards against 2D planar projection artifacts.
  */
-export function detectBiologicalSex(points: number[][]): "female" | "male" {
-  if (!points || points.length === 0) return "female";
+export function detectBiologicalSex(
+  points: number[][],
+  filename?: string,
+  fallbackSex: "female" | "male" = "female"
+): "female" | "male" {
+  if (filename) {
+    const fn = filename.toLowerCase();
+    if (fn.includes("female") || fn.includes("uterus")) return "female";
+    if (fn.includes("male") || fn.includes("prostate")) return "male";
+  }
+
+  if (!points || points.length === 0) return fallbackSex;
+
+  // Check anterior-posterior depth extent to distinguish 3D volumetric scans from 2D planar photographs
+  let minAllY = Infinity, maxAllY = -Infinity;
+  for (const p of points) {
+    if (p[1] < minAllY) minAllY = p[1];
+    if (p[1] > maxAllY) maxAllY = p[1];
+  }
+  const totalDepth = maxAllY - minAllY;
+  // If points are from a 2D RGB or planar depth projection (shallow anterior depth < 85mm),
+  // retain active patient sex instead of falsely classifying as female
+  if (totalDepth < 85) {
+    return fallbackSex;
+  }
 
   // Filter pelvic sub-cloud: Z in [-260mm, -120mm]
   const pelvicPts = points.filter((p) => p[2] >= -260 && p[2] <= -120);
-  if (pelvicPts.length < 30) return "female";
+  if (pelvicPts.length < 30) return fallbackSex;
 
   let minX = Infinity, maxX = -Infinity;
   let minY = Infinity, maxY = -Infinity;
@@ -279,6 +303,6 @@ export function detectBiologicalSex(points: number[][]): "female" | "male" {
   const depthY = maxY - minY;
   const pelvicRatio = widthX / Math.max(depthY, 1.0);
 
-  // Female pelvic aperture has significantly wider transverse diameter (> 1.25)
-  return pelvicRatio > 1.25 ? "female" : "male";
+  // Female pelvic aperture has significantly wider transverse diameter (> 1.32)
+  return pelvicRatio > 1.32 ? "female" : "male";
 }

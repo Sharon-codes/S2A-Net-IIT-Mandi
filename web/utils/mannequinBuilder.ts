@@ -198,35 +198,18 @@ export function createDepthSensorRig(): THREE.Group {
 export function createPhotoBillboardRig(): THREE.Group {
   const group = new THREE.Group();
 
-  // 1. Clinical Calibration Grid Plane (Backing board)
-  const boardGeo = new THREE.PlaneGeometry(420, 760);
-  const boardMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 0.7,
-    metalness: 0.05,
-  });
-  const board = new THREE.Mesh(boardGeo, boardMat);
-  board.position.set(0, 20, -50);
-  group.add(board);
-
-  // 2. Medical Grid Lines
-  const gridHelper = new THREE.GridHelper(700, 35, 0x94a3b8, 0xe2e8f0);
-  gridHelper.rotation.x = Math.PI / 2;
-  gridHelper.position.set(0, 20, -48);
-  group.add(gridHelper);
-
-  // 3. Clinical Camera Tripod / Lighting Guide Stand
+  // Subtle Clinical Measurement Caliper Guide Frame (Zero occlusion)
   const standMat = new THREE.MeshBasicMaterial({
-    color: 0xd97706,
+    color: 0x8b9a6d,
     transparent: true,
-    opacity: 0.4,
+    opacity: 0.35,
   });
   const guidePoints = [
-    new THREE.Vector3(-210, 400, -46),
-    new THREE.Vector3(210, 400, -46),
-    new THREE.Vector3(210, -360, -46),
-    new THREE.Vector3(-210, -360, -46),
-    new THREE.Vector3(-210, 400, -46),
+    new THREE.Vector3(-195, 430, -36),
+    new THREE.Vector3(195, 430, -36),
+    new THREE.Vector3(195, -330, -36),
+    new THREE.Vector3(-195, -330, -36),
+    new THREE.Vector3(-195, 430, -36),
   ];
   const guideGeo = new THREE.BufferGeometry().setFromPoints(guidePoints);
   const guideLine = new THREE.Line(guideGeo, standMat);

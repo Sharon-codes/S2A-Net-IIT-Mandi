@@ -74,18 +74,19 @@ export function FileDropzone({
     try {
       let filename = "";
       let outputName = "";
+      const isMale = detectedSex === "male";
 
       if (type === "depth_camera") {
         filename = "sample_depth_camera.png";
-        outputName = "realsense_depth_frame.png";
+        outputName = isMale ? "sample_patient_male_depth.png" : "sample_patient_female_depth.png";
         onModalityChange?.("depth");
       } else if (type === "clinical_rgb") {
-        filename = "sample_patient_female_rgb.jpg";
-        outputName = "clinical_patient_photo.jpg";
+        filename = isMale ? "sample_patient_male_rgb.jpg" : "sample_patient_female_rgb.jpg";
+        outputName = isMale ? "sample_patient_male_rgb.jpg" : "sample_patient_female_rgb.jpg";
         onModalityChange?.("rgb");
       } else {
-        filename = "sample_whole_body_canonical.ply";
-        outputName = "canonical_patient_scan.ply";
+        filename = isMale ? "sample_male_body.ply" : "sample_female_body.ply";
+        outputName = isMale ? "sample_male_scan_4096.ply" : "sample_female_scan_4096.ply";
         onModalityChange?.("mesh");
       }
 

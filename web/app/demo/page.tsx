@@ -22,6 +22,7 @@ export default function DemoPage() {
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
 
   const [patientSex, setPatientSex] = useState<"auto" | "female" | "male">("female");
+  const [patientImageUrl, setPatientImageUrl] = useState<string | null>(null);
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
     "brain",
     "heart",
@@ -60,13 +61,28 @@ export default function DemoPage() {
       setActiveFileName(name);
       setFileBuffer(buf);
 
+      const isImageModality =
+        name.toLowerCase().endsWith(".jpg") ||
+        name.toLowerCase().endsWith(".jpeg") ||
+        name.toLowerCase().endsWith(".png") ||
+        name.toLowerCase().endsWith(".webp");
+
+      if (isImageModality) {
+        const blob = new Blob([buf]);
+        const url = URL.createObjectURL(blob);
+        setPatientImageUrl(url);
+      } else {
+        setPatientImageUrl(null);
+      }
+
       // Parse points for local rendering (supports 3D mesh, depth frames, and RGB photos)
       const pts = await parseAnyFormatToPoints(name, buf);
       if (pts.length > 0) {
         setSurfacePoints(pts);
 
-        // Automatically classify biological sex from pelvic geometry aspect ratio
-        const detectedSex = detectBiologicalSex(pts);
+        // Detect biological sex safely without unwanted flipping
+        const fallback = patientSex === "male" ? "male" : "female";
+        const detectedSex = detectBiologicalSex(pts, name, fallback);
         setPatientSex(detectedSex);
 
         // Auto-adapt target organ list based on detected sex
@@ -130,6 +146,7 @@ export default function DemoPage() {
   const loadFemalePreset = async () => {
     setActiveModality("mesh");
     setPatientSex("female");
+    setPatientImageUrl(null);
     const targets = ["brain", "heart", "liver", "kidney_left", "uterus", "urinary_bladder", "ovary_left", "ovary_right"];
     setSelectedTargets(targets);
     setActiveFocusedTarget("uterus");
@@ -155,6 +172,7 @@ export default function DemoPage() {
   const loadMalePreset = async () => {
     setActiveModality("mesh");
     setPatientSex("male");
+    setPatientImageUrl(null);
     const targets = ["brain", "heart", "liver", "kidney_left", "prostate", "urinary_bladder"];
     setSelectedTargets(targets);
     setActiveFocusedTarget("prostate");
@@ -333,13 +351,15 @@ export default function DemoPage() {
         {/* Center & Right Columns: 3D Canvas Viewer + Predicted Coordinates Side-by-Side (8 cols) */}
         <div className="lg:col-span-8 flex flex-col md:flex-row gap-4 items-stretch lg:sticky lg:top-20">
           {/* Center: 3D ThreeViewer */}
-          <div className="flex-1 h-[520px] sm:h-[620px] lg:h-[760px] min-h-[500px]">
+          <div className="flex-1 h-[420px] sm:h-[600px] lg:h-[760px] min-h-[380px]">
             <ThreeViewer
               surfacePoints={surfacePoints}
               predictions={predictions}
               selectedTarget={activeFocusedTarget}
               onSelectTarget={setActiveFocusedTarget}
               modality={activeModality}
+              patientSex={patientSex}
+              imageUrl={patientImageUrl}
             />
           </div>
 

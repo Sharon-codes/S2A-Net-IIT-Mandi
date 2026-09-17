@@ -26,6 +26,8 @@ interface ThreeViewerProps {
   onSelectTarget?: (target: string | null) => void;
   coordinateFrame?: string;
   modality?: "mesh" | "depth" | "rgb";
+  patientSex?: "female" | "male" | "auto";
+  imageUrl?: string | null;
 }
 
 /**
@@ -45,6 +47,8 @@ export function ThreeViewer({
   selectedTarget,
   onSelectTarget,
   modality = "mesh",
+  patientSex = "female",
+  imageUrl = null,
 }: ThreeViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -55,11 +59,13 @@ export function ThreeViewer({
   const mannequinGroupRef = useRef<THREE.Group | null>(null);
   const depthSensorGroupRef = useRef<THREE.Group | null>(null);
   const photoBillboardGroupRef = useRef<THREE.Group | null>(null);
+  const imagePlaneMeshRef = useRef<THREE.Mesh | null>(null);
   const reqIdRef = useRef<number | null>(null);
 
   // Interaction & Display State
   const [showMannequin, setShowMannequin] = useState(true);
   const [showSensorRig, setShowSensorRig] = useState(true);
+  const [showImagePlane, setShowImagePlane] = useState(true);
   const [showPoints, setShowPoints] = useState(true);
   const [isolateSelected, setIsolateSelected] = useState(true);
 
@@ -339,6 +345,83 @@ export function ThreeViewer({
     };
   }, []);
 
+  // Load & Render Real Patient Image Plane (Superimposed under 3D Points & Organs)
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    const scene = sceneRef.current;
+
+    // Dispose old image plane
+    if (imagePlaneMeshRef.current) {
+      scene.remove(imagePlaneMeshRef.current);
+      imagePlaneMeshRef.current.geometry.dispose();
+      const mat = imagePlaneMeshRef.current.material as THREE.MeshBasicMaterial;
+      if (mat && mat.map) mat.map.dispose();
+      if (mat) mat.dispose();
+      imagePlaneMeshRef.current = null;
+    }
+
+    if (modality === "mesh") return;
+
+    let textureUrl = imageUrl;
+    if (!textureUrl) {
+      if (modality === "rgb") {
+        textureUrl =
+          patientSex === "male"
+            ? "/demo/sample_patient_male_rgb.jpg"
+            : "/demo/sample_patient_female_rgb.jpg";
+      } else if (modality === "depth") {
+        textureUrl = "/demo/sample_depth_camera.png";
+      }
+    }
+
+    if (!textureUrl) return;
+
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      textureUrl,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        // Torso height ~ 720mm, width ~ 360mm
+        const planeGeo = new THREE.PlaneGeometry(360, 720);
+        const planeMat = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.94,
+          depthWrite: false, // Ensures point cloud particles and pins render cleanly on top!
+        });
+        const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+        planeMesh.position.set(0, 45, -35);
+        planeMesh.visible = showImagePlane;
+        scene.add(planeMesh);
+        imagePlaneMeshRef.current = planeMesh;
+      },
+      undefined,
+      (err) => {
+        console.warn("Failed to load patient image texture:", err);
+      }
+    );
+
+    return () => {
+      if (imagePlaneMeshRef.current && sceneRef.current) {
+        sceneRef.current.remove(imagePlaneMeshRef.current);
+        imagePlaneMeshRef.current.geometry.dispose();
+        const mat = imagePlaneMeshRef.current.material as THREE.MeshBasicMaterial;
+        if (mat && mat.map) mat.map.dispose();
+        if (mat) mat.dispose();
+        imagePlaneMeshRef.current = null;
+      }
+    };
+  }, [modality, patientSex, imageUrl]);
+
+  // Sync image plane visibility
+  useEffect(() => {
+    if (imagePlaneMeshRef.current) {
+      imagePlaneMeshRef.current.visible =
+        (modality === "rgb" || modality === "depth") && showImagePlane;
+    }
+  }, [showImagePlane, modality]);
+
   // Update Geometry Visibility based on Active Input Modality
   useEffect(() => {
     // 1. Mannequin only on 3D Mesh scans
@@ -568,7 +651,7 @@ export function ThreeViewer({
   };
 
   return (
-    <div className="relative w-full h-full min-h-[540px] rounded-2xl overflow-hidden border border-border bg-[#F5F5F0] shadow-inner flex flex-col">
+    <div className="relative w-full h-full min-h-[400px] sm:min-h-[520px] rounded-2xl overflow-hidden border border-border bg-[#F5F5F0] shadow-inner flex flex-col">
       {/* 3D Canvas Mounting Element */}
       <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none flex-1" />
 
@@ -608,7 +691,7 @@ export function ThreeViewer({
       </div>
 
       {/* Modality & Visibility Toggles Top-Left */}
-      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
+      <div className="absolute top-3 left-3 flex flex-wrap max-w-[calc(100%-220px)] sm:max-w-none items-center gap-1 sm:gap-1.5 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
         {modality === "mesh" ? (
           <button
             onClick={() => setShowMannequin(!showMannequin)}
@@ -620,25 +703,47 @@ export function ThreeViewer({
             <span>🧍 Mannequin</span>
           </button>
         ) : modality === "depth" ? (
-          <button
-            onClick={() => setShowSensorRig(!showSensorRig)}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-              showSensorRig ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
-            }`}
-            title="Toggle Intel RealSense depth sensor frustum"
-          >
-            <span>📹 Depth Sensor</span>
-          </button>
+          <>
+            <button
+              onClick={() => setShowImagePlane(!showImagePlane)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+                showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+              }`}
+              title="Toggle real 3D depth camera image frame"
+            >
+              <span>📹 Depth Frame</span>
+            </button>
+            <button
+              onClick={() => setShowSensorRig(!showSensorRig)}
+              className={`flex items-center gap-1 px-1.5 py-1 rounded-lg transition-colors hidden sm:flex ${
+                showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
+              }`}
+              title="Toggle Intel RealSense sensor frustum"
+            >
+              <span>📐 Sensor Rig</span>
+            </button>
+          </>
         ) : (
-          <button
-            onClick={() => setShowSensorRig(!showSensorRig)}
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-              showSensorRig ? "bg-amber-600 text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
-            }`}
-            title="Toggle clinical photo measurement backdrop"
-          >
-            <span>📸 Studio Grid</span>
-          </button>
+          <>
+            <button
+              onClick={() => setShowImagePlane(!showImagePlane)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+                showImagePlane ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+              }`}
+              title="Toggle real clinical patient photograph"
+            >
+              <span>📸 Patient Photo</span>
+            </button>
+            <button
+              onClick={() => setShowSensorRig(!showSensorRig)}
+              className={`flex items-center gap-1 px-1.5 py-1 rounded-lg transition-colors hidden sm:flex ${
+                showSensorRig ? "bg-slate-200 text-slate-800" : "hover:bg-slate-100 text-text-muted"
+              }`}
+              title="Toggle clinical studio caliper guides"
+            >
+              <span>📐 Studio Frame</span>
+            </button>
+          </>
         )}
 
         <button
@@ -648,13 +753,13 @@ export function ThreeViewer({
           }`}
           title="Toggle 4,096 surface point cloud"
         >
-          <span>✨ Cloud (4,096)</span>
+          <span>✨ Cloud</span>
         </button>
       </div>
 
       {/* Selected Target Organ Focus HUD Pill (Appears when an organ is selected) */}
       {selectedTarget && (
-        <div className="absolute top-14 left-3 flex flex-wrap items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in">
+        <div className="absolute top-14 left-3 flex flex-wrap items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-24px)]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
             <span className="font-bold text-slate-900 capitalize">
@@ -690,11 +795,11 @@ export function ThreeViewer({
       )}
 
       {/* Legend Bottom-Left */}
-      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-xl border border-border shadow-xs text-xs text-text-muted flex flex-col gap-1 z-10">
-        <div className="flex items-center gap-3">
+      <div className="absolute bottom-3 left-3 max-w-[calc(100%-24px)] bg-white/95 backdrop-blur px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-border shadow-xs text-[10px] sm:text-xs text-text-muted flex flex-col gap-1 z-10">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] ring-2 ring-amber-400/50 animate-pulse" />
-            <span className="font-semibold text-slate-900">Selected (Pulsing Glow)</span>
+            <span className="font-semibold text-slate-900">Selected (Glow)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-accent-green" />
@@ -709,7 +814,7 @@ export function ThreeViewer({
             <span>High (&gt; 15mm)</span>
           </div>
         </div>
-        <span className="text-[10px] text-text-muted/80">
+        <span className="text-[9px] sm:text-[10px] text-text-muted/80 hidden sm:inline">
           Click pin to focus &bull; Drag to rotate 360° &bull; Scroll to zoom
         </span>
       </div>

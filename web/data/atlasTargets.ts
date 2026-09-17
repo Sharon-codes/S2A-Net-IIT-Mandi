@@ -804,8 +804,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "system": "pelvis",
     "coords": [
       0.0,
-      46.0,
-      -180.0
+      48.0,
+      -95.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
@@ -823,8 +823,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "system": "pelvis",
     "coords": [
       0.0,
-      35.0,
-      -170.0
+      38.0,
+      -105.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
@@ -842,8 +842,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "system": "pelvis",
     "coords": [
       0.0,
-      40.0,
-      -145.0
+      42.0,
+      -78.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
@@ -862,9 +862,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
-      -35.0,
+      -42.0,
       38.0,
-      -150.0
+      -75.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
@@ -882,9 +882,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
-      35.0,
+      42.0,
       38.0,
-      -150.0
+      -75.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
@@ -903,8 +903,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "system": "pelvis",
     "coords": [
       0.0,
-      30.0,
-      -200.0
+      32.0,
+      -125.0
     ],
     "color": 14239471,
     "hex": "#d946ef",
