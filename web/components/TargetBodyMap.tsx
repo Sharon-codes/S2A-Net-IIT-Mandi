@@ -119,10 +119,11 @@ export function TargetBodyMap({
     // Add 3D Landmark Pin Spheres
     const pinMeshes: THREE.Mesh[] = [];
     ALL_ATLAS_TARGETS.forEach((pin) => {
-      // Map coordinates: [X, Y, Z] -> Three.js [X, Z, Y]
-      const tx = pin.coords[0];
+      // Map coordinates: [X, Y, Z] -> Three.js [-X, Z, Y] (anatomical right on viewer's left)
+      const tx = -pin.coords[0];
       const ty = pin.coords[2];
       const tz = pin.coords[1];
+
 
       const isSel = selectedTarget === pin.id;
       const isFilteredOut = systemFilter !== null && pin.system !== systemFilter;

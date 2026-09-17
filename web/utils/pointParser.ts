@@ -164,8 +164,10 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
 
       const rawPoints: number[][] = [];
 
-      const isFemalePhoto = filename.toLowerCase().includes("female") && !isDepth;
-      const isMalePhoto = filename.toLowerCase().includes("male") && !isDepth;
+      const fnLower = filename.toLowerCase();
+      const isFemalePhoto = (fnLower.includes("female") || fnLower.includes("clinical") || fnLower.includes("woman")) && !isDepth;
+      const isMalePhoto = (fnLower.includes("male") || fnLower.includes("man")) && !isFemalePhoto && !isDepth;
+
 
       // Anatomical vertical span (mm)
       // Head cranium is at +370mm, feet at -470mm
@@ -324,10 +326,11 @@ export function detectBiologicalSex(
 ): "female" | "male" {
   if (filename) {
     const fn = filename.toLowerCase();
-    if (fn.includes("female") || fn.includes("uterus")) return "female";
-    if (fn.includes("male") || fn.includes("prostate")) return "male";
+    if (fn.includes("female") || fn.includes("clinical") || fn.includes("woman") || fn.includes("uterus")) return "female";
+    if (fn.includes("male") || fn.includes("man") || fn.includes("prostate")) return "male";
     if (fn.includes("depth") || fn.includes("realsense") || fn.includes("kinect")) return fallbackSex;
   }
+
 
   if (!points || points.length === 0) return fallbackSex;
 
@@ -337,31 +340,31 @@ export function detectBiologicalSex(
     if (p[1] < minAllY) minAllY = p[1];
     if (p[1] > maxAllY) maxAllY = p[1];
   }
-  const totalDepth = maxAllY - minAllY;
-  // If points are from a 2D RGB or planar depth projection (shallow anterior depth < 85mm),
-  // retain active patient sex instead of falsely classifying as female
-  if (totalDepth < 85) {
-    return fallbackSex;
-  }
-
-  // Filter pelvic sub-cloud: Z in [-260mm, -120mm]
+  // For 3D volumetric point clouds (total anterior-posterior depth >= 85mm):
+  // Compute biacromial shoulder width (Z: 180 to 240mm) vs bitrochanteric pelvic width (Z: -260 to -120mm)
+  const shoulderPts = points.filter((p) => p[2] >= 180 && p[2] <= 240);
   const pelvicPts = points.filter((p) => p[2] >= -260 && p[2] <= -120);
-  if (pelvicPts.length < 30) return fallbackSex;
 
-  let minX = Infinity, maxX = -Infinity;
-  let minY = Infinity, maxY = -Infinity;
-
-  for (const p of pelvicPts) {
-    if (p[0] < minX) minX = p[0];
-    if (p[0] > maxX) maxX = p[0];
-    if (p[1] < minY) minY = p[1];
-    if (p[1] > maxY) maxY = p[1];
+  if (shoulderPts.length >= 30 && pelvicPts.length >= 30) {
+    let minSx = Infinity, maxSx = -Infinity;
+    for (const p of shoulderPts) {
+      if (p[0] < minSx) minSx = p[0];
+      if (p[0] > maxSx) maxSx = p[0];
+    }
+    let minPx = Infinity, maxPx = -Infinity;
+    for (const p of pelvicPts) {
+      if (p[0] < minPx) minPx = p[0];
+      if (p[0] > maxPx) maxPx = p[0];
+    }
+    const wShoulder = maxSx - minSx;
+    const wPelvis = maxPx - minPx;
+    if (wPelvis > 0) {
+      const dimorphismRatio = wShoulder / wPelvis;
+      // Men have broader shoulders relative to pelvis (> 1.01)
+      // Women have wider pelvic diameter relative to shoulders (<= 1.01)
+      return dimorphismRatio > 1.01 ? "male" : "female";
+    }
   }
 
-  const widthX = maxX - minX;
-  const depthY = maxY - minY;
-  const pelvicRatio = widthX / Math.max(depthY, 1.0);
-
-  // Female pelvic aperture has significantly wider transverse diameter (> 1.32)
-  return pelvicRatio > 1.32 ? "female" : "male";
+  return fallbackSex;
 }

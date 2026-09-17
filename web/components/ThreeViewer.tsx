@@ -38,7 +38,8 @@ interface ThreeViewerProps {
  * - Three.js Z = med[1] (Anterior + / Posterior -)
  */
 function toThreeCoord(med: [number, number, number]): [number, number, number] {
-  return [med[0], med[2], med[1]];
+  // In standard anterior anatomical view: anatomical Right (+med[0]) appears on viewer's LEFT (-Three.js X)
+  return [-med[0], med[2], med[1]];
 }
 
 export function ThreeViewer({
@@ -401,9 +402,9 @@ export function ThreeViewer({
         let planeY = 45;
 
         const isFemalePhoto =
-          patientSex === "female" && (modality === "rgb" || textureUrl.includes("female"));
+          patientSex === "female" && (modality === "rgb" || textureUrl.includes("female") || textureUrl.includes("clinical") || textureUrl.includes("woman"));
         const isMalePhoto =
-          patientSex === "male" && (modality === "rgb" || textureUrl.includes("male"));
+          patientSex === "male" && (modality === "rgb" || textureUrl.includes("male") || textureUrl.includes("man"));
         const isDepth =
           modality === "depth" || textureUrl.includes("depth");
 
