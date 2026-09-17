@@ -1,7 +1,19 @@
 /**
- * Lightweight browser parser for 3D point cloud formats:
- * .PLY (ASCII & Binary Little Endian), .OBJ, .XYZ
+ * Lightweight browser parser and preprocessor for 3D point cloud formats:
+ * .PLY (ASCII & Binary Little Endian), .OBJ, .XYZ,
+ * as well as 2D RGB clinical photographs and 3D Depth Camera maps (Intel RealSense / Azure Kinect).
  */
+
+export interface TargetPrediction {
+  target: string;
+  target_index: number;
+  centroid_canonical_mm: [number, number, number];
+  centroid_input_world_mm: [number, number, number];
+  uncertainty_mm: number;
+  uncertainty_level: "low" | "moderate" | "high";
+  seed_predictions_mm: Record<string, [number, number, number]>;
+}
+
 export function parsePointsFromBuffer(filename: string, buffer: ArrayBuffer): number[][] {
   const lowerName = filename.toLowerCase();
 
@@ -64,8 +76,6 @@ function parsePLY(buffer: ArrayBuffer): number[][] {
 
   if (vertexCount <= 0) return [];
 
-  // Find exact byte offset of the newline right after "end_header"
-  const fullHeaderStr = "end_header";
   const bytes = new Uint8Array(buffer);
   let offset = 0;
   for (let i = 0; i < Math.min(4096, bytes.length - 10); i++) {
@@ -92,7 +102,6 @@ function parsePLY(buffer: ArrayBuffer): number[][] {
   const points: number[][] = [];
   if (isBinary) {
     const dataView = new DataView(buffer, offset);
-    // Standard PLY float32 x, y, z (12 bytes per vertex)
     const stride = 12;
     for (let i = 0; i < vertexCount; i++) {
       if (offset + i * stride + 12 > buffer.byteLength) break;
@@ -113,7 +122,8 @@ function parsePLY(buffer: ArrayBuffer): number[][] {
 
 /**
  * Converts 2D RGB clinical photographs or 3D Depth Camera images (Intel RealSense / Azure Kinect)
- * into a 4,096-point 3D external body surface point cloud.
+ * into a dense 4,096-point 3D external body surface point cloud.
+ * Automatically corrects landscape/horizontal couch orientation into standard upright anatomical position.
  */
 export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer): Promise<number[][]> {
   return new Promise((resolve) => {
@@ -124,6 +134,10 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
     img.onload = () => {
       URL.revokeObjectURL(url);
       const canvas = document.createElement("canvas");
+      const isDepth = filename.toLowerCase().includes("depth");
+      const isLandscape = img.width > img.height;
+
+      // Standard upright grid dimensions
       const w = 160;
       const h = 240;
       canvas.width = w;
@@ -134,14 +148,26 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
         return;
       }
 
-      ctx.drawImage(img, 0, 0, w, h);
+      // If image was captured in landscape (e.g. horizontal scanner bed), rotate upright
+      if (isLandscape) {
+        ctx.save();
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(img, -h / 2, -w / 2, h, w);
+        ctx.restore();
+      } else {
+        ctx.drawImage(img, 0, 0, w, h);
+      }
+
       const imgData = ctx.getImageData(0, 0, w, h);
       const data = imgData.data;
 
       const rawPoints: number[][] = [];
-      const isDepth = filename.toLowerCase().includes("depth");
 
       for (let y = 0; y < h; y += 2) {
+        // Exclude bottom floor/couch wall artifacts for depth maps
+        if (isDepth && y > h * 0.88) continue;
+
         for (let x = 0; x < w; x += 2) {
           const idx = (y * w + x) * 4;
           const r = data[idx];
@@ -149,32 +175,33 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
           const b = data[idx + 2];
           const brightness = (r + g + b) / 3;
 
-          // Detect patient foreground (either non-background depth or clinical silhouette)
-          const isForeground = isDepth ? brightness < 235 && brightness > 30 : brightness < 225 && brightness > 40;
+          // Detect patient foreground
+          const isForeground = isDepth
+            ? brightness < 230 && brightness > 35
+            : brightness < 235 && brightness > 30;
 
           if (isForeground) {
-            // Map pixel (x, y) to anatomical frame (mm)
-            // X: lateral [-160mm, 160mm]
-            const px = ((x - w / 2) / (w / 2)) * 160;
-            // Z (vertical height): Head at +360mm down to Pelvis at -300mm
-            const pz = 360 - (y / h) * 680;
-            // Y (anterior depth): curved body curvature
-            const curve = Math.cos((px / 160) * (Math.PI / 2.2)) * 50;
-            const py = isDepth ? 40 + (255 - brightness) * 0.35 : 40 + curve;
+            // Map pixel (x, y) to standard anatomical frame (mm)
+            // X: lateral [-150mm, 150mm]
+            const px = ((x - w / 2) / (w / 2)) * 150;
+            // Z (vertical height): Head at +370mm down to Pelvis/Legs at -370mm
+            const pz = 370 - (y / h) * 740;
+            // Y (anterior depth): thoracic curvature
+            const curve = Math.cos((px / 150) * (Math.PI / 2.2)) * 48;
+            const py = isDepth ? 35 + (255 - brightness) * 0.32 : 35 + curve;
 
             rawPoints.push([px, py, pz]);
           }
         }
       }
 
-      // Fallback if foreground detection found too few points (e.g. non-standard lighting)
+      // Fallback if foreground detection found too few points
       if (rawPoints.length < 100) {
         for (let i = 0; i < 4096; i++) {
           const u = Math.random();
           const v = Math.random();
           const theta = u * 2 * Math.PI;
           const pz = 370 - v * 720;
-          // Torso / Head cross section radius
           const rX = pz > 260 ? 80 : pz > 50 ? 150 : 135;
           const rY = pz > 260 ? 95 : pz > 50 ? 110 : 100;
           const px = Math.cos(theta) * rX * (0.8 + 0.2 * Math.random());
@@ -189,7 +216,6 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
       for (let i = 0; i < 4096; i++) {
         const idx = Math.min(Math.floor((i / 4096) * count), count - 1);
         const pt = rawPoints[idx];
-        // Jitter slightly for realistic sensor noise
         const jx = (Math.random() - 0.5) * 1.2;
         const jy = (Math.random() - 0.5) * 1.2;
         const jz = (Math.random() - 0.5) * 1.2;
@@ -201,7 +227,6 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      // Generate standard 4096 point cloud fallback
       const fallback: number[][] = [];
       for (let i = 0; i < 4096; i++) {
         const theta = Math.random() * 2 * Math.PI;
@@ -228,3 +253,32 @@ export async function parseAnyFormatToPoints(filename: string, buffer: ArrayBuff
   return parsePointsFromBuffer(filename, buffer);
 }
 
+/**
+ * Mathematically infers biological sex from patient surface point cloud geometry:
+ * Measures pelvic bi-trochanteric width versus anterior-posterior depth
+ * strictly following the paper's pelvic dimorphism classifier P(g=Female | S_pelvis).
+ */
+export function detectBiologicalSex(points: number[][]): "female" | "male" {
+  if (!points || points.length === 0) return "female";
+
+  // Filter pelvic sub-cloud: Z in [-260mm, -120mm]
+  const pelvicPts = points.filter((p) => p[2] >= -260 && p[2] <= -120);
+  if (pelvicPts.length < 30) return "female";
+
+  let minX = Infinity, maxX = -Infinity;
+  let minY = Infinity, maxY = -Infinity;
+
+  for (const p of pelvicPts) {
+    if (p[0] < minX) minX = p[0];
+    if (p[0] > maxX) maxX = p[0];
+    if (p[1] < minY) minY = p[1];
+    if (p[1] > maxY) maxY = p[1];
+  }
+
+  const widthX = maxX - minX;
+  const depthY = maxY - minY;
+  const pelvicRatio = widthX / Math.max(depthY, 1.0);
+
+  // Female pelvic aperture has significantly wider transverse diameter (> 1.25)
+  return pelvicRatio > 1.25 ? "female" : "male";
+}

@@ -19,7 +19,7 @@ export function MathView({ math, block = true, className = "" }: MathViewProps) 
 
   return (
     <div
-      className={`my-3 overflow-x-auto py-3 px-4 rounded-xl bg-slate-900 text-slate-100 shadow-sm border border-slate-800 flex items-center justify-center font-sans ${className}`}
+      className={`my-3 overflow-x-auto py-3 px-4 rounded-xl bg-[#F8F9F5] text-[#1F241B] shadow-2xs border border-[#D8DCCF] flex items-center justify-center font-sans ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

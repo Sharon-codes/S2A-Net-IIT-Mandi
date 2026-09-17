@@ -127,78 +127,66 @@ export function createHumanMannequin(): THREE.Group {
 export function createDepthSensorRig(): THREE.Group {
   const group = new THREE.Group();
 
-  // 1. Depth Camera Sensor Body
-  const bodyGeo = new THREE.BoxGeometry(160, 42, 35);
+  // 1. Depth Camera Sensor Body (Intel RealSense D435) mounted at [0, 100, 720]
+  const bodyGeo = new THREE.BoxGeometry(150, 36, 28);
   const bodyMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.3,
-    metalness: 0.8,
+    color: 0x465133,
+    roughness: 0.4,
+    metalness: 0.6,
   });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
-  body.position.set(0, 80, 720);
+  body.position.set(0, 100, 720);
   group.add(body);
 
-  // 2. Optical Lenses (IR projector + stereo depth cameras)
-  const lensGeo = new THREE.CylinderGeometry(10, 10, 8, 24);
+  // 2. Optical Lenses (IR projector + stereo depth sensors)
+  const lensGeo = new THREE.CylinderGeometry(8, 8, 6, 20);
   const lensMat = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
-    roughness: 0.1,
-    metalness: 0.9,
-    emissive: 0x0284c7,
-    emissiveIntensity: 0.4,
+    color: 0x8b9a6d,
+    roughness: 0.2,
+    metalness: 0.7,
+    emissive: 0x8b9a6d,
+    emissiveIntensity: 0.3,
   });
 
   const lensLeft = new THREE.Mesh(lensGeo, lensMat);
   lensLeft.rotation.x = Math.PI / 2;
-  lensLeft.position.set(-45, 80, 702);
+  lensLeft.position.set(-42, 100, 705);
   group.add(lensLeft);
 
   const lensRight = new THREE.Mesh(lensGeo, lensMat);
   lensRight.rotation.x = Math.PI / 2;
-  lensRight.position.set(45, 80, 702);
+  lensRight.position.set(42, 100, 705);
   group.add(lensRight);
 
-  // 3. Optical Sensor Ray Frustum (Wireframe pyramid to patient)
+  // 3. Subtle Optical Ray Frustum Pyramid (Soft olive lines, zero occlusion)
   const frustumPoints = [
-    new THREE.Vector3(0, 80, 700),
-    new THREE.Vector3(-180, 360, 80),
-    new THREE.Vector3(0, 80, 700),
-    new THREE.Vector3(180, 360, 80),
-    new THREE.Vector3(0, 80, 700),
-    new THREE.Vector3(180, -320, 80),
-    new THREE.Vector3(0, 80, 700),
-    new THREE.Vector3(-180, -320, 80),
-    // Connecting rectangle at patient plane
-    new THREE.Vector3(-180, 360, 80),
-    new THREE.Vector3(180, 360, 80),
-    new THREE.Vector3(180, 360, 80),
-    new THREE.Vector3(180, -320, 80),
-    new THREE.Vector3(180, -320, 80),
-    new THREE.Vector3(-180, -320, 80),
-    new THREE.Vector3(-180, -320, 80),
-    new THREE.Vector3(-180, 360, 80),
+    new THREE.Vector3(0, 100, 700),
+    new THREE.Vector3(-160, 360, 90),
+    new THREE.Vector3(0, 100, 700),
+    new THREE.Vector3(160, 360, 90),
+    new THREE.Vector3(0, 100, 700),
+    new THREE.Vector3(160, -320, 90),
+    new THREE.Vector3(0, 100, 700),
+    new THREE.Vector3(-160, -320, 90),
+    // Patient plane perimeter guide
+    new THREE.Vector3(-160, 360, 90),
+    new THREE.Vector3(160, 360, 90),
+    new THREE.Vector3(160, 360, 90),
+    new THREE.Vector3(160, -320, 90),
+    new THREE.Vector3(160, -320, 90),
+    new THREE.Vector3(-160, -320, 90),
+    new THREE.Vector3(-160, -320, 90),
+    new THREE.Vector3(-160, 360, 90),
   ];
 
   const frustumGeo = new THREE.BufferGeometry().setFromPoints(frustumPoints);
   const frustumMat = new THREE.LineBasicMaterial({
-    color: 0x38bdf8,
+    color: 0x8b9a6d,
     transparent: true,
-    opacity: 0.28,
+    opacity: 0.22,
   });
   const frustum = new THREE.LineSegments(frustumGeo, frustumMat);
   group.add(frustum);
-
-  // 4. Depth Measurement Plane
-  const depthPlaneGeo = new THREE.PlaneGeometry(360, 680, 18, 34);
-  const depthPlaneMat = new THREE.MeshBasicMaterial({
-    color: 0x0284c7,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.12,
-  });
-  const depthPlane = new THREE.Mesh(depthPlaneGeo, depthPlaneMat);
-  depthPlane.position.set(0, 20, 75);
-  group.add(depthPlane);
 
   return group;
 }

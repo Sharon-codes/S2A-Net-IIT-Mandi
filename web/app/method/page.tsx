@@ -108,10 +108,10 @@ export default function MethodPage() {
           <p>
             Patient surface scans captured across varying hospital scanner couches or depth cameras arrive with arbitrary translations and rotations. To prevent neural overfitting to room coordinates, we extract a 16-D rotation-invariant geometric moment vector and pass it through a frozen L2-regularized Ridge estimator:
           </p>
-          <div className="bg-slate-900 text-slate-100 p-4 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm flex flex-col gap-2">
-            <span className="text-slate-400 text-[11px] uppercase tracking-wider">Canonical Centering &amp; Scaling:</span>
+          <div className="bg-[#F8F9F5] text-slate-800 p-4 rounded-xl border border-[#D8DCCF] font-mono text-xs sm:text-sm flex flex-col gap-2 shadow-2xs">
+            <span className="text-slate-500 text-[11px] uppercase tracking-wider font-semibold">Canonical Centering &amp; Scaling:</span>
             <MathView math={String.raw`\mathcal{P}_{\text{canonical}} = \frac{\mathcal{S} - \mathbf{c}_{\text{external}}}{500.0} \quad \in [-1, 1]^{N \times 3}`} block={false} />
-            <span className="text-[11px] text-[#A3C475] mt-1">
+            <span className="text-[11px] text-primary-dark font-sans mt-1">
               &bull; Guarantees metric equivariance regardless of scanner couch elevation or patient translation.
             </span>
           </div>
@@ -315,8 +315,8 @@ export default function MethodPage() {
             During clinical execution, knowing <em>when</em> a prediction is uncertain is as critical as coordinate accuracy. Epistemic uncertainty is derived across an ensemble of 3 distinct random seed initializations (Seeds 42, 43, 44):
           </p>
 
-          <div className="bg-slate-900 text-slate-100 p-4 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm flex flex-col gap-2">
-            <span className="text-slate-400 text-[11px] uppercase tracking-wider">Multi-Seed Epistemic Disagreement Formula:</span>
+          <div className="bg-[#F8F9F5] text-slate-800 p-4 rounded-xl border border-[#D8DCCF] font-mono text-xs sm:text-sm flex flex-col gap-2 shadow-2xs">
+            <span className="text-slate-500 text-[11px] uppercase tracking-wider font-semibold">Multi-Seed Epistemic Disagreement Formula:</span>
             <MathView math={String.raw`\sigma_{\text{epistemic}} = \sqrt{ \frac{1}{3} \sum_{s \in \{42, 43, 44\}} \| \hat{\mathbf{c}}_k^{(s)} - \bar{\mathbf{c}}_k \|^2 }`} block={false} />
           </div>
 
@@ -362,12 +362,12 @@ export default function MethodPage() {
               onClick={() => setSensorTab("depth")}
               className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col gap-2 ${
                 sensorTab === "depth"
-                  ? "bg-sky-50/70 border-sky-300 shadow-xs ring-1 ring-sky-300"
+                  ? "bg-primary/10 border-primary shadow-xs ring-1 ring-primary/40"
                   : "bg-white border-slate-200 hover:border-slate-300"
               }`}
             >
               <div className="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm">
-                <Camera className="w-4 h-4 text-sky-600" />
+                <Camera className="w-4 h-4 text-primary-dark" />
                 <span>3D Depth Camera (RGB-D)</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -632,38 +632,38 @@ export default function MethodPage() {
         </div>
 
         <div className="p-5 sm:p-7 flex flex-col gap-6">
-          {/* Scientific Mathematical Card with High-Contrast KaTeX */}
-          <div className="bg-[#181D14] text-slate-100 rounded-2xl border border-[#2C3720] p-5 sm:p-6 shadow-xl flex flex-col gap-4">
-            <div className="flex items-center justify-between border-b border-[#2C3720] pb-3">
-              <span className="text-xs font-mono font-semibold text-[#A3C475] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
+          {/* Scientific Mathematical Card with High-Contrast KaTeX (Light Olive Theme) */}
+          <div className="bg-[#F8F9F5] text-slate-800 rounded-2xl border border-[#D8DCCF] p-5 sm:p-6 shadow-xs flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-[#D8DCCF] pb-3">
+              <span className="text-xs font-mono font-bold text-[#465133] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
                 <span>{currentStage.formulaLabel}</span>
               </span>
-              <span className="text-[10px] font-mono text-slate-400 bg-[#22291B] px-2 py-0.5 rounded border border-[#313C24] text-[#B5CA95]">
+              <span className="text-[10px] font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-[#D8DCCF]">
                 KaTeX Typeset &bull; Exact Formulation
               </span>
             </div>
 
             {/* Rendered Math Formula with KaTeX */}
             <div className="py-2 overflow-x-auto">
-              <MathView math={currentStage.formula} block={true} className="bg-slate-900/90 border-slate-800" />
+              <MathView math={currentStage.formula} block={true} className="bg-white text-slate-900 border-[#D8DCCF]" />
             </div>
 
             {/* Variable Decoder Grid */}
-            <div className="mt-2 pt-3 border-t border-[#2C3720] flex flex-col gap-2">
-              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-400">
+            <div className="mt-2 pt-3 border-t border-[#D8DCCF] flex flex-col gap-2">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-600">
                 Variable Definitions &amp; Dimensionality:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {currentStage.variables.map((v, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2 text-xs bg-[#22291B] p-2 rounded-lg border border-[#313C24]"
+                    className="flex items-start gap-2 text-xs bg-white p-2.5 rounded-lg border border-[#D8DCCF] shadow-2xs"
                   >
-                    <span className="font-mono font-bold text-[#A3C475] shrink-0">
+                    <span className="font-mono font-bold text-primary-dark shrink-0">
                       <MathView math={v.symbol} block={false} />:
                     </span>
-                    <span className="text-slate-300 font-sans text-[11px]">{v.meaning}</span>
+                    <span className="text-slate-600 font-sans text-[11px]">{v.meaning}</span>
                   </div>
                 ))}
               </div>

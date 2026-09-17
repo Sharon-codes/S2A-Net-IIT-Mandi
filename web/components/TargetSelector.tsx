@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Mic, MicOff, Check, Sparkles, User, Heart } from "lucide-react";
+import { Search, Mic, MicOff, Check, Sparkles, User, Lock, ShieldCheck } from "lucide-react";
 
 interface TargetSelectorProps {
   selectedTargets: string[];
@@ -28,14 +28,14 @@ const COMMON_BENCHMARKS = [
 ];
 
 const FEMALE_REPRODUCTIVE = [
-  { id: "uterus", label: "Uterus", color: "text-fuchsia-700 bg-fuchsia-50 border-fuchsia-200" },
-  { id: "ovary_left", label: "Left Ovary", color: "text-pink-700 bg-pink-50 border-pink-200" },
-  { id: "ovary_right", label: "Right Ovary", color: "text-pink-700 bg-pink-50 border-pink-200" },
-  { id: "vagina", label: "Vagina", color: "text-purple-700 bg-purple-50 border-purple-200" },
+  { id: "uterus", label: "Uterus" },
+  { id: "ovary_left", label: "Left Ovary" },
+  { id: "ovary_right", label: "Right Ovary" },
+  { id: "vagina", label: "Vagina" },
 ];
 
 const MALE_REPRODUCTIVE = [
-  { id: "prostate", label: "Prostate Gland", color: "text-indigo-700 bg-indigo-50 border-indigo-200" },
+  { id: "prostate", label: "Prostate Gland" },
 ];
 
 export function TargetSelector({
@@ -46,7 +46,7 @@ export function TargetSelector({
   onRunInference,
   isPredicting,
   hasGeometry,
-  patientSex = "auto",
+  patientSex = "female",
   onPatientSexChange,
 }: TargetSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,25 +73,6 @@ export function TargetSelector({
         ]);
       });
   }, []);
-
-  const handleSexChange = (sex: "auto" | "female" | "male") => {
-    if (onPatientSexChange) {
-      onPatientSexChange(sex);
-    }
-    if (sex === "female") {
-      // If prostate is selected, swap for uterus
-      let updated = selectedTargets.filter((t) => t !== "prostate");
-      if (!updated.includes("uterus")) updated.push("uterus");
-      onSelectTargets(updated);
-    } else if (sex === "male") {
-      // Remove female reproductive organs and add prostate
-      let updated = selectedTargets.filter(
-        (t) => !["uterus", "ovary_left", "ovary_right", "vagina"].includes(t)
-      );
-      if (!updated.includes("prostate")) updated.push("prostate");
-      onSelectTargets(updated);
-    }
-  };
 
   // Web Speech API Voice Recognition
   const startVoiceInput = () => {
@@ -160,65 +141,45 @@ export function TargetSelector({
   );
 
   return (
-    <div className="flex flex-col gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-border shadow-sm">
+    <div className="flex flex-col gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
         <h3 className="text-xs font-bold text-text-main uppercase tracking-wider">
-          2. Target Organs & Biological Sex
+          2. Target Organs &amp; Biological Sex
         </h3>
-        <span className="text-[11px] font-mono text-primary-dark font-medium bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 w-fit">
+        <span className="text-[11px] font-mono text-primary-dark font-semibold bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20 w-fit">
           Sex-Aware 121-Organ Ensemble
         </span>
       </div>
 
-      {/* Patient Biological Sex & Reproductive Anatomy */}
-      <div className="flex flex-col gap-2 p-2.5 rounded-xl bg-slate-50/80 border border-slate-200">
+      {/* Patient Biological Sex: Locked / Auto-detected from Scan Geometry */}
+      <div className="flex flex-col gap-2 p-3 rounded-xl bg-background border border-border">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
             <User className="w-3.5 h-3.5 text-primary" />
-            <span>Patient Sex:</span>
-          </span>
-          <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 text-xs">
-            <button
-              type="button"
-              onClick={() => handleSexChange("auto")}
-              className={`px-2 py-0.5 rounded-md font-medium transition-all ${
-                patientSex === "auto"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Auto
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSexChange("female")}
-              className={`px-2 py-0.5 rounded-md font-medium transition-all ${
-                patientSex === "female"
-                  ? "bg-fuchsia-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Female ♀
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSexChange("male")}
-              className={`px-2 py-0.5 rounded-md font-medium transition-all ${
-                patientSex === "male"
-                  ? "bg-sky-700 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Male ♂
-            </button>
+            <span>Biological Sex:</span>
+          </div>
+
+          {/* Auto-detected status pill with lock icon (Option disabled as requested) */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-border text-xs font-mono shadow-2xs">
+            <Lock className="w-3 h-3 text-slate-400" />
+            <span className="text-[11px] text-slate-500 font-sans">Auto-detected:</span>
+            {patientSex === "female" ? (
+              <span className="font-bold text-fuchsia-700 flex items-center gap-1">
+                Female ♀
+              </span>
+            ) : (
+              <span className="font-bold text-primary-dark flex items-center gap-1">
+                Male ♂
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Dynamic Reproductive Presets */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-200/60">
-          <span className="text-[11px] font-medium text-slate-500">Reproductive:</span>
-          {(patientSex === "female" || patientSex === "auto") &&
+        {/* Dynamic Reproductive Organs based on Detected Sex */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-border/80">
+          <span className="text-[11px] font-medium text-slate-500">Reproductive Priors:</span>
+          {patientSex === "female" ? (
             FEMALE_REPRODUCTIVE.map((t) => {
               const isSelected = selectedTargets.includes(t.id);
               return (
@@ -235,9 +196,8 @@ export function TargetSelector({
                   {isSelected && <Check className="w-2.5 h-2.5" />}
                 </button>
               );
-            })}
-
-          {(patientSex === "male" || patientSex === "auto") &&
+            })
+          ) : (
             MALE_REPRODUCTIVE.map((t) => {
               const isSelected = selectedTargets.includes(t.id);
               return (
@@ -246,15 +206,16 @@ export function TargetSelector({
                   onClick={() => onToggleTarget(t.id)}
                   className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-all flex items-center gap-1 border ${
                     isSelected
-                      ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                      : "bg-white text-indigo-900 border-indigo-200 hover:bg-indigo-50"
+                      ? "bg-primary text-white border-primary shadow-xs"
+                      : "bg-white text-slate-800 border-border hover:bg-primary/5"
                   }`}
                 >
                   {t.label}
                   {isSelected && <Check className="w-2.5 h-2.5" />}
                 </button>
               );
-            })}
+            })
+          )}
         </div>
       </div>
 
@@ -291,7 +252,7 @@ export function TargetSelector({
         </div>
       )}
 
-      {/* Quick Select Common Benchmark Organ Chips */}
+      {/* Quick Select Common Benchmark Organ Chips (Styled with Olive Green - NO Dark Blue!) */}
       <div>
         <span className="text-xs font-medium text-text-muted block mb-2">Primary Clinical Benchmarks:</span>
         <div className="flex flex-wrap gap-1.5">
@@ -301,9 +262,9 @@ export function TargetSelector({
               <button
                 key={t.id}
                 onClick={() => onToggleTarget(t.id)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 border ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${
                   isSelected
-                    ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                    ? "bg-primary text-white border-primary shadow-xs"
                     : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
                 }`}
               >

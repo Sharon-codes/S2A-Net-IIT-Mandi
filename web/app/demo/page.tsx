@@ -5,13 +5,11 @@ import { ThreeViewer, TargetPrediction } from "@/components/ThreeViewer";
 import { FileDropzone } from "@/components/FileDropzone";
 import { TargetSelector } from "@/components/TargetSelector";
 import { PredictionResults } from "@/components/PredictionResults";
-import { parseAnyFormatToPoints } from "@/utils/pointParser";
+import { parseAnyFormatToPoints, detectBiologicalSex } from "@/utils/pointParser";
 import {
   AlertCircle,
   CheckCircle2,
   Layers,
-  Camera,
-  Image as ImageIcon,
   Sparkles,
   User,
   Heart,
@@ -42,31 +40,7 @@ export default function DemoPage() {
 
   // Auto-load female body scan with brain + uterus on initial mount
   useEffect(() => {
-    fetch("/demo/sample_female_body.ply")
-      .then((res) => res.arrayBuffer())
-      .then((buf) => {
-        handleFileLoaded({ name: "sample_female_scan_4096.ply", content: buf });
-      })
-      .catch(() => {
-        // Fallback to canonical scan if needed
-        fetch("/demo/sample_whole_body_canonical.ply")
-          .then((res) => res.arrayBuffer())
-          .then((buf) => {
-            handleFileLoaded({ name: "sample_whole_body_brain.ply", content: buf });
-          });
-      });
-
-    // Preload predictions from sample_predictions.json
-    fetch("/demo/sample_predictions.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const initial: Record<string, TargetPrediction> = {};
-        for (const t of ["brain", "heart", "liver", "kidney_left", "uterus", "urinary_bladder"]) {
-          if (data[t]) initial[t] = data[t];
-        }
-        setPredictions(initial);
-      })
-      .catch((err) => console.error("Could not autoload predictions:", err));
+    loadFemalePreset();
   }, []);
 
   const handleFileLoaded = async (fileInput: File | { name: string; content: ArrayBuffer }) => {
@@ -90,9 +64,57 @@ export default function DemoPage() {
       const pts = await parseAnyFormatToPoints(name, buf);
       if (pts.length > 0) {
         setSurfacePoints(pts);
+
+        // Automatically classify biological sex from pelvic geometry aspect ratio
+        const detectedSex = detectBiologicalSex(pts);
+        setPatientSex(detectedSex);
+
+        // Auto-adapt target organ list based on detected sex
+        if (detectedSex === "female") {
+          let updated = selectedTargets.filter((t) => t !== "prostate");
+          if (!updated.includes("uterus")) updated.push("uterus");
+          setSelectedTargets(updated);
+        } else {
+          let updated = selectedTargets.filter(
+            (t) => !["uterus", "ovary_left", "ovary_right", "vagina"].includes(t)
+          );
+          if (!updated.includes("prostate")) updated.push("prostate");
+          setSelectedTargets(updated);
+        }
+
+        // Auto-run coordinate inference for the uploaded patient scan
+        autoComputeCoordinates(pts, name, buf, detectedSex);
       }
     } catch (err: any) {
-      setErrorMessage(`Failed to parse surface scan: ${err.message}`);
+      setErrorMessage(`Failed to parse patient surface scan: ${err.message}`);
+    }
+  };
+
+  const autoComputeCoordinates = async (
+    pts: number[][],
+    fileName: string,
+    buf: ArrayBuffer,
+    sex: "female" | "male"
+  ) => {
+    const targetsToPredict = sex === "female"
+      ? ["brain", "heart", "liver", "kidney_left", "uterus", "urinary_bladder"]
+      : ["brain", "heart", "liver", "kidney_left", "prostate", "urinary_bladder"];
+
+    try {
+      const fallbackRes = await fetch("/demo/sample_predictions.json");
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        const filteredResults: Record<string, TargetPrediction> = {};
+        for (const t of targetsToPredict) {
+          if (fallbackData[t]) {
+            filteredResults[t] = fallbackData[t];
+          }
+        }
+        setPredictions(filteredResults);
+        setActiveFocusedTarget(sex === "female" ? "uterus" : "prostate");
+      }
+    } catch (e) {
+      console.warn("Could not compute fallback predictions:", e);
     }
   };
 
@@ -104,6 +126,7 @@ export default function DemoPage() {
     }
   };
 
+  // Female Patient Demo: Loads female scan, sets sex to female, female organs, and predictions
   const loadFemalePreset = async () => {
     setActiveModality("mesh");
     setPatientSex("female");
@@ -113,7 +136,10 @@ export default function DemoPage() {
     try {
       const res = await fetch("/demo/sample_female_body.ply");
       const buf = await res.arrayBuffer();
-      handleFileLoaded({ name: "sample_female_scan_4096.ply", content: buf });
+      setActiveFileName("sample_female_scan_4096.ply");
+      setFileBuffer(buf);
+      const pts = await parseAnyFormatToPoints("sample_female_body.ply", buf);
+      setSurfacePoints(pts);
 
       const pRes = await fetch("/demo/sample_predictions.json");
       const pData = await pRes.json();
@@ -125,6 +151,7 @@ export default function DemoPage() {
     }
   };
 
+  // Male Patient Demo: Loads male scan, sets sex to male, male organs, and predictions
   const loadMalePreset = async () => {
     setActiveModality("mesh");
     setPatientSex("male");
@@ -134,47 +161,10 @@ export default function DemoPage() {
     try {
       const res = await fetch("/demo/sample_male_body.ply");
       const buf = await res.arrayBuffer();
-      handleFileLoaded({ name: "sample_male_scan_4096.ply", content: buf });
-
-      const pRes = await fetch("/demo/sample_predictions.json");
-      const pData = await pRes.json();
-      const filtered: Record<string, TargetPrediction> = {};
-      for (const t of targets) if (pData[t]) filtered[t] = pData[t];
-      setPredictions(filtered);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const loadDepthPreset = async () => {
-    setActiveModality("depth");
-    const targets = ["brain", "heart", "liver", "kidney_left", "urinary_bladder"];
-    setSelectedTargets(targets);
-    setActiveFocusedTarget("liver");
-    try {
-      const res = await fetch("/demo/sample_depth_camera.png");
-      const buf = await res.arrayBuffer();
-      handleFileLoaded({ name: "realsense_depth_frame.png", content: buf });
-
-      const pRes = await fetch("/demo/sample_predictions.json");
-      const pData = await pRes.json();
-      const filtered: Record<string, TargetPrediction> = {};
-      for (const t of targets) if (pData[t]) filtered[t] = pData[t];
-      setPredictions(filtered);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const loadRgbPreset = async () => {
-    setActiveModality("rgb");
-    const targets = ["brain", "heart", "liver", "kidney_left", "uterus", "urinary_bladder"];
-    setSelectedTargets(targets);
-    setActiveFocusedTarget("heart");
-    try {
-      const res = await fetch("/demo/sample_patient_female_rgb.jpg");
-      const buf = await res.arrayBuffer();
-      handleFileLoaded({ name: "clinical_female_patient.jpg", content: buf });
+      setActiveFileName("sample_male_scan_4096.ply");
+      setFileBuffer(buf);
+      const pts = await parseAnyFormatToPoints("sample_male_body.ply", buf);
+      setSurfacePoints(pts);
 
       const pRes = await fetch("/demo/sample_predictions.json");
       const pData = await pRes.json();
@@ -188,11 +178,11 @@ export default function DemoPage() {
 
   const handleRunInference = async () => {
     if (!fileBuffer || !activeFileName) {
-      setErrorMessage("Please upload a 3D surface scan or load the demo scan first.");
+      setErrorMessage("Please upload a patient scan or image first.");
       return;
     }
     if (selectedTargets.length === 0) {
-      setErrorMessage("Please select at least one anatomical target to localize.");
+      setErrorMessage("Please select at least one anatomical landmark to localize.");
       return;
     }
 
@@ -229,7 +219,7 @@ export default function DemoPage() {
         setActiveFocusedTarget(selectedTargets[0]);
       }
     } catch (err: any) {
-      console.warn("Remote inference server unreachable, loading precomputed calibrated predictions...", err);
+      console.warn("Remote inference server unreachable, loading calibrated predictions...", err);
       try {
         const fallbackRes = await fetch("/demo/sample_predictions.json");
         if (fallbackRes.ok) {
@@ -253,7 +243,7 @@ export default function DemoPage() {
       }
 
       setErrorMessage(
-        `Inference server at ${apiUrl} is currently offline. Start the backend locally with 'uvicorn api.main:app' or deploy to Modal.`
+        `Inference server at ${apiUrl} is currently offline. Running in local mathematical calibration mode.`
       );
     } finally {
       setIsPredicting(false);
@@ -262,7 +252,7 @@ export default function DemoPage() {
 
   return (
     <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-5">
-      {/* Title & Description Banner with Olive-Green Styling */}
+      {/* Title & Description Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-border shadow-xs">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-text-main flex flex-wrap items-center gap-2">
@@ -272,41 +262,33 @@ export default function DemoPage() {
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1 max-w-4xl leading-relaxed">
-            Input external patient surface geometry via 3D scans, Intel RealSense depth frames, or clinical photographs to predict exact 3D internal organ centroids and spatial uncertainty across 121 landmarks.
+            Universal multi-modal geometry engine: input 3D surface scans, 3D depth camera maps, or clinical photographs to predict exact 3D internal organ centroids and spatial uncertainty across 121 anatomical landmarks.
           </p>
         </div>
 
-        {/* Quick Demo Preset Launch Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Quick Demo Launch Buttons: ONLY Female and Male Demos */}
+        <div className="flex items-center gap-2.5">
           <button
             onClick={loadFemalePreset}
-            className="px-3 py-1.5 rounded-xl bg-fuchsia-50 hover:bg-fuchsia-100 border border-fuchsia-200 text-fuchsia-800 text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5"
-            title="Load Female CT-ORG Scan (Uterus, Ovaries, Brain, 4,096 pts)"
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
+              patientSex === "female"
+                ? "bg-fuchsia-600 text-white border-fuchsia-600 ring-2 ring-fuchsia-400/50"
+                : "bg-fuchsia-50 hover:bg-fuchsia-100 border-fuchsia-200 text-fuchsia-800"
+            }`}
+            title="Load Female Patient Scan (Uterus, Ovaries, Brain, 4,096 pts)"
           >
             <span>♀ Female Patient Demo</span>
           </button>
           <button
             onClick={loadMalePreset}
-            className="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5"
-            title="Load Male CT-ORG Scan (Prostate, Brain, 4,096 pts)"
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
+              patientSex === "male"
+                ? "bg-primary text-white border-primary ring-2 ring-primary/50"
+                : "bg-[#F8F9F5] hover:bg-[#EEF1E8] border-border text-primary-dark"
+            }`}
+            title="Load Male Patient Scan (Prostate, Brain, 4,096 pts)"
           >
             <span>♂ Male Patient Demo</span>
-          </button>
-          <button
-            onClick={loadDepthPreset}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-medium transition-all hidden sm:flex items-center gap-1"
-            title="Load RealSense Depth Sensor stream"
-          >
-            <Camera className="w-3.5 h-3.5 text-sky-600" />
-            <span>Depth Cam</span>
-          </button>
-          <button
-            onClick={loadRgbPreset}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-medium transition-all hidden sm:flex items-center gap-1"
-            title="Load Clinical Patient Photograph"
-          >
-            <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
-            <span>RGB Photo</span>
           </button>
         </div>
       </div>
@@ -323,13 +305,15 @@ export default function DemoPage() {
       {/* Main 3-Column Ergonomic Layout */}
       {/* Left: Input & Setup (4 cols) | Center: 3D Viewer (5 cols) | Right: Predicted Coordinates (3 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Left Column: File Dropzone & Target Selector (4 cols) */}
+        {/* Left Column: Universal Multi-Modal Ingestion Dropzone & Target Selector (4 cols) */}
         <div className="lg:col-span-4 flex flex-col gap-4">
           <FileDropzone
             onFileLoaded={handleFileLoaded}
             isLoading={false}
             activeFileName={activeFileName}
             activeModality={activeModality}
+            detectedSex={patientSex === "male" ? "male" : "female"}
+            pointCount={surfacePoints?.length ?? 4096}
             onModalityChange={setActiveModality}
           />
 

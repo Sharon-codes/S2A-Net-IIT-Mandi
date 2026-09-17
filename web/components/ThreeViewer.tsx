@@ -623,7 +623,7 @@ export function ThreeViewer({
           <button
             onClick={() => setShowSensorRig(!showSensorRig)}
             className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
-              showSensorRig ? "bg-sky-600 text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+              showSensorRig ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
             }`}
             title="Toggle Intel RealSense depth sensor frustum"
           >
