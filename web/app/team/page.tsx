@@ -4,7 +4,7 @@ import { User, Award, GraduationCap, Building2, Cpu, Sparkles } from "lucide-rea
 
 export default function TeamPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 flex flex-col gap-10">
       {/* Logos & Header Section */}
       <div className="text-center max-w-3xl mx-auto flex flex-col items-center gap-4">
         {/* Dual Institution Logos: CAIR + IIT Mandi */}

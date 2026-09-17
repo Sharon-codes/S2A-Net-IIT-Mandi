@@ -799,9 +799,9 @@ export function ThreeViewer({
         </div>
       </div>
 
-      {/* Selected Target Organ Focus HUD Pill */}
+      {/* Selected Target Organ Focus HUD Pill — sits BELOW the top controls row, no overlap */}
       {selectedTarget && (
-        <div className="absolute top-14 left-2.5 flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-20px)]">
+        <div className="absolute top-12 left-2.5 flex items-center gap-1.5 sm:gap-2 bg-white/95 backdrop-blur px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in max-w-[calc(100%-20px)]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
             <span className="font-bold text-slate-900 capitalize">
@@ -811,7 +811,7 @@ export function ThreeViewer({
 
           <div className="h-3 w-px bg-slate-200 mx-0.5" />
 
-          {/* Toggle: Isolate Single Point vs Show All 121 Points */}
+          {/* Toggle: Isolate Single Point vs Show All Points */}
           <button
             onClick={() => setIsolateSelected(!isolateSelected)}
             className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all flex items-center gap-1 ${
@@ -819,9 +819,9 @@ export function ThreeViewer({
                 ? "bg-amber-500 text-white shadow-xs"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
-            title={isolateSelected ? "Click to show all 121 landmarks" : "Click to isolate only this selected organ"}
+            title={isolateSelected ? "Click to show all landmarks" : "Click to isolate only this organ"}
           >
-            {isolateSelected ? "👁️ Isolated Focus" : "🌐 Show All (121)"}
+            {isolateSelected ? "👁️ Isolated" : "🌐 All"}
           </button>
 
           {/* Clear Selection Button */}
@@ -835,6 +835,7 @@ export function ThreeViewer({
           </button>
         </div>
       )}
+
 
       {/* Legend Bottom-Left */}
       <div className="absolute bottom-3 left-3 max-w-[calc(100%-24px)] bg-white/95 backdrop-blur px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-border shadow-xs text-[10px] sm:text-xs text-text-muted flex flex-col gap-1 z-10">

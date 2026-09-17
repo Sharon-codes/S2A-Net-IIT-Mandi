@@ -949,6 +949,10 @@ export default function TargetsPage() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>("all");
   const [selectedPin, setSelectedPin] = useState<string | null>(null);
+  // Track which categories have been expanded past the preview limit
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
+  const PREVIEW_LIMIT = 9; // items shown per category before "Show all"
+
 
   const totalTargetsCount = Object.values(ALL_CATEGORIES).reduce(
     (acc, cat) => acc + cat.targets.length,
@@ -1077,6 +1081,14 @@ export default function TargetsPage() {
 
           if (filteredTargets.length === 0) return null;
 
+          // In "All" mode without a search query, limit displayed items per category
+          const isAllMode = selectedCat === "all" && !query.trim();
+          const isExpanded = expandedCats.has(key);
+          const displayTargets = isAllMode && !isExpanded
+            ? filteredTargets.slice(0, PREVIEW_LIMIT)
+            : filteredTargets;
+          const hasMore = isAllMode && !isExpanded && filteredTargets.length > PREVIEW_LIMIT;
+
           return (
             <div key={key} className="bg-white rounded-xl border border-border p-5 shadow-xs flex flex-col gap-4">
               <div className="border-b border-border/80 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
@@ -1092,7 +1104,7 @@ export default function TargetsPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                {filteredTargets.map((t) => {
+                {displayTargets.map((t) => {
                   const isSelected = selectedPin === t.name;
                   return (
                     <div
@@ -1127,6 +1139,27 @@ export default function TargetsPage() {
                   );
                 })}
               </div>
+
+              {/* Expand button for "All" mode when there are more items */}
+              {hasMore && (
+                <button
+                  onClick={() => setExpandedCats(prev => new Set(Array.from(prev).concat(key)))}
+                  className="self-start text-xs font-medium text-primary hover:text-primary-dark flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-colors"
+                >
+                  <span>Show all {filteredTargets.length} in {cat.name.split(" ")[0]}</span>
+                  <span className="text-[10px] opacity-70">↓</span>
+                </button>
+              )}
+              {isAllMode && isExpanded && filteredTargets.length > PREVIEW_LIMIT && (
+                <button
+                  onClick={() => setExpandedCats(prev => { const n = new Set(Array.from(prev)); n.delete(key); return n; })}
+                  className="self-start text-xs font-medium text-text-muted hover:text-text-main flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-border transition-colors"
+                >
+                  <span>Collapse</span>
+                  <span className="text-[10px] opacity-70">↑</span>
+                </button>
+              )}
+
             </div>
           );
         })}
@@ -1134,3 +1167,4 @@ export default function TargetsPage() {
     </div>
   );
 }
+

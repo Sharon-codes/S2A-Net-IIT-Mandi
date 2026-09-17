@@ -269,62 +269,59 @@ export default function DemoPage() {
   };
 
   return (
-    <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-5">
+    <div className="max-w-[1520px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col gap-4 sm:gap-5">
       {/* Title & Description Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-border shadow-xs">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-text-main flex flex-wrap items-center gap-2">
-            <span>3D Interactive Anatomy Localization</span>
-            <span className="text-[11px] font-mono font-normal px-2.5 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
-              CAIR IIT Mandi &bull; 121 Landmark GNN Ensemble
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-border shadow-xs">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-2xl font-bold text-text-main flex flex-wrap items-center gap-2">
+            <span>3D Anatomy Localization</span>
+            <span className="text-[10px] sm:text-[11px] font-mono font-normal px-2 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
+              CAIR IIT Mandi · 121 Landmarks
             </span>
           </h1>
-          <p className="text-xs sm:text-sm text-text-muted mt-1 max-w-4xl leading-relaxed">
-            Universal multi-modal geometry engine: input 3D surface scans, 3D depth camera maps, or clinical photographs to predict exact 3D internal organ centroids and spatial uncertainty across 121 anatomical landmarks.
+          <p className="text-xs text-text-muted mt-1 leading-relaxed hidden sm:block">
+            Multi-modal geometry engine: input 3D scans, depth maps, or photos to predict organ centroid coordinates across 121 anatomical landmarks.
           </p>
         </div>
 
-        {/* Quick Demo Launch Buttons: ONLY Female and Male Demos */}
-        <div className="flex items-center gap-2.5">
+        {/* Quick Demo Launch Buttons */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={loadFemalePreset}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
               patientSex === "female"
                 ? "bg-fuchsia-600 text-white border-fuchsia-600 ring-2 ring-fuchsia-400/50"
                 : "bg-fuchsia-50 hover:bg-fuchsia-100 border-fuchsia-200 text-fuchsia-800"
             }`}
-            title="Load Female Patient Scan (Uterus, Ovaries, Brain, 4,096 pts)"
           >
-            <span>♀ Female Patient Demo</span>
+            <span>♀ Female</span>
           </button>
           <button
             onClick={loadMalePreset}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 border ${
               patientSex === "male"
                 ? "bg-primary text-white border-primary ring-2 ring-primary/50"
                 : "bg-[#F8F9F5] hover:bg-[#EEF1E8] border-border text-primary-dark"
             }`}
-            title="Load Male Patient Scan (Prostate, Brain, 4,096 pts)"
           >
-            <span>♂ Male Patient Demo</span>
+            <span>♂ Male</span>
           </button>
         </div>
       </div>
 
       {errorMessage && (
-        <div className="bg-accent-red/10 border border-accent-red/30 text-accent-red p-4 rounded-xl text-sm flex items-start gap-2">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <div>
-            <strong>Error:</strong> {errorMessage}
-          </div>
+        <div className="bg-accent-red/10 border border-accent-red/30 text-accent-red p-3 rounded-xl text-xs flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div><strong>Error:</strong> {errorMessage}</div>
         </div>
       )}
 
-      {/* Main 3-Column Ergonomic Layout */}
-      {/* Left: Input & Setup (4 cols) | Center: 3D Viewer (5 cols) | Right: Predicted Coordinates (3 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Left Column: Universal Multi-Modal Ingestion Dropzone & Target Selector (4 cols) */}
-        <div className="lg:col-span-4 flex flex-col gap-4">
+      {/* MOBILE LAYOUT: Viewer → Inputs → Results (stacked vertically)
+          DESKTOP LAYOUT: Left inputs | Center viewer | Right results */}
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+
+        {/* LEFT PANEL: Input & Setup — on mobile shows BELOW the 3D viewer */}
+        <div className="lg:col-span-3 xl:col-span-3 flex flex-col gap-3 order-2 lg:order-1">
           <FileDropzone
             onFileLoaded={handleFileLoaded}
             isLoading={false}
@@ -349,33 +346,31 @@ export default function DemoPage() {
           />
         </div>
 
-        {/* Center & Right Columns: 3D Canvas Viewer + Predicted Coordinates Side-by-Side (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col md:flex-row gap-4 items-stretch lg:sticky lg:top-20">
-          {/* Center: 3D ThreeViewer */}
-          <div className="flex-1 h-[420px] sm:h-[600px] lg:h-[760px] min-h-[380px]">
-            <ThreeViewer
-              surfacePoints={surfacePoints}
-              predictions={predictions}
-              selectedTarget={activeFocusedTarget}
-              onSelectTarget={setActiveFocusedTarget}
-              modality={activeModality}
-              patientSex={patientSex}
-              imageUrl={patientImageUrl}
-            />
-          </div>
+        {/* CENTER: 3D ThreeViewer — appears FIRST on mobile (order-1) */}
+        <div className="lg:col-span-5 xl:col-span-6 order-1 lg:order-2 h-[380px] sm:h-[500px] lg:h-[740px] lg:sticky lg:top-20">
+          <ThreeViewer
+            surfacePoints={surfacePoints}
+            predictions={predictions}
+            selectedTarget={activeFocusedTarget}
+            onSelectTarget={setActiveFocusedTarget}
+            modality={activeModality}
+            patientSex={patientSex}
+            imageUrl={patientImageUrl}
+          />
+        </div>
 
-          {/* Right: Predicted Organ Locations & Pin Selection (Right side of 3D Canvas!) */}
-          <div className="w-full md:w-[320px] xl:w-[360px] h-[520px] sm:h-[620px] lg:h-[760px] shrink-0">
-            <PredictionResults
-              predictions={predictions}
-              selectedTarget={activeFocusedTarget}
-              onSelectTarget={setActiveFocusedTarget}
-              latencyMs={latencyMs}
-              prepLatencyMs={prepLatencyMs}
-            />
-          </div>
+        {/* RIGHT: Predicted Organ Locations */}
+        <div className="lg:col-span-4 xl:col-span-3 order-3 w-full h-[420px] sm:h-[560px] lg:h-[740px] lg:sticky lg:top-20">
+          <PredictionResults
+            predictions={predictions}
+            selectedTarget={activeFocusedTarget}
+            onSelectTarget={setActiveFocusedTarget}
+            latencyMs={latencyMs}
+            prepLatencyMs={prepLatencyMs}
+          />
         </div>
       </div>
     </div>
   );
 }
+

@@ -6,6 +6,7 @@ import { createHumanMannequin } from "@/utils/mannequinBuilder";
 import { ALL_ATLAS_TARGETS, AtlasTargetDef } from "@/data/atlasTargets";
 import { RotateCcw, Compass, Layers, CheckCircle2 } from "lucide-react";
 
+
 interface TargetBodyMapProps {
   onSelectTarget: (targetName: string) => void;
   selectedTarget: string | null;
@@ -36,10 +37,13 @@ export function TargetBodyMap({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const pinMeshesRef = useRef<THREE.Mesh[]>([]);
   const reqIdRef = useRef<number | null>(null);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [hoveredPin, setHoveredPin] = useState<AtlasTargetDef | null>(null);
   const [autoRotate, setAutoRotate] = useState(true);
+  const autoRotateRef = useRef(true);
   const [systemFilter, setSystemFilter] = useState<string | null>(activeSystemFilter || null);
+
 
   const isDraggingRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
@@ -159,7 +163,7 @@ export function TargetBodyMap({
     // Animation Loop
     const animate = () => {
       reqIdRef.current = requestAnimationFrame(animate);
-      if (autoRotate && !isDraggingRef.current) {
+      if (autoRotateRef.current && !isDraggingRef.current) {
         cameraSphericalRef.current.theta += 0.0035;
         updateCamera();
       }
@@ -167,10 +171,14 @@ export function TargetBodyMap({
     };
     animate();
 
+
     // Mouse Controls
     const onMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true;
+      // Pause rotation while dragging; clear any pending resume timer
+      autoRotateRef.current = false;
       setAutoRotate(false);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
       previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
     };
 
@@ -224,7 +232,15 @@ export function TargetBodyMap({
         const pin = hit.userData.pinData as AtlasTargetDef;
         onSelectTarget(pin.id);
       }
+
+      // Auto-resume rotation after 8 seconds of inactivity
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = setTimeout(() => {
+        autoRotateRef.current = true;
+        setAutoRotate(true);
+      }, 8000);
     };
+
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -238,7 +254,9 @@ export function TargetBodyMap({
     // Touch Controls for Mobile Devices
     let initialPinchDist = 0;
     const onTouchStart = (e: TouchEvent) => {
+      autoRotateRef.current = false;
       setAutoRotate(false);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
       if (e.touches.length === 1) {
         isDraggingRef.current = true;
         previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -335,7 +353,11 @@ export function TargetBodyMap({
   }, [selectedTarget, systemFilter]);
 
   const setView = (view: "front" | "back" | "side" | "top") => {
+    // Freeze rotation and snap to view angle
+    autoRotateRef.current = false;
     setAutoRotate(false);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+
     if (view === "front") {
       cameraSphericalRef.current = { radius: 920, theta: 0, phi: Math.PI / 2 };
     } else if (view === "back") {
@@ -346,7 +368,14 @@ export function TargetBodyMap({
       cameraSphericalRef.current = { radius: 920, theta: 0, phi: 0.15 };
     }
     updateCamera();
+
+    // Auto-resume rotation after 30 seconds
+    resumeTimerRef.current = setTimeout(() => {
+      autoRotateRef.current = true;
+      setAutoRotate(true);
+    }, 30000);
   };
+
 
   const handleFilterClick = (sysId: string) => {
     const next = sysId === "all" ? null : sysId;
@@ -392,34 +421,26 @@ export function TargetBodyMap({
           className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
         />
 
-        {/* Viewport Presets & Rotation Controls Top-Right */}
-        <div className="absolute top-3 right-3 flex flex-wrap max-w-[210px] sm:max-w-none justify-end gap-1 bg-white/95 backdrop-blur px-2 py-1.5 rounded-2xl border border-border shadow-xs text-xs font-medium text-slate-700 z-10">
-          <button
-            onClick={() => setView("front")}
-            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => setView("back")}
-            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
-          >
-            Posterior
-          </button>
-          <button
-            onClick={() => setView("side")}
-            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
-          >
-            Lateral
-          </button>
-          <button
-            onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-2 py-0.5 rounded-lg transition-colors text-[11px] ${
-              autoRotate ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-slate-600"
-            }`}
-          >
-            {autoRotate ? "Orbit On" : "Paused"}
-          </button>
+        {/* Viewport Presets Top-Right — click to freeze for 30s then auto-resume */}
+        <div className="absolute top-3 right-3 flex items-center gap-0.5 bg-white/95 backdrop-blur px-2 py-1.5 rounded-2xl border border-border shadow-xs text-xs font-medium text-slate-700 z-10">
+          {(["front","back","side","top"] as const).map((v) => {
+            const labels: Record<string, string> = { front: "Anterior", back: "Posterior", side: "Lateral", top: "Superior" };
+            return (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className="px-2 py-0.5 rounded-lg hover:bg-slate-100 active:bg-primary/20 transition-colors text-[11px]"
+                title={`Snap to ${labels[v]} view · Freezes for 30s then resumes orbit`}
+              >
+                {labels[v]}
+              </button>
+            );
+          })}
+          {/* Subtle orbit status indicator */}
+          <span
+            className={`w-1.5 h-1.5 rounded-full ml-1 shrink-0 transition-colors ${autoRotate ? "bg-primary animate-pulse" : "bg-slate-300"}`}
+            title={autoRotate ? "Orbiting" : "Frozen — auto-resumes soon"}
+          />
         </div>
 
         {/* Floating Hover Card Top-Left */}
