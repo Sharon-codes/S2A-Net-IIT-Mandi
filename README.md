@@ -11,7 +11,7 @@
 
 **Centre for Artificial Intelligence and Robotics (CAIR)**  
 **Indian Institute of Technology Mandi (IIT Mandi)**  
-*School of Computing & Electrical Engineering | Advanced Biomedical Perception & Surgical Robotics*
+*Advanced Biomedical Perception & Surgical Robotics*
 
 [![Live 3D Web Platform](https://img.shields.io/badge/Vercel_Live_Platform-web--self--theta--51.vercel.app-66734b?style=for-the-badge&logo=vercel)](https://web-self-theta-51.vercel.app)
 [![Hugging Face Weights (CAIR IIT Mandi)](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-IITMandiResearch-yellow?style=for-the-badge)](https://huggingface.co/IITMandiResearch/Surface2Anatomy-Weights)
@@ -33,7 +33,7 @@ This research and software platform was developed by research interns at the **C
 - **Sharon Melhi** — *Research Intern, Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi*
 
 ### Under the Academic Supervision of:
-- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR) & School of Computing & Electrical Engineering, Indian Institute of Technology Mandi (IIT Mandi)*
+- **Dr. Deepak Raina** — *Assistant Professor, Centre for Artificial Intelligence and Robotics (CAIR), Indian Institute of Technology Mandi (IIT Mandi)*
 
 ---
 

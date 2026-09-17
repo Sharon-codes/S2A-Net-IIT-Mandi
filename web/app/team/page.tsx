@@ -60,7 +60,7 @@ export default function TeamPage() {
           </div>
 
           <p className="text-sm font-medium text-primary-dark">
-            Assistant Professor &bull; Centre for Artificial Intelligence and Robotics (CAIR) &amp; School of Computing &amp; Electrical Engineering, IIT Mandi
+            Assistant Professor &bull; Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi
           </p>
           <p className="text-xs text-text-muted leading-relaxed">
             Supervised the architectural formulation, medical coordinate system invariance, cross-attention mechanism design, and scientific validation paradigms for radiation-free internal organ localization.
@@ -69,7 +69,7 @@ export default function TeamPage() {
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2 text-xs text-text-muted font-mono">
             <span className="flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-primary" />
-              <span>CAIR &amp; SCEE, Indian Institute of Technology Mandi</span>
+              <span>CAIR, Indian Institute of Technology Mandi</span>
             </span>
           </div>
         </div>
@@ -91,11 +91,12 @@ export default function TeamPage() {
               Project Lead
             </div>
 
-            <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-primary/10 to-primary/25 border-2 border-dashed border-primary/40 flex flex-col items-center justify-center text-primary-dark shrink-0">
-              <span className="text-2xl font-extrabold font-mono">KM</span>
-              <span className="text-[9px] uppercase font-mono mt-1 text-text-muted text-center px-1">
-                Photo to be uploaded
-              </span>
+            <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+              <img
+                src="/team/khushi_mhamane.jpg"
+                alt="Khushi Mhamane"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
 
             <div className="flex flex-col gap-2 text-center sm:text-left flex-grow">
@@ -114,11 +115,12 @@ export default function TeamPage() {
 
           {/* Sharon Melhi - Research Intern */}
           <div className="bg-white rounded-xl border border-border p-6 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 border-2 border-dashed border-primary/30 flex flex-col items-center justify-center text-primary-dark shrink-0">
-              <span className="text-2xl font-extrabold font-mono">SM</span>
-              <span className="text-[9px] uppercase font-mono mt-1 text-text-muted text-center px-1">
-                Photo to be uploaded
-              </span>
+            <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+              <img
+                src="/team/sharon_melhi.png"
+                alt="Sharon Melhi"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
 
             <div className="flex flex-col gap-2 text-center sm:text-left flex-grow">
