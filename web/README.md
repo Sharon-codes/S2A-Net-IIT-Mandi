@@ -169,19 +169,6 @@ Kamand Campus, Mandi &mdash; 175005, Himachal Pradesh, India.
 
 ---
 
-## 📜 Citation
-
-```bibtex
-@article{mhamane2026surface2anatomy,
-  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
-  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
-  journal={arXiv preprint},
-  year={2026}
-}
-```
-
----
-
 ## 📄 License
 
 Apache 2.0 License. See [LICENSE](LICENSE) for details.

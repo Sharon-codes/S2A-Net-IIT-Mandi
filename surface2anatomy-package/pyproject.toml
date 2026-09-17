@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "surface2anatomy"
-version = "0.1.0"
+version = "0.1.1"
 description = "Target-conditioned 3D internal anatomy localization from external body surface geometry."
 readme = "README.md"
 requires-python = ">=3.10"

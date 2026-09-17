@@ -263,58 +263,6 @@ print(result.centroid_mm)  # (-61.2, 34.8, 105.4)`}
           </div>
         </div>
       </section>
-
-      {/* Academic Citation Block */}
-      <section className="bg-white rounded-2xl border border-border p-6 md:p-8 flex flex-col gap-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xl font-bold text-text-main">Citation &amp; Academic Attribution</h2>
-            <p className="text-xs text-text-muted mt-0.5">
-              If you utilize Surface2Anatomy (S2A-Net) or its algorithmic formulations in academic research, please cite:
-            </p>
-          </div>
-          <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 shrink-0">
-            BibTeX
-          </span>
-        </div>
-
-        {/* Authors Highlight */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-          <div>
-            <span className="font-semibold text-text-main">Khushi Mhamane</span>
-            <span className="text-[10px] font-mono text-primary uppercase ml-1 font-bold">(Project Lead)</span>
-            <div className="text-[11px] font-mono text-accent-green">
-              <a href="mailto:khushimhamane@gmail.com" className="hover:underline">khushimhamane@gmail.com</a>
-            </div>
-          </div>
-          <div>
-            <span className="font-semibold text-text-main">Sharon Melhi</span>
-            <span className="text-[10px] font-mono text-text-muted ml-1">(Research Intern)</span>
-            <div className="text-[11px] font-mono text-accent-green">
-              <a href="mailto:sharonmelhi365@gmail.com" className="hover:underline">sharonmelhi365@gmail.com</a>
-            </div>
-          </div>
-          <div>
-            <span className="font-semibold text-text-main">Dr. Deepak Raina</span>
-            <span className="text-[10px] font-mono text-text-muted ml-1">(Supervisor)</span>
-            <div className="text-[11px] font-mono text-accent-green">
-              <a href="mailto:deepak@iitmandi.ac.in" className="hover:underline">deepak@iitmandi.ac.in</a>
-            </div>
-          </div>
-        </div>
-
-        {/* BibTeX Code Card */}
-        <div className="relative">
-          <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto select-all leading-relaxed border border-slate-800">
-{`@article{mhamane2026surface2anatomy,
-  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
-  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
-  journal={arXiv preprint},
-  year={2026}
-}`}
-          </pre>
-        </div>
-      </section>
     </div>
   );
 }

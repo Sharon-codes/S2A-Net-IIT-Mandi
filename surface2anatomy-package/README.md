@@ -250,21 +250,7 @@ Evaluated across the locked held-out test cohort ($N=168$ subjects, Dataset V3):
 
 > **RESEARCH PROTOTYPE**: Surface2Anatomy is an open scientific software package intended strictly for academic research, pre-clinical computational simulation, and anatomical exploration. It is **not** approved by regulatory agencies (e.g., FDA, CE) for standalone clinical diagnosis, surgical navigation, or autonomous procedural intervention.
 
----
-
-## Citation
-
-```bibtex
-@article{mhamane2026surface2anatomy,
-  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
-  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
-  journal={arXiv preprint},
-  year={2026}
-}
-```
-
----
-
 ## License
 
 Surface2Anatomy is released under the **Apache 2.0 License**. See [LICENSE](LICENSE) for details.
+

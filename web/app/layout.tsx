@@ -49,7 +49,7 @@ export default function RootLayout({
                       rel="noopener noreferrer"
                       className="hover:text-primary transition-colors flex items-center gap-1.5"
                     >
-                      <span className="font-mono text-primary font-semibold">PyPI:</span> surface2anatomy v0.1.0
+                      <span className="font-mono text-primary font-semibold">PyPI:</span> surface2anatomy v0.1.1
                     </a>
                   </li>
                   <li>

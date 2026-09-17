@@ -225,30 +225,6 @@ export default function TeamPage() {
           </a>
         </div>
       </div>
-
-      {/* Academic Citation Block */}
-      <div className="bg-white border border-border rounded-2xl p-6 flex flex-col gap-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 className="font-bold text-base text-text-main">Official Academic Citation</h3>
-            <p className="text-xs text-text-muted mt-0.5">
-              Please cite the following work when referencing the Surface2Anatomy framework or dataset artifacts:
-            </p>
-          </div>
-          <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 shrink-0">
-            BibTeX
-          </span>
-        </div>
-
-        <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto select-all leading-relaxed border border-slate-800">
-{`@article{mhamane2026surface2anatomy,
-  title={Surface2Anatomy: Target-Conditioned 3D Internal Anatomy Localization from External Body Surface Geometry},
-  author={Mhamane, Khushi and Melhi, Sharon and Raina, Deepak},
-  journal={arXiv preprint},
-  year={2026}
-}`}
-        </pre>
-      </div>
     </div>
   );
 }
