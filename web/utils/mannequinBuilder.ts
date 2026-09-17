@@ -119,3 +119,131 @@ export function createHumanMannequin(): THREE.Group {
   return group;
 }
 
+/**
+ * Creates an Intel RealSense / Azure Kinect 3D Depth Sensor representation:
+ * Camera enclosure at [0, 80, 750], optical cone ray frustum pointing to patient,
+ * and calibrated depth range bounds.
+ */
+export function createDepthSensorRig(): THREE.Group {
+  const group = new THREE.Group();
+
+  // 1. Depth Camera Sensor Body
+  const bodyGeo = new THREE.BoxGeometry(160, 42, 35);
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.3,
+    metalness: 0.8,
+  });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.set(0, 80, 720);
+  group.add(body);
+
+  // 2. Optical Lenses (IR projector + stereo depth cameras)
+  const lensGeo = new THREE.CylinderGeometry(10, 10, 8, 24);
+  const lensMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    roughness: 0.1,
+    metalness: 0.9,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.4,
+  });
+
+  const lensLeft = new THREE.Mesh(lensGeo, lensMat);
+  lensLeft.rotation.x = Math.PI / 2;
+  lensLeft.position.set(-45, 80, 702);
+  group.add(lensLeft);
+
+  const lensRight = new THREE.Mesh(lensGeo, lensMat);
+  lensRight.rotation.x = Math.PI / 2;
+  lensRight.position.set(45, 80, 702);
+  group.add(lensRight);
+
+  // 3. Optical Sensor Ray Frustum (Wireframe pyramid to patient)
+  const frustumPoints = [
+    new THREE.Vector3(0, 80, 700),
+    new THREE.Vector3(-180, 360, 80),
+    new THREE.Vector3(0, 80, 700),
+    new THREE.Vector3(180, 360, 80),
+    new THREE.Vector3(0, 80, 700),
+    new THREE.Vector3(180, -320, 80),
+    new THREE.Vector3(0, 80, 700),
+    new THREE.Vector3(-180, -320, 80),
+    // Connecting rectangle at patient plane
+    new THREE.Vector3(-180, 360, 80),
+    new THREE.Vector3(180, 360, 80),
+    new THREE.Vector3(180, 360, 80),
+    new THREE.Vector3(180, -320, 80),
+    new THREE.Vector3(180, -320, 80),
+    new THREE.Vector3(-180, -320, 80),
+    new THREE.Vector3(-180, -320, 80),
+    new THREE.Vector3(-180, 360, 80),
+  ];
+
+  const frustumGeo = new THREE.BufferGeometry().setFromPoints(frustumPoints);
+  const frustumMat = new THREE.LineBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.28,
+  });
+  const frustum = new THREE.LineSegments(frustumGeo, frustumMat);
+  group.add(frustum);
+
+  // 4. Depth Measurement Plane
+  const depthPlaneGeo = new THREE.PlaneGeometry(360, 680, 18, 34);
+  const depthPlaneMat = new THREE.MeshBasicMaterial({
+    color: 0x0284c7,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.12,
+  });
+  const depthPlane = new THREE.Mesh(depthPlaneGeo, depthPlaneMat);
+  depthPlane.position.set(0, 20, 75);
+  group.add(depthPlane);
+
+  return group;
+}
+
+/**
+ * Creates a Clinical Photographic Backdrop Frame for RGB photos:
+ * Vertical measurement grid billboard showing clinical studio calibration.
+ */
+export function createPhotoBillboardRig(): THREE.Group {
+  const group = new THREE.Group();
+
+  // 1. Clinical Calibration Grid Plane (Backing board)
+  const boardGeo = new THREE.PlaneGeometry(420, 760);
+  const boardMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.7,
+    metalness: 0.05,
+  });
+  const board = new THREE.Mesh(boardGeo, boardMat);
+  board.position.set(0, 20, -50);
+  group.add(board);
+
+  // 2. Medical Grid Lines
+  const gridHelper = new THREE.GridHelper(700, 35, 0x94a3b8, 0xe2e8f0);
+  gridHelper.rotation.x = Math.PI / 2;
+  gridHelper.position.set(0, 20, -48);
+  group.add(gridHelper);
+
+  // 3. Clinical Camera Tripod / Lighting Guide Stand
+  const standMat = new THREE.MeshBasicMaterial({
+    color: 0xd97706,
+    transparent: true,
+    opacity: 0.4,
+  });
+  const guidePoints = [
+    new THREE.Vector3(-210, 400, -46),
+    new THREE.Vector3(210, 400, -46),
+    new THREE.Vector3(210, -360, -46),
+    new THREE.Vector3(-210, -360, -46),
+    new THREE.Vector3(-210, 400, -46),
+  ];
+  const guideGeo = new THREE.BufferGeometry().setFromPoints(guidePoints);
+  const guideLine = new THREE.Line(guideGeo, standMat);
+  group.add(guideLine);
+
+  return group;
+}
+

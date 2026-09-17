@@ -111,7 +111,7 @@ export default function MethodPage() {
           <div className="bg-slate-900 text-slate-100 p-4 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm flex flex-col gap-2">
             <span className="text-slate-400 text-[11px] uppercase tracking-wider">Canonical Centering &amp; Scaling:</span>
             <MathView math={String.raw`\mathcal{P}_{\text{canonical}} = \frac{\mathcal{S} - \mathbf{c}_{\text{external}}}{500.0} \quad \in [-1, 1]^{N \times 3}`} block={false} />
-            <span className="text-[11px] text-emerald-400 mt-1">
+            <span className="text-[11px] text-[#A3C475] mt-1">
               &bull; Guarantees metric equivariance regardless of scanner couch elevation or patient translation.
             </span>
           </div>
@@ -547,7 +547,7 @@ export default function MethodPage() {
                 onClick={() => setActiveStage(idx)}
                 className={`flex flex-col text-left p-2.5 rounded-xl transition-all border ${
                   isActive
-                    ? "bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-primary/40"
+                    ? "bg-[#465133] text-white border-[#465133] shadow-md ring-2 ring-primary/50"
                     : "bg-slate-50/70 hover:bg-slate-100 text-slate-700 border-slate-200/80"
                 }`}
               >
@@ -582,7 +582,7 @@ export default function MethodPage() {
         {/* Stage Header Banner */}
         <div className="p-5 sm:p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 via-white to-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-mono font-bold text-base shadow-sm shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#465133] text-white flex items-center justify-center font-mono font-bold text-base shadow-sm shrink-0">
               0{currentStage.id}
             </div>
             <div>
@@ -622,7 +622,7 @@ export default function MethodPage() {
               className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1 transition-all ${
                 activeStage === STAGES.length - 1
                   ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                  : "bg-slate-900 hover:bg-slate-800 text-white border-slate-900 shadow-xs"
+                  : "bg-[#465133] hover:bg-[#384228] text-white border-[#465133] shadow-xs"
               }`}
             >
               <span className="hidden sm:inline">Next</span>
@@ -633,13 +633,13 @@ export default function MethodPage() {
 
         <div className="p-5 sm:p-7 flex flex-col gap-6">
           {/* Scientific Mathematical Card with High-Contrast KaTeX */}
-          <div className="bg-slate-950 text-slate-100 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl flex flex-col gap-4">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <span className="text-xs font-mono font-semibold text-emerald-400 flex items-center gap-1.5">
+          <div className="bg-[#181D14] text-slate-100 rounded-2xl border border-[#2C3720] p-5 sm:p-6 shadow-xl flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-[#2C3720] pb-3">
+              <span className="text-xs font-mono font-semibold text-[#A3C475] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{currentStage.formulaLabel}</span>
               </span>
-              <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+              <span className="text-[10px] font-mono text-slate-400 bg-[#22291B] px-2 py-0.5 rounded border border-[#313C24] text-[#B5CA95]">
                 KaTeX Typeset &bull; Exact Formulation
               </span>
             </div>
@@ -650,7 +650,7 @@ export default function MethodPage() {
             </div>
 
             {/* Variable Decoder Grid */}
-            <div className="mt-2 pt-3 border-t border-slate-800/80 flex flex-col gap-2">
+            <div className="mt-2 pt-3 border-t border-[#2C3720] flex flex-col gap-2">
               <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-400">
                 Variable Definitions &amp; Dimensionality:
               </span>
@@ -658,9 +658,9 @@ export default function MethodPage() {
                 {currentStage.variables.map((v, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2 text-xs bg-slate-900/60 p-2 rounded-lg border border-slate-800/60"
+                    className="flex items-start gap-2 text-xs bg-[#22291B] p-2 rounded-lg border border-[#313C24]"
                   >
-                    <span className="font-mono font-bold text-emerald-400 shrink-0">
+                    <span className="font-mono font-bold text-[#A3C475] shrink-0">
                       <MathView math={v.symbol} block={false} />:
                     </span>
                     <span className="text-slate-300 font-sans text-[11px]">{v.meaning}</span>
@@ -705,7 +705,7 @@ export default function MethodPage() {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeStage === STAGES.length - 1
                 ? "text-slate-400 cursor-not-allowed"
-                : "bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
+                : "bg-[#465133] hover:bg-[#384228] text-white shadow-xs"
             }`}
           >
             <span>

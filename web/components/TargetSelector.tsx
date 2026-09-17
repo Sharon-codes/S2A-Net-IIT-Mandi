@@ -264,7 +264,7 @@ export function TargetSelector({
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-text-muted" />
           <input
             type="text"
-            placeholder="Search 111 organs (e.g. uterus, liver, aorta, brain)..."
+            placeholder="Search 121 organs (e.g. uterus, liver, aorta, brain)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"

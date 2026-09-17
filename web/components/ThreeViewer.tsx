@@ -2,8 +2,12 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { createHumanMannequin } from "@/utils/mannequinBuilder";
-import { Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
+import {
+  createHumanMannequin,
+  createDepthSensorRig,
+  createPhotoBillboardRig,
+} from "@/utils/mannequinBuilder";
+import { Eye, EyeOff, Layers, RotateCcw, Sparkles, X, Focus } from "lucide-react";
 
 export interface TargetPrediction {
   target: string;
@@ -19,8 +23,9 @@ interface ThreeViewerProps {
   surfacePoints: number[][] | null; // (N, 3) in mm
   predictions: Record<string, TargetPrediction> | null;
   selectedTarget: string | null;
-  onSelectTarget?: (target: string) => void;
+  onSelectTarget?: (target: string | null) => void;
   coordinateFrame?: string;
+  modality?: "mesh" | "depth" | "rgb";
 }
 
 /**
@@ -39,6 +44,7 @@ export function ThreeViewer({
   predictions,
   selectedTarget,
   onSelectTarget,
+  modality = "mesh",
 }: ThreeViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -47,17 +53,30 @@ export function ThreeViewer({
   const pointsMeshRef = useRef<THREE.Points | null>(null);
   const targetGroupRef = useRef<THREE.Group | null>(null);
   const mannequinGroupRef = useRef<THREE.Group | null>(null);
+  const depthSensorGroupRef = useRef<THREE.Group | null>(null);
+  const photoBillboardGroupRef = useRef<THREE.Group | null>(null);
   const reqIdRef = useRef<number | null>(null);
 
+  // Interaction & Display State
   const [showMannequin, setShowMannequin] = useState(true);
+  const [showSensorRig, setShowSensorRig] = useState(true);
   const [showPoints, setShowPoints] = useState(true);
-  const [activePinHover, setActivePinHover] = useState<string | null>(null);
+  const [isolateSelected, setIsolateSelected] = useState(true);
+
+  // Sync refs for event listeners and animation loop
+  const selectedTargetRef = useRef(selectedTarget);
+  selectedTargetRef.current = selectedTarget;
+  const onSelectTargetRef = useRef(onSelectTarget);
+  onSelectTargetRef.current = onSelectTarget;
+  const isolateSelectedRef = useRef(isolateSelected);
+  isolateSelectedRef.current = isolateSelected;
 
   // Manual orbit controls variables (Spherical coordinates)
   const isDraggingRef = useRef(false);
+  const mouseDownPosRef = useRef({ x: 0, y: 0 });
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
   const cameraSphericalRef = useRef({ radius: 950, theta: Math.PI / 4, phi: Math.PI / 2.3 });
-  const targetCenterRef = useRef(new THREE.Vector3(0, 100, 0)); // Center camera on mid-torso
+  const targetCenterRef = useRef(new THREE.Vector3(0, 80, 0)); // Center camera on mid-torso
 
   const updateCamera = () => {
     if (!cameraRef.current) return;
@@ -69,7 +88,21 @@ export function ThreeViewer({
     cameraRef.current.lookAt(targetCenterRef.current);
   };
 
-  // Initialize Scene
+  // Smoothly center camera when a target organ is selected
+  useEffect(() => {
+    if (selectedTarget && predictions && predictions[selectedTarget]) {
+      const pred = predictions[selectedTarget];
+      const coords = pred.centroid_canonical_mm ?? pred.centroid_input_world_mm;
+      const [tx, ty, tz] = toThreeCoord(coords);
+      targetCenterRef.current.set(tx * 0.35, ty, tz * 0.35);
+      updateCamera();
+    } else {
+      targetCenterRef.current.set(0, 80, 0);
+      updateCamera();
+    }
+  }, [selectedTarget, predictions]);
+
+  // Initialize Three.js Scene
   useEffect(() => {
     if (!mountRef.current) return;
     const container = mountRef.current;
@@ -77,7 +110,7 @@ export function ThreeViewer({
     const height = container.clientHeight;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf6f7f2);
+    scene.background = new THREE.Color(0xf5f5f0); // Website background #F5F5F0
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000);
@@ -95,14 +128,14 @@ export function ThreeViewer({
     container.appendChild(renderer.domElement);
 
     // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.65);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.7);
     dirLight1.position.set(300, 600, 400);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0xced8c6, 0.4);
+    const dirLight2 = new THREE.DirectionalLight(0xb8c2ad, 0.45);
     dirLight2.position.set(-300, -200, -300);
     scene.add(dirLight2);
 
@@ -111,26 +144,65 @@ export function ThreeViewer({
     gridHelper.position.y = -520;
     scene.add(gridHelper);
 
-    // 1. Mannequin Group
+    // 1. Mannequin Group (For 3D Mesh Scans)
     const mannequin = createHumanMannequin();
     scene.add(mannequin);
     mannequinGroupRef.current = mannequin;
 
-    // 2. Anatomical Target Pins Group
+    // 2. Depth Sensor Rig Group (For RealSense / Azure Kinect Depth Frames)
+    const depthSensor = createDepthSensorRig();
+    scene.add(depthSensor);
+    depthSensorGroupRef.current = depthSensor;
+
+    // 3. Photo Billboard Rig Group (For Clinical Photographs)
+    const photoBillboard = createPhotoBillboardRig();
+    scene.add(photoBillboard);
+    photoBillboardGroupRef.current = photoBillboard;
+
+    // 4. Anatomical Target Pins Group
     const targetGroup = new THREE.Group();
     scene.add(targetGroup);
     targetGroupRef.current = targetGroup;
 
-    // Animation Loop
+    // Animation Loop with Smooth Periodic Pulsing for Selected Pin
     const animate = () => {
       reqIdRef.current = requestAnimationFrame(animate);
+      const time = performance.now() * 0.001;
+
+      if (targetGroupRef.current) {
+        targetGroupRef.current.children.forEach((child: any) => {
+          // Periodically pulsate selected organ sphere
+          if (child.userData?.isPulsing) {
+            const pulse = (Math.sin(time * 5.5) + 1.0) * 0.5; // 0 to 1
+            if (child.material && child.material.emissiveIntensity !== undefined) {
+              child.material.emissiveIntensity = 0.8 + 1.4 * pulse;
+            }
+            const s = 1.0 + 0.22 * pulse;
+            child.scale.set(s, s, s);
+          }
+          // Expanding radiating beacon halo shockwave
+          if (child.userData?.isBeacon) {
+            const beaconPhase = (time * 1.5) % 1.0;
+            const bScale = 1.0 + beaconPhase * 2.5;
+            child.scale.set(bScale, bScale, bScale);
+            if (child.material) {
+              child.material.opacity = Math.max(0, (1.0 - beaconPhase) * 0.75);
+            }
+          }
+        });
+      }
+
       renderer.render(scene, camera);
     };
     animate();
 
-    // Mouse Navigation Controls
+    // Raycaster for Direct 3D Pin Clicking
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
     const onMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true;
+      mouseDownPosRef.current = { x: e.clientX, y: e.clientY };
       previousMousePositionRef.current = { x: e.clientX, y: e.clientY };
     };
 
@@ -149,8 +221,32 @@ export function ThreeViewer({
       updateCamera();
     };
 
-    const onMouseUp = () => {
+    const onMouseUp = (e: MouseEvent) => {
       isDraggingRef.current = false;
+      const dist = Math.hypot(
+        e.clientX - mouseDownPosRef.current.x,
+        e.clientY - mouseDownPosRef.current.y
+      );
+
+      // If user clicked without dragging, raycast to select pin in 3D
+      if (dist < 6 && targetGroupRef.current && cameraRef.current && container) {
+        const rect = container.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, cameraRef.current);
+
+        const intersects = raycaster.intersectObjects(targetGroupRef.current.children, true);
+        if (intersects.length > 0) {
+          const hit = intersects.find((i) => i.object.userData?.targetName);
+          if (hit && hit.object.userData?.targetName) {
+            const organName = hit.object.userData.targetName;
+            if (onSelectTargetRef.current) {
+              const current = selectedTargetRef.current;
+              onSelectTargetRef.current(current === organName ? null : organName);
+            }
+          }
+        }
+      }
     };
 
     const onWheel = (e: WheelEvent) => {
@@ -171,11 +267,12 @@ export function ThreeViewer({
       renderer.setSize(w, h);
     };
 
-    // Touch Navigation Controls for Mobile Devices
+    // Touch Controls for Mobile Devices
     let initialPinchDist = 0;
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         isDraggingRef.current = true;
+        mouseDownPosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       } else if (e.touches.length === 2) {
         isDraggingRef.current = false;
@@ -242,14 +339,23 @@ export function ThreeViewer({
     };
   }, []);
 
-  // Toggle Mannequin visibility
+  // Update Geometry Visibility based on Active Input Modality
   useEffect(() => {
+    // 1. Mannequin only on 3D Mesh scans
     if (mannequinGroupRef.current) {
-      mannequinGroupRef.current.visible = showMannequin;
+      mannequinGroupRef.current.visible = modality === "mesh" && showMannequin;
     }
-  }, [showMannequin]);
+    // 2. RealSense Frustum only on 3D Depth Camera
+    if (depthSensorGroupRef.current) {
+      depthSensorGroupRef.current.visible = modality === "depth" && showSensorRig;
+    }
+    // 3. Clinical Measurement Backdrop only on RGB Pictures
+    if (photoBillboardGroupRef.current) {
+      photoBillboardGroupRef.current.visible = modality === "rgb" && showSensorRig;
+    }
+  }, [modality, showMannequin, showSensorRig]);
 
-  // Update Surface Point Cloud (Floating points around mannequin)
+  // Update Surface Point Cloud (Dense 4,096 points)
   useEffect(() => {
     if (!sceneRef.current) return;
     const scene = sceneRef.current;
@@ -268,7 +374,7 @@ export function ThreeViewer({
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
-    // Check bounding box to ensure point cloud is aligned with canonical frame
+    // Anatomical alignment
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
@@ -284,10 +390,8 @@ export function ThreeViewer({
     }
 
     const midX = (minX + maxX) / 2;
-    const midY = (minY + maxY) / 2; // Medical AP
-    const midZ = (minZ + maxZ) / 2; // Medical SI
+    const midY = (minY + maxY) / 2;
 
-    // Anatomical alignment: lock skull apex at +375mm to align cleanly with mannequin
     let shiftX = 0;
     let shiftY = 0;
     let shiftZ = 0;
@@ -304,28 +408,28 @@ export function ThreeViewer({
       const cy = p[1] - shiftY;
       const cz = p[2] - shiftZ;
 
-      // Map medical (X, Y, Z) to Three.js upright (X: X, Y: Z, Z: Y)
       const [tx, ty, tz] = toThreeCoord([cx, cy, cz]);
       positions[i * 3 + 0] = tx;
       positions[i * 3 + 1] = ty;
       positions[i * 3 + 2] = tz;
 
-      // Luminous scientific gradient: Head (bright cyan) -> Torso (sky blue) -> Lower (slate)
+      // Olive-green harmonious scientific gradient:
+      // Cranial (emerald) -> Torso (primary olive) -> Pelvis (slate-olive)
       if (ty > 260) {
         // Head / Brain / Cranium region
-        colors[i * 3 + 0] = 0.22; // R
-        colors[i * 3 + 1] = 0.74; // G
-        colors[i * 3 + 2] = 0.97; // B (Bright Cyan #38bdf8)
+        colors[i * 3 + 0] = 0.35; // R
+        colors[i * 3 + 1] = 0.65; // G
+        colors[i * 3 + 2] = 0.55; // B
       } else if (ty > 60) {
         // Thorax & Upper Abdomen
-        colors[i * 3 + 0] = 0.35;
-        colors[i * 3 + 1] = 0.65;
-        colors[i * 3 + 2] = 0.85;
+        colors[i * 3 + 0] = 0.40;
+        colors[i * 3 + 1] = 0.48;
+        colors[i * 3 + 2] = 0.32;
       } else {
         // Pelvis & Lower Extremities
         colors[i * 3 + 0] = 0.45;
-        colors[i * 3 + 1] = 0.58;
-        colors[i * 3 + 2] = 0.72;
+        colors[i * 3 + 1] = 0.52;
+        colors[i * 3 + 2] = 0.42;
       }
     }
 
@@ -345,6 +449,7 @@ export function ThreeViewer({
   }, [surfacePoints, showPoints]);
 
   // Update Target Centroid Pins & Uncertainty Halos
+  // When isolateSelected is true, only the selected organ is shown!
   useEffect(() => {
     if (!targetGroupRef.current) return;
     const group = targetGroupRef.current;
@@ -352,7 +457,13 @@ export function ThreeViewer({
     while (group.children.length > 0) {
       const child = group.children[0] as any;
       if (child.geometry) child.geometry.dispose();
-      if (child.material) child.material.dispose();
+      if (child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m: any) => m.dispose());
+        } else {
+          child.material.dispose();
+        }
+      }
       group.remove(child);
     }
 
@@ -363,78 +474,105 @@ export function ThreeViewer({
       const [tx, ty, tz] = toThreeCoord(rawCoords);
       const isSelected = selectedTarget === name;
 
-      let pinColor = 0x4e774a; // Low unc
+      // When isolateSelected is active and an organ is selected, only show the selected organ!
+      const shouldDisplay = !isolateSelected || !selectedTarget || isSelected;
+      if (!shouldDisplay) return;
+
+      // Color scheme:
+      // When selected: RADIANT AMBER / GOLD (0xFFB800) with glowing pulsating emissive!
+      // Unselected: Low unc (0x4E774A), Moderate (0xC88A2D), High (0xB34A3E)
+      let pinColor = 0x4e774a;
       if (pred.uncertainty_level === "moderate") pinColor = 0xc88a2d;
       if (pred.uncertainty_level === "high") pinColor = 0xb34a3e;
-      if (isSelected) pinColor = 0x1f241b;
+      if (isSelected) pinColor = 0xffb800; // Radiant Gold/Amber
 
-      // 1. Organ Centroid Glowing Sphere
-      const sphereGeo = new THREE.SphereGeometry(isSelected ? 11 : 8, 24, 24);
+      // 1. Organ Centroid Sphere (Interactive clickable mesh)
+      const sphereGeo = new THREE.SphereGeometry(isSelected ? 13 : 8, 24, 24);
       const sphereMat = new THREE.MeshStandardMaterial({
         color: pinColor,
         roughness: 0.15,
-        metalness: 0.6,
-        emissive: pinColor,
-        emissiveIntensity: isSelected ? 0.4 : 0.15,
+        metalness: 0.5,
+        emissive: isSelected ? 0xffaa00 : pinColor,
+        emissiveIntensity: isSelected ? 0.95 : 0.18,
       });
       const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
       sphereMesh.position.set(tx, ty, tz);
+      sphereMesh.userData = {
+        targetName: name,
+        isTargetPin: true,
+        isPulsing: isSelected,
+      };
       group.add(sphereMesh);
 
-      // 2. Wireframe Uncertainty Radius Sphere
+      // 2. If Selected: Radiant Expanding Beacon Halo (Periodical Shockwave)
+      if (isSelected) {
+        const beaconGeo = new THREE.SphereGeometry(15, 18, 18);
+        const beaconMat = new THREE.MeshBasicMaterial({
+          color: 0xffb800,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.75,
+        });
+        const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+        beaconMesh.position.set(tx, ty, tz);
+        beaconMesh.userData = {
+          targetName: name,
+          isBeacon: true,
+        };
+        group.add(beaconMesh);
+      }
+
+      // 3. Wireframe Uncertainty Radius Sphere
       const radius = Math.max(9, pred.uncertainty_mm);
       const haloGeo = new THREE.SphereGeometry(radius, 16, 16);
       const haloMat = new THREE.MeshBasicMaterial({
         color: pinColor,
         wireframe: true,
         transparent: true,
-        opacity: isSelected ? 0.5 : 0.25,
+        opacity: isSelected ? 0.6 : 0.22,
       });
       const haloMesh = new THREE.Mesh(haloGeo, haloMat);
       haloMesh.position.set(tx, ty, tz);
+      haloMesh.userData = { targetName: name };
       group.add(haloMesh);
 
-      // 3. Drop Indicator Stalk to Base Plane
+      // 4. Drop Indicator Stalk to Base Plane
       const lineMat = new THREE.LineBasicMaterial({
         color: pinColor,
         transparent: true,
-        opacity: 0.35,
+        opacity: isSelected ? 0.75 : 0.3,
       });
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(tx, ty, tz),
         new THREE.Vector3(tx, -520, tz),
       ]);
       const line = new THREE.Line(lineGeo, lineMat);
+      line.userData = { targetName: name };
       group.add(line);
     });
-  }, [predictions, selectedTarget]);
+  }, [predictions, selectedTarget, isolateSelected]);
 
   const setViewPreset = (preset: "iso" | "coronal_front" | "coronal_back" | "sagittal" | "axial") => {
     if (preset === "coronal_front") {
-      // Front AP: theta = 0, phi = 90 deg
       cameraSphericalRef.current = { radius: 950, theta: 0, phi: Math.PI / 2 };
     } else if (preset === "coronal_back") {
-      // Back PA: theta = 180 deg, phi = 90 deg
       cameraSphericalRef.current = { radius: 950, theta: Math.PI, phi: Math.PI / 2 };
     } else if (preset === "sagittal") {
-      // Side: theta = 90 deg, phi = 90 deg
       cameraSphericalRef.current = { radius: 950, theta: Math.PI / 2, phi: Math.PI / 2 };
     } else if (preset === "axial") {
-      // Top down: phi = small
       cameraSphericalRef.current = { radius: 1050, theta: 0, phi: 0.08 };
     } else {
-      // Perspective
       cameraSphericalRef.current = { radius: 950, theta: Math.PI / 4, phi: Math.PI / 2.4 };
     }
     updateCamera();
   };
 
   return (
-    <div className="relative w-full h-full min-h-[520px] rounded-xl overflow-hidden border border-border bg-[#F6F7F2] shadow-inner">
+    <div className="relative w-full h-full min-h-[540px] rounded-2xl overflow-hidden border border-border bg-[#F5F5F0] shadow-inner flex flex-col">
       {/* 3D Canvas Mounting Element */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none" />
+      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none flex-1" />
 
-      {/* Preset Viewport Buttons Top Bar */}
+      {/* Preset Viewport Buttons Top-Right */}
       <div className="absolute top-3 right-3 flex flex-wrap max-w-[210px] sm:max-w-none justify-end items-center gap-1 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-text-muted z-10">
         <span className="text-[10px] uppercase font-mono px-1 hidden sm:inline">View:</span>
         <button
@@ -469,44 +607,110 @@ export function ThreeViewer({
         </button>
       </div>
 
-      {/* Visibility Toggles Top-Left */}
-      <div className="absolute top-3 left-3 flex items-center gap-1 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
-        <button
-          onClick={() => setShowMannequin(!showMannequin)}
-          className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition-colors ${
-            showMannequin ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
-          }`}
-        >
-          <span>🧍 Mannequin</span>
-        </button>
+      {/* Modality & Visibility Toggles Top-Left */}
+      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
+        {modality === "mesh" ? (
+          <button
+            onClick={() => setShowMannequin(!showMannequin)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+              showMannequin ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+            }`}
+            title="Toggle anatomical mannequin silhouette"
+          >
+            <span>🧍 Mannequin</span>
+          </button>
+        ) : modality === "depth" ? (
+          <button
+            onClick={() => setShowSensorRig(!showSensorRig)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+              showSensorRig ? "bg-sky-600 text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+            }`}
+            title="Toggle Intel RealSense depth sensor frustum"
+          >
+            <span>📹 Depth Sensor</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowSensorRig(!showSensorRig)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+              showSensorRig ? "bg-amber-600 text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
+            }`}
+            title="Toggle clinical photo measurement backdrop"
+          >
+            <span>📸 Studio Grid</span>
+          </button>
+        )}
+
         <button
           onClick={() => setShowPoints(!showPoints)}
-          className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition-colors ${
-            showPoints ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
+          className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+            showPoints ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-text-muted"
           }`}
+          title="Toggle 4,096 surface point cloud"
         >
-          <span>✨ Cloud</span>
+          <span>✨ Cloud (4,096)</span>
         </button>
       </div>
 
+      {/* Selected Target Organ Focus HUD Pill (Appears when an organ is selected) */}
+      {selectedTarget && (
+        <div className="absolute top-14 left-3 flex flex-wrap items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl border border-amber-400 shadow-md text-xs z-10 animate-fade-in">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
+            <span className="font-bold text-slate-900 capitalize">
+              {selectedTarget.replace(/_/g, " ")}
+            </span>
+          </div>
+
+          <div className="h-3 w-px bg-slate-200 mx-0.5" />
+
+          {/* Toggle: Isolate Single Point vs Show All 121 Points */}
+          <button
+            onClick={() => setIsolateSelected(!isolateSelected)}
+            className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all flex items-center gap-1 ${
+              isolateSelected
+                ? "bg-amber-500 text-white shadow-xs"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+            title={isolateSelected ? "Click to show all 121 landmarks" : "Click to isolate only this selected organ"}
+          >
+            {isolateSelected ? "👁️ Isolated Focus" : "🌐 Show All (121)"}
+          </button>
+
+          {/* Clear Selection Button */}
+          <button
+            onClick={() => onSelectTarget?.(null)}
+            className="px-1.5 py-0.5 rounded text-[11px] font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors flex items-center gap-0.5"
+            title="Deselect organ"
+          >
+            <X className="w-3 h-3" />
+            <span>Clear</span>
+          </button>
+        </div>
+      )}
+
       {/* Legend Bottom-Left */}
-      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-lg border border-border shadow-xs text-xs text-text-muted flex flex-col gap-1 z-10">
+      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3 py-2 rounded-xl border border-border shadow-xs text-xs text-text-muted flex flex-col gap-1 z-10">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-green" />
-            <span>Low Unc (&le; 5mm)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFB800] ring-2 ring-amber-400/50 animate-pulse" />
+            <span className="font-semibold text-slate-900">Selected (Pulsing Glow)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-amber" />
-            <span>Moderate (5-15mm)</span>
+            <span className="w-2 h-2 rounded-full bg-accent-green" />
+            <span>Low (&le; 5mm)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent-red" />
+            <span className="w-2 h-2 rounded-full bg-accent-amber" />
+            <span>Mod (5-15mm)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-accent-red" />
             <span>High (&gt; 15mm)</span>
           </div>
         </div>
         <span className="text-[10px] text-text-muted/80">
-          Interactive 3D: Drag to rotate &bull; Scroll to zoom &bull; Standard anatomical coordinates (mm)
+          Click pin to focus &bull; Drag to rotate 360° &bull; Scroll to zoom
         </span>
       </div>
     </div>

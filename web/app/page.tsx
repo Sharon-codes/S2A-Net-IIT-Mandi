@@ -4,7 +4,7 @@ import { RoboticArmScanner } from "@/components/RoboticArmScanner";
 
 export default function Home() {
   const metrics = [
-    { label: "Anatomical Targets", value: "111", note: "Female Reproductive, Cranial, Thorax & Spine" },
+    { label: "Anatomical Targets", value: "121", note: "Female Reproductive, Cranial, Thorax & Spine" },
     { label: "Internal MRE", value: "23.34 mm", note: "3-Seed Ensemble Consensus" },
     { label: "Brain Error (Retrained)", value: "5.5 mm", note: "Phase 16 Whole-Body Model on CT-ORG" },
     { label: "Inference Latency", value: "11.3 FPS", note: "88 ms End-to-End GPU Latency" },
@@ -43,7 +43,7 @@ export default function Home() {
             href="/targets"
             className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-900 font-semibold text-base shadow-xs transition-colors"
           >
-            111 Target Catalog
+            121 Target Catalog
           </Link>
           <Link
             href="/team"

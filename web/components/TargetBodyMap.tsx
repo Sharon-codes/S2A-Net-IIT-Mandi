@@ -14,14 +14,14 @@ interface TargetBodyMapProps {
 }
 
 const SYSTEM_OPTIONS = [
-  { id: "all", label: "All 111 Targets", count: 111, color: "#475569" },
+  { id: "all", label: "All 121 Targets", count: 121, color: "#475569" },
   { id: "cranial", label: "Cranial", count: 2, color: "#06b6d4" },
   { id: "thoracic", label: "Thorax", count: 9, color: "#f43f5e" },
   { id: "vascular", label: "Vascular", count: 17, color: "#ef4444" },
   { id: "abdominal", label: "Abdomen", count: 14, color: "#10b981" },
-  { id: "spine", label: "Spine & Vertebrae", count: 28, color: "#f59e0b" },
   { id: "pelvis", label: "Pelvis & Reproductive", count: 19, color: "#d946ef" },
-  { id: "ribs", label: "Ribs & Skeleton", count: 22, color: "#14b8a6" },
+  { id: "spine", label: "Spine & Vertebrae", count: 28, color: "#f59e0b" },
+  { id: "ribs", label: "Ribs & Skeleton", count: 32, color: "#14b8a6" },
 ];
 
 export function TargetBodyMap({
@@ -448,7 +448,7 @@ export function TargetBodyMap({
         <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-2xl border border-slate-200 shadow-xs text-[11px] sm:text-xs text-slate-600 z-10 flex items-center gap-2">
           <Compass className="w-4 h-4 text-primary shrink-0" />
           <span>
-            <strong>111 Anatomical Targets:</strong> 3D pins show canonical coordinates including female reproductive structures. Drag to orbit 360°.
+            <strong>121 Anatomical Targets:</strong> 3D pins show canonical coordinates including female reproductive structures. Drag to orbit 360°.
           </span>
         </div>
       </div>

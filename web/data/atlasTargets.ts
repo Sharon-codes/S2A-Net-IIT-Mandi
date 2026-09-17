@@ -13,14 +13,536 @@ export interface AtlasTargetDef {
 
 export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   {
-    "id": "liver",
+    "id": "brain",
+    "slot": 1,
+    "name": "Brain",
+    "category": "Cranial & Neuroanatomy",
+    "system": "cranial",
+    "coords": [
+      -2.9,
+      52.0,
+      350.0
+    ],
+    "color": 440020,
+    "hex": "#06b6d4",
+    "side": "anterior",
+    "synonyms": [
+      "cerebrum",
+      "encephalon",
+      "cranial cavity",
+      "brainstem"
+    ]
+  },
+  {
+    "id": "skull",
+    "slot": 2,
+    "name": "Skull",
+    "category": "Cranial & Neuroanatomy",
+    "system": "cranial",
+    "coords": [
+      0.82,
+      110.86,
+      320.0
+    ],
+    "color": 440020,
+    "hex": "#06b6d4",
+    "side": "superior",
+    "synonyms": [
+      "cranium",
+      "calvarium",
+      "neurocranium"
+    ]
+  },
+  {
+    "id": "heart",
+    "slot": 3,
+    "name": "Heart",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      -25.8,
+      85.0,
+      75.8
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "cardiac organ",
+      "cor",
+      "myocardium"
+    ]
+  },
+  {
+    "id": "trachea",
     "slot": 4,
+    "name": "Trachea",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      3.22,
+      52.78,
+      164.39
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "windpipe",
+      "respiratory tube"
+    ]
+  },
+  {
+    "id": "esophagus",
+    "slot": 5,
+    "name": "Esophagus",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      -8.5,
+      42.87,
+      99.79
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "posterior",
+    "synonyms": [
+      "gullet",
+      "alimentary canal"
+    ]
+  },
+  {
+    "id": "thyroid_gland",
+    "slot": 6,
+    "name": "Thyroid Gland",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      1.4,
+      79.49,
+      215.77
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "thyroid",
+      "glandula thyroidea"
+    ]
+  },
+  {
+    "id": "lung_upper_lobe_left",
+    "slot": 7,
+    "name": "Left Upper Lung Lobe",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      -79.44,
+      72.83,
+      116.58
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "LUL",
+      "left upper lung"
+    ]
+  },
+  {
+    "id": "lung_lower_lobe_left",
+    "slot": 8,
+    "name": "Left Lower Lung Lobe",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      -73.55,
+      11.25,
+      74.61
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "posterior",
+    "synonyms": [
+      "LLL",
+      "left lower lung"
+    ]
+  },
+  {
+    "id": "lung_upper_lobe_right",
+    "slot": 9,
+    "name": "Right Upper Lung Lobe",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      56.72,
+      67.26,
+      137.4
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "RUL",
+      "right upper lung"
+    ]
+  },
+  {
+    "id": "lung_middle_lobe_right",
+    "slot": 10,
+    "name": "Right Middle Lung Lobe",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      71.21,
+      99.15,
+      80.52
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "anterior",
+    "synonyms": [
+      "RML",
+      "right middle lung"
+    ]
+  },
+  {
+    "id": "lung_lower_lobe_right",
+    "slot": 11,
+    "name": "Right Lower Lung Lobe",
+    "category": "Thoracic & Respiratory",
+    "system": "thoracic",
+    "coords": [
+      66.74,
+      14.55,
+      74.16
+    ],
+    "color": 16007006,
+    "hex": "#f43f5e",
+    "side": "posterior",
+    "synonyms": [
+      "RLL",
+      "right lower lung"
+    ]
+  },
+  {
+    "id": "aorta",
+    "slot": 12,
+    "name": "Aorta",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -12.0,
+      28.0,
+      45.0
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "thoracic aorta",
+      "abdominal aorta"
+    ]
+  },
+  {
+    "id": "superior_vena_cava",
+    "slot": 13,
+    "name": "Superior Vena Cava",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      24.87,
+      68.95,
+      127.96
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "SVC",
+      "precava"
+    ]
+  },
+  {
+    "id": "inferior_vena_cava",
+    "slot": 14,
+    "name": "Inferior Vena Cava",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      20.29,
+      58.93,
+      -11.41
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "IVC",
+      "postcava"
+    ]
+  },
+  {
+    "id": "pulmonary_vein",
+    "slot": 15,
+    "name": "Pulmonary Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -2.54,
+      40.66,
+      97.75
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "venae pulmonales"
+    ]
+  },
+  {
+    "id": "brachiocephalic_trunk",
+    "slot": 16,
+    "name": "Brachiocephalic Trunk",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      6.42,
+      76.85,
+      176.12
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "innominate artery"
+    ]
+  },
+  {
+    "id": "subclavian_artery_right",
+    "slot": 17,
+    "name": "Right Subclavian Artery",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      43.54,
+      61.42,
+      201.01
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "right subclavian"
+    ]
+  },
+  {
+    "id": "subclavian_artery_left",
+    "slot": 18,
+    "name": "Left Subclavian Artery",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -38.7,
+      57.55,
+      195.23
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "left subclavian"
+    ]
+  },
+  {
+    "id": "common_carotid_artery_right",
+    "slot": 19,
+    "name": "Right Common Carotid",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      20.59,
+      72.5,
+      213.59
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "right carotid"
+    ]
+  },
+  {
+    "id": "common_carotid_artery_left",
+    "slot": 20,
+    "name": "Left Common Carotid",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -16.71,
+      69.58,
+      199.82
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "left carotid"
+    ]
+  },
+  {
+    "id": "brachiocephalic_vein_left",
+    "slot": 21,
+    "name": "Left Brachiocephalic Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -6.53,
+      84.29,
+      173.6
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "left innominate vein"
+    ]
+  },
+  {
+    "id": "brachiocephalic_vein_right",
+    "slot": 22,
+    "name": "Right Brachiocephalic Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      29.13,
+      74.42,
+      178.37
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "right innominate vein"
+    ]
+  },
+  {
+    "id": "atrial_appendage_left",
+    "slot": 23,
+    "name": "Left Atrial Appendage",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -35.67,
+      63.23,
+      103.21
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "left auricle"
+    ]
+  },
+  {
+    "id": "portal_vein_and_splenic_vein",
+    "slot": 24,
+    "name": "Portal & Splenic Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      6.16,
+      73.71,
+      -14.51
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "portal venous confluence"
+    ]
+  },
+  {
+    "id": "iliac_artery_left",
+    "slot": 25,
+    "name": "Left Iliac Artery",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -40.0,
+      67.58,
+      -179.06
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "left common iliac artery"
+    ]
+  },
+  {
+    "id": "iliac_artery_right",
+    "slot": 26,
+    "name": "Right Iliac Artery",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      37.65,
+      70.07,
+      -181.37
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "anterior",
+    "synonyms": [
+      "right common iliac artery"
+    ]
+  },
+  {
+    "id": "iliac_vena_left",
+    "slot": 27,
+    "name": "Left Iliac Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      -35.4,
+      57.78,
+      -187.69
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "left common iliac vein"
+    ]
+  },
+  {
+    "id": "iliac_vena_right",
+    "slot": 28,
+    "name": "Right Iliac Vein",
+    "category": "Cardiovascular & Major Vessels",
+    "system": "vascular",
+    "coords": [
+      40.96,
+      60.56,
+      -191.55
+    ],
+    "color": 15680580,
+    "hex": "#ef4444",
+    "side": "posterior",
+    "synonyms": [
+      "right common iliac vein"
+    ]
+  },
+  {
+    "id": "liver",
+    "slot": 29,
     "name": "Liver",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
-      63.13,
-      74.22,
+      63.1,
+      72.0,
       5.2
     ],
     "color": 1096065,
@@ -33,13 +555,13 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "spleen",
-    "slot": 3,
+    "slot": 30,
     "name": "Spleen",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
       -94.56,
-      21.02,
+      32.0,
       0.4
     ],
     "color": 1096065,
@@ -52,14 +574,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "pancreas",
-    "slot": 6,
+    "slot": 31,
     "name": "Pancreas",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
-      -18.25,
-      77.32,
-      -32.19
+      8.0,
+      50.0,
+      15.0
     ],
     "color": 1096065,
     "hex": "#10b981",
@@ -71,17 +593,17 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "gallbladder",
-    "slot": 5,
+    "slot": 32,
     "name": "Gallbladder",
-    "category": "Pelvis, Urinary & Musculature",
-    "system": "pelvis",
+    "category": "Abdominal & Digestive",
+    "system": "abdominal",
     "coords": [
       69.49,
       99.77,
       -32.44
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 1096065,
+    "hex": "#10b981",
     "side": "anterior",
     "synonyms": [
       "cholecyst",
@@ -90,7 +612,7 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "stomach",
-    "slot": 15,
+    "slot": 33,
     "name": "Stomach",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
@@ -109,7 +631,7 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "duodenum",
-    "slot": 16,
+    "slot": 34,
     "name": "Duodenum",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
@@ -127,7 +649,7 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "small_bowel",
-    "slot": 17,
+    "slot": 35,
     "name": "Small Bowel",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
@@ -147,7 +669,7 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "colon",
-    "slot": 53,
+    "slot": 36,
     "name": "Colon",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
@@ -166,14 +688,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "kidney_right",
-    "slot": 1,
-    "name": "Kidney Right",
+    "slot": 37,
+    "name": "Right Kidney",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
-      65.58,
-      23.35,
-      -54.76
+      68.5,
+      25.0,
+      -49.5
     ],
     "color": 1096065,
     "hex": "#10b981",
@@ -185,14 +707,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "kidney_left",
-    "slot": 2,
-    "name": "Kidney Left",
+    "slot": 38,
+    "name": "Left Kidney",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
-      -68.45,
-      22.1,
-      -49.51
+      -68.5,
+      25.0,
+      -49.5
     ],
     "color": 1096065,
     "hex": "#10b981",
@@ -204,8 +726,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "adrenal_gland_right",
-    "slot": 7,
-    "name": "Adrenal Gland Right",
+    "slot": 39,
+    "name": "Right Adrenal Gland",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
@@ -215,15 +737,15 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1096065,
     "hex": "#10b981",
-    "side": "central",
+    "side": "posterior",
     "synonyms": [
       "right suprarenal gland"
     ]
   },
   {
     "id": "adrenal_gland_left",
-    "slot": 8,
-    "name": "Adrenal Gland Left",
+    "slot": 40,
+    "name": "Left Adrenal Gland",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
@@ -233,15 +755,15 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1096065,
     "hex": "#10b981",
-    "side": "central",
+    "side": "posterior",
     "synonyms": [
       "left suprarenal gland"
     ]
   },
   {
     "id": "kidney_cyst_left",
-    "slot": 22,
-    "name": "Kidney Cyst Left",
+    "slot": 41,
+    "name": "Left Kidney Cyst",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
@@ -258,8 +780,8 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "kidney_cyst_right",
-    "slot": 23,
-    "name": "Kidney Cyst Right",
+    "slot": 42,
+    "name": "Right Kidney Cyst",
     "category": "Abdominal & Digestive",
     "system": "abdominal",
     "coords": [
@@ -275,499 +797,18 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ]
   },
   {
-    "id": "heart",
-    "slot": 49,
-    "name": "Heart",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      -25.8,
-      87.16,
-      75.84
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "anterior",
-    "synonyms": [
-      "cardiac organ",
-      "cor",
-      "myocardium"
-    ]
-  },
-  {
-    "id": "trachea",
-    "slot": 48,
-    "name": "Trachea",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      3.22,
-      52.78,
-      164.39
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "central",
-    "synonyms": [
-      "windpipe",
-      "respiratory tube"
-    ]
-  },
-  {
-    "id": "esophagus",
-    "slot": 14,
-    "name": "Esophagus",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      -8.5,
-      42.87,
-      99.79
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "central",
-    "synonyms": [
-      "gullet",
-      "alimentary canal"
-    ]
-  },
-  {
-    "id": "thyroid_gland",
-    "slot": 47,
-    "name": "Thyroid Gland",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      1.4,
-      79.49,
-      215.77
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "anterior",
-    "synonyms": [
-      "thyroid",
-      "glandula thyroidea"
-    ]
-  },
-  {
-    "id": "lung_upper_lobe_left",
-    "slot": 9,
-    "name": "Lung Upper Lobe Left",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      -79.44,
-      72.83,
-      116.58
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "anterior",
-    "synonyms": [
-      "LUL",
-      "left upper lung"
-    ]
-  },
-  {
-    "id": "lung_lower_lobe_left",
-    "slot": 10,
-    "name": "Lung Lower Lobe Left",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      -73.55,
-      11.25,
-      74.61
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "central",
-    "synonyms": [
-      "LLL",
-      "left lower lung"
-    ]
-  },
-  {
-    "id": "lung_upper_lobe_right",
-    "slot": 11,
-    "name": "Lung Upper Lobe Right",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      56.72,
-      67.26,
-      137.4
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "anterior",
-    "synonyms": [
-      "RUL",
-      "right upper lung"
-    ]
-  },
-  {
-    "id": "lung_middle_lobe_right",
-    "slot": 12,
-    "name": "Lung Middle Lobe Right",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      71.21,
-      99.15,
-      80.52
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "anterior",
-    "synonyms": [
-      "RML",
-      "right middle lung"
-    ]
-  },
-  {
-    "id": "lung_lower_lobe_right",
-    "slot": 13,
-    "name": "Lung Lower Lobe Right",
-    "category": "Thoracic & Respiratory",
-    "system": "thoracic",
-    "coords": [
-      66.74,
-      14.55,
-      74.16
-    ],
-    "color": 16007006,
-    "hex": "#f43f5e",
-    "side": "central",
-    "synonyms": [
-      "RLL",
-      "right lower lung"
-    ]
-  },
-  {
-    "id": "aorta",
-    "slot": 50,
-    "name": "Aorta",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -11.61,
-      48.93,
-      58.28
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "central",
-    "synonyms": [
-      "thoracic aorta",
-      "abdominal aorta"
-    ]
-  },
-  {
-    "id": "superior_vena_cava",
-    "slot": 61,
-    "name": "Superior Vena Cava",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      24.87,
-      68.95,
-      127.96
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "SVC",
-      "precava"
-    ]
-  },
-  {
-    "id": "inferior_vena_cava",
-    "slot": 62,
-    "name": "Inferior Vena Cava",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      20.29,
-      58.93,
-      -11.41
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "central",
-    "synonyms": [
-      "IVC",
-      "postcava"
-    ]
-  },
-  {
-    "id": "pulmonary_vein",
-    "slot": 51,
-    "name": "Pulmonary Vein",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -2.54,
-      40.66,
-      97.75
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "central",
-    "synonyms": [
-      "venae pulmonales"
-    ]
-  },
-  {
-    "id": "brachiocephalic_trunk",
-    "slot": 52,
-    "name": "Brachiocephalic Trunk",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      6.42,
-      76.85,
-      176.12
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "innominate artery"
-    ]
-  },
-  {
-    "id": "subclavian_artery_right",
-    "slot": 54,
-    "name": "Subclavian Artery Right",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      43.54,
-      61.42,
-      201.01
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "right subclavian"
-    ]
-  },
-  {
-    "id": "subclavian_artery_left",
-    "slot": 55,
-    "name": "Subclavian Artery Left",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -38.7,
-      57.55,
-      195.23
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "central",
-    "synonyms": [
-      "left subclavian"
-    ]
-  },
-  {
-    "id": "common_carotid_artery_right",
-    "slot": 56,
-    "name": "Common Carotid Artery Right",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      20.59,
-      72.5,
-      213.59
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "right carotid"
-    ]
-  },
-  {
-    "id": "common_carotid_artery_left",
-    "slot": 57,
-    "name": "Common Carotid Artery Left",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -16.71,
-      69.58,
-      199.82
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "left carotid"
-    ]
-  },
-  {
-    "id": "brachiocephalic_vein_left",
-    "slot": 58,
-    "name": "Brachiocephalic Vein Left",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -6.53,
-      84.29,
-      173.6
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "left innominate vein"
-    ]
-  },
-  {
-    "id": "brachiocephalic_vein_right",
-    "slot": 59,
-    "name": "Brachiocephalic Vein Right",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      29.13,
-      74.42,
-      178.37
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "right innominate vein"
-    ]
-  },
-  {
-    "id": "atrial_appendage_left",
-    "slot": 60,
-    "name": "Atrial Appendage Left",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -35.67,
-      63.23,
-      103.21
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "left auricle"
-    ]
-  },
-  {
-    "id": "portal_vein_and_splenic_vein",
-    "slot": 63,
-    "name": "Portal Vein And Splenic Vein",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      6.16,
-      73.71,
-      -14.51
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "portal venous confluence"
-    ]
-  },
-  {
-    "id": "iliac_artery_left",
-    "slot": 64,
-    "name": "Iliac Artery Left",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      -40.0,
-      67.58,
-      -179.06
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "left common iliac artery"
-    ]
-  },
-  {
-    "id": "iliac_artery_right",
-    "slot": 65,
-    "name": "Iliac Artery Right",
-    "category": "Cardiovascular & Major Vessels",
-    "system": "vascular",
-    "coords": [
-      37.65,
-      70.07,
-      -181.37
-    ],
-    "color": 15680580,
-    "hex": "#ef4444",
-    "side": "anterior",
-    "synonyms": [
-      "right common iliac artery"
-    ]
-  },
-  {
-    "id": "iliac_vena_left",
-    "slot": 66,
-    "name": "Iliac Vena Left",
-    "category": "Abdominal & Digestive",
-    "system": "abdominal",
-    "coords": [
-      -35.4,
-      57.78,
-      -187.69
-    ],
-    "color": 1096065,
-    "hex": "#10b981",
-    "side": "central",
-    "synonyms": [
-      "left common iliac vein"
-    ]
-  },
-  {
-    "id": "iliac_vena_right",
-    "slot": 67,
-    "name": "Iliac Vena Right",
-    "category": "Abdominal & Digestive",
-    "system": "abdominal",
-    "coords": [
-      40.96,
-      60.56,
-      -191.55
-    ],
-    "color": 1096065,
-    "hex": "#10b981",
-    "side": "anterior",
-    "synonyms": [
-      "right common iliac vein"
-    ]
-  },
-  {
     "id": "urinary_bladder",
-    "slot": 20,
+    "slot": 43,
     "name": "Urinary Bladder",
-    "category": "Pelvis, Urinary & Musculature",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
-      1.33,
-      62.23,
-      -244.09
+      0.0,
+      46.0,
+      -180.0
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "anterior",
     "synonyms": [
       "vesica urinaria",
@@ -776,35 +817,117 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "prostate",
-    "slot": 21,
-    "name": "Prostate",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 44,
+    "name": "Prostate Gland",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
-      -1.64,
-      35.87,
-      -273.35
+      0.0,
+      35.0,
+      -170.0
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "central",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "anterior",
     "synonyms": [
-      "prostatic gland"
+      "prostatic gland",
+      "male reproductive"
+    ]
+  },
+  {
+    "id": "uterus",
+    "slot": 45,
+    "name": "Uterus",
+    "category": "Pelvis, Reproductive & Lower Girdle",
+    "system": "pelvis",
+    "coords": [
+      0.0,
+      40.0,
+      -145.0
+    ],
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "anterior",
+    "synonyms": [
+      "womb",
+      "uterine body",
+      "myometrium",
+      "female pelvis"
+    ]
+  },
+  {
+    "id": "ovary_left",
+    "slot": 46,
+    "name": "Left Ovary",
+    "category": "Pelvis, Reproductive & Lower Girdle",
+    "system": "pelvis",
+    "coords": [
+      -35.0,
+      38.0,
+      -150.0
+    ],
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
+    "synonyms": [
+      "left adnexa",
+      "ovarium sinistrum",
+      "female gonad"
+    ]
+  },
+  {
+    "id": "ovary_right",
+    "slot": 47,
+    "name": "Right Ovary",
+    "category": "Pelvis, Reproductive & Lower Girdle",
+    "system": "pelvis",
+    "coords": [
+      35.0,
+      38.0,
+      -150.0
+    ],
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
+    "synonyms": [
+      "right adnexa",
+      "ovarium dextrum",
+      "female gonad"
+    ]
+  },
+  {
+    "id": "vagina",
+    "slot": 48,
+    "name": "Vagina",
+    "category": "Pelvis, Reproductive & Lower Girdle",
+    "system": "pelvis",
+    "coords": [
+      0.0,
+      30.0,
+      -200.0
+    ],
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "anterior",
+    "synonyms": [
+      "vaginal canal",
+      "female birth canal",
+      "colpos"
     ]
   },
   {
     "id": "sacrum",
-    "slot": 24,
+    "slot": 49,
     "name": "Sacrum",
-    "category": "Pelvis, Urinary & Musculature",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       0.55,
       -14.18,
       -181.08
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "posterior",
     "synonyms": [
       "sacral bone",
@@ -813,55 +936,55 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "hip_left",
-    "slot": 76,
-    "name": "Hip Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 50,
+    "name": "Left Hip (Os Coxae)",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -72.5,
       28.57,
       -204.62
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "central",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
-      "left os coxae",
-      "left ilium"
+      "left ilium",
+      "left pelvic bone"
     ]
   },
   {
     "id": "hip_right",
-    "slot": 77,
-    "name": "Hip Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 51,
+    "name": "Right Hip (Os Coxae)",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       72.56,
       29.1,
       -205.52
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "central",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
-      "right os coxae",
-      "right ilium"
+      "right ilium",
+      "right pelvic bone"
     ]
   },
   {
     "id": "femur_left",
-    "slot": 74,
-    "name": "Femur Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 52,
+    "name": "Left Femur Head",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -105.86,
       36.73,
       -282.31
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "lateral",
     "synonyms": [
       "left thigh bone"
@@ -869,17 +992,17 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "femur_right",
-    "slot": 75,
-    "name": "Femur Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 53,
+    "name": "Right Femur Head",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       104.75,
       37.22,
       -285.03
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "lateral",
     "synonyms": [
       "right thigh bone"
@@ -887,17 +1010,17 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "gluteus_maximus_left",
-    "slot": 79,
-    "name": "Gluteus Maximus Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 54,
+    "name": "Left Gluteus Maximus",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -87.87,
       -20.57,
       -247.64
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "posterior",
     "synonyms": [
       "left upper buttock muscle"
@@ -905,17 +1028,17 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "gluteus_maximus_right",
-    "slot": 80,
-    "name": "Gluteus Maximus Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 55,
+    "name": "Right Gluteus Maximus",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       87.55,
       -20.41,
       -250.41
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
+    "color": 14239471,
+    "hex": "#d946ef",
     "side": "posterior",
     "synonyms": [
       "right upper buttock muscle"
@@ -923,117 +1046,117 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "gluteus_medius_left",
-    "slot": 81,
-    "name": "Gluteus Medius Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 56,
+    "name": "Left Gluteus Medius",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -115.72,
       24.17,
       -184.41
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "posterior",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
       "left middle buttock muscle"
     ]
   },
   {
     "id": "gluteus_medius_right",
-    "slot": 82,
-    "name": "Gluteus Medius Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 57,
+    "name": "Right Gluteus Medius",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       117.53,
       24.74,
       -191.72
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "posterior",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
       "right middle buttock muscle"
     ]
   },
   {
     "id": "gluteus_minimus_left",
-    "slot": 83,
-    "name": "Gluteus Minimus Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 58,
+    "name": "Left Gluteus Minimus",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -112.01,
       47.58,
       -210.22
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "posterior",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
       "left deep buttock muscle"
     ]
   },
   {
     "id": "gluteus_minimus_right",
-    "slot": 84,
-    "name": "Gluteus Minimus Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 59,
+    "name": "Right Gluteus Minimus",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       111.84,
       46.22,
       -213.73
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "posterior",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "lateral",
     "synonyms": [
       "right deep buttock muscle"
     ]
   },
   {
     "id": "iliopsoas_left",
-    "slot": 87,
-    "name": "Iliopsoas Left",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 60,
+    "name": "Left Iliopsoas",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       -60.06,
       44.67,
       -146.73
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "central",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "anterior",
     "synonyms": [
       "left psoas hip flexor"
     ]
   },
   {
     "id": "iliopsoas_right",
-    "slot": 88,
-    "name": "Iliopsoas Right",
-    "category": "Pelvis, Urinary & Musculature",
+    "slot": 61,
+    "name": "Right Iliopsoas",
+    "category": "Pelvis, Reproductive & Lower Girdle",
     "system": "pelvis",
     "coords": [
       56.94,
       42.36,
       -146.44
     ],
-    "color": 9133302,
-    "hex": "#8b5cf6",
-    "side": "central",
+    "color": 14239471,
+    "hex": "#d946ef",
+    "side": "anterior",
     "synonyms": [
       "right psoas hip flexor"
     ]
   },
   {
     "id": "spinal_cord",
-    "slot": 78,
+    "slot": 62,
     "name": "Spinal Cord",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.15,
@@ -1042,7 +1165,7 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 16096779,
     "hex": "#f59e0b",
-    "side": "central",
+    "side": "posterior",
     "synonyms": [
       "medulla spinalis",
       "spinal canal"
@@ -1050,9 +1173,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C1",
-    "slot": 46,
-    "name": "Vertebra C1",
-    "category": "Spine & Deep Paravertebral",
+    "slot": 63,
+    "name": "Vertebra C1 (Atlas)",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -3.17,
@@ -1068,9 +1191,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C2",
-    "slot": 45,
-    "name": "Vertebra C2",
-    "category": "Spine & Deep Paravertebral",
+    "slot": 64,
+    "name": "Vertebra C2 (Axis)",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -3.06,
@@ -1086,9 +1209,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C3",
-    "slot": 44,
+    "slot": 65,
     "name": "Vertebra C3",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -2.04,
@@ -1104,9 +1227,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C4",
-    "slot": 43,
+    "slot": 66,
     "name": "Vertebra C4",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -1.72,
@@ -1122,9 +1245,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C5",
-    "slot": 42,
+    "slot": 67,
     "name": "Vertebra C5",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -1.72,
@@ -1140,9 +1263,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C6",
-    "slot": 41,
+    "slot": 68,
     "name": "Vertebra C6",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.35,
@@ -1158,9 +1281,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_C7",
-    "slot": 40,
-    "name": "Vertebra C7",
-    "category": "Spine & Deep Paravertebral",
+    "slot": 69,
+    "name": "Vertebra C7 (Prominens)",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       0.1,
@@ -1171,15 +1294,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "hex": "#f59e0b",
     "side": "posterior",
     "synonyms": [
-      "seventh cervical vertebra",
-      "vertebra prominens"
+      "seventh cervical vertebra"
     ]
   },
   {
     "id": "vertebrae_T1",
-    "slot": 39,
+    "slot": 70,
     "name": "Vertebra T1",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.36,
@@ -1195,9 +1317,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T2",
-    "slot": 38,
+    "slot": 71,
     "name": "Vertebra T2",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.58,
@@ -1213,9 +1335,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T3",
-    "slot": 37,
+    "slot": 72,
     "name": "Vertebra T3",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.3,
@@ -1231,9 +1353,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T4",
-    "slot": 36,
+    "slot": 73,
     "name": "Vertebra T4",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       0.37,
@@ -1249,9 +1371,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T5",
-    "slot": 35,
+    "slot": 74,
     "name": "Vertebra T5",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       1.6,
@@ -1267,9 +1389,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T6",
-    "slot": 34,
+    "slot": 75,
     "name": "Vertebra T6",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       2.26,
@@ -1285,9 +1407,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T7",
-    "slot": 33,
+    "slot": 76,
     "name": "Vertebra T7",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       2.6,
@@ -1303,9 +1425,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T8",
-    "slot": 32,
+    "slot": 77,
     "name": "Vertebra T8",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       1.83,
@@ -1321,9 +1443,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T9",
-    "slot": 31,
+    "slot": 78,
     "name": "Vertebra T9",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       1.68,
@@ -1339,9 +1461,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T10",
-    "slot": 30,
+    "slot": 79,
     "name": "Vertebra T10",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       1.25,
@@ -1357,9 +1479,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T11",
-    "slot": 29,
+    "slot": 80,
     "name": "Vertebra T11",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       0.84,
@@ -1375,9 +1497,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_T12",
-    "slot": 28,
+    "slot": 81,
     "name": "Vertebra T12",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       0.38,
@@ -1393,9 +1515,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_L1",
-    "slot": 27,
+    "slot": 82,
     "name": "Vertebra L1",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.06,
@@ -1411,9 +1533,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_L2",
-    "slot": 26,
+    "slot": 83,
     "name": "Vertebra L2",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.35,
@@ -1429,9 +1551,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_L3",
-    "slot": 25,
+    "slot": 84,
     "name": "Vertebra L3",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.49,
@@ -1447,9 +1569,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_L4",
-    "slot": 24,
+    "slot": 85,
     "name": "Vertebra L4",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.53,
@@ -1465,9 +1587,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_L5",
-    "slot": 23,
+    "slot": 86,
     "name": "Vertebra L5",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -0.1,
@@ -1483,9 +1605,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "vertebrae_S1",
-    "slot": 25,
+    "slot": 87,
     "name": "Vertebra S1",
-    "category": "Spine & Deep Paravertebral",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       0.25,
@@ -1501,9 +1623,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "autochthon_left",
-    "slot": 85,
-    "name": "Autochthon Left",
-    "category": "Spine & Deep Paravertebral",
+    "slot": 88,
+    "name": "Left Erector Spinae",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       -29.2,
@@ -1514,14 +1636,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "hex": "#f59e0b",
     "side": "posterior",
     "synonyms": [
-      "left erector spinae"
+      "left autochthonous back muscle"
     ]
   },
   {
     "id": "autochthon_right",
-    "slot": 86,
-    "name": "Autochthon Right",
-    "category": "Spine & Deep Paravertebral",
+    "slot": 89,
+    "name": "Right Erector Spinae",
+    "category": "Spine & Vertebral Column",
     "system": "spine",
     "coords": [
       28.69,
@@ -1532,14 +1654,14 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     "hex": "#f59e0b",
     "side": "posterior",
     "synonyms": [
-      "right erector spinae"
+      "right autochthonous back muscle"
     ]
   },
   {
     "id": "sternum",
-    "slot": 102,
+    "slot": 90,
     "name": "Sternum",
-    "category": "Ribs & Thoracic Skeleton",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -1.12,
@@ -1555,9 +1677,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "costal_cartilages",
-    "slot": 103,
+    "slot": 91,
     "name": "Costal Cartilages",
-    "category": "Ribs & Thoracic Skeleton",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -3.15,
@@ -1573,9 +1695,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "clavicula_left",
-    "slot": 72,
-    "name": "Clavicula Left",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 92,
+    "name": "Left Clavicle",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -55.69,
@@ -1591,9 +1713,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "clavicula_right",
-    "slot": 73,
-    "name": "Clavicula Right",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 93,
+    "name": "Right Clavicle",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       57.93,
@@ -1609,9 +1731,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "scapula_left",
-    "slot": 70,
-    "name": "Scapula Left",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 94,
+    "name": "Left Scapula",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -117.34,
@@ -1620,16 +1742,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "posterior",
     "synonyms": [
       "left shoulder blade"
     ]
   },
   {
     "id": "scapula_right",
-    "slot": 71,
-    "name": "Scapula Right",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 95,
+    "name": "Right Scapula",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       118.22,
@@ -1638,16 +1760,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "posterior",
     "synonyms": [
       "right shoulder blade"
     ]
   },
   {
     "id": "humerus_left",
-    "slot": 68,
-    "name": "Humerus Left",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 96,
+    "name": "Left Humerus",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -147.81,
@@ -1663,9 +1785,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "humerus_right",
-    "slot": 69,
-    "name": "Humerus Right",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 97,
+    "name": "Right Humerus",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       144.62,
@@ -1681,9 +1803,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_left_1",
-    "slot": 91,
-    "name": "Left Rib 1",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 98,
+    "name": "Rib 1 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -55.38,
@@ -1699,9 +1821,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_left_2",
-    "slot": 92,
-    "name": "Left Rib 2",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 99,
+    "name": "Rib 2 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -73.9,
@@ -1710,16 +1832,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "central",
+    "side": "anterior",
     "synonyms": [
       "second left rib"
     ]
   },
   {
     "id": "rib_left_3",
-    "slot": 93,
-    "name": "Left Rib 3",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 100,
+    "name": "Rib 3 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -84.63,
@@ -1728,16 +1850,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "central",
+    "side": "anterior",
     "synonyms": [
       "third left rib"
     ]
   },
   {
     "id": "rib_left_4",
-    "slot": 94,
-    "name": "Left Rib 4",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 101,
+    "name": "Rib 4 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -91.14,
@@ -1746,16 +1868,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "anterior",
     "synonyms": [
       "fourth left rib"
     ]
   },
   {
     "id": "rib_left_5",
-    "slot": 95,
-    "name": "Left Rib 5",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 102,
+    "name": "Rib 5 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -96.1,
@@ -1764,16 +1886,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "anterior",
     "synonyms": [
       "fifth left rib"
     ]
   },
   {
     "id": "rib_left_6",
-    "slot": 96,
-    "name": "Left Rib 6",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 103,
+    "name": "Rib 6 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -104.85,
@@ -1782,16 +1904,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "anterior",
     "synonyms": [
       "sixth left rib"
     ]
   },
   {
     "id": "rib_left_7",
-    "slot": 97,
-    "name": "Left Rib 7",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 104,
+    "name": "Rib 7 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -113.0,
@@ -1800,16 +1922,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "lateral",
+    "side": "anterior",
     "synonyms": [
       "seventh left rib"
     ]
   },
   {
     "id": "rib_left_8",
-    "slot": 98,
-    "name": "Left Rib 8",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 105,
+    "name": "Rib 8 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -113.64,
@@ -1825,9 +1947,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_left_9",
-    "slot": 99,
-    "name": "Left Rib 9",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 106,
+    "name": "Rib 9 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -109.24,
@@ -1843,9 +1965,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_left_10",
-    "slot": 100,
-    "name": "Left Rib 10",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 107,
+    "name": "Rib 10 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -100.13,
@@ -1861,9 +1983,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_left_11",
-    "slot": 101,
-    "name": "Left Rib 11",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 108,
+    "name": "Rib 11 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -82.43,
@@ -1872,16 +1994,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "central",
+    "side": "posterior",
     "synonyms": [
-      "eleventh left rib"
+      "eleventh left floating rib"
     ]
   },
   {
     "id": "rib_left_12",
-    "slot": 102,
-    "name": "Left Rib 12",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 109,
+    "name": "Rib 12 (Left)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       -57.7,
@@ -1890,16 +2012,16 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "central",
+    "side": "posterior",
     "synonyms": [
-      "twelfth left rib"
+      "twelfth left floating rib"
     ]
   },
   {
     "id": "rib_right_1",
-    "slot": 103,
-    "name": "Right Rib 1",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 110,
+    "name": "Rib 1 (Right)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       54.42,
@@ -1915,9 +2037,9 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
   },
   {
     "id": "rib_right_2",
-    "slot": 104,
-    "name": "Right Rib 2",
-    "category": "Ribs & Thoracic Skeleton",
+    "slot": 111,
+    "name": "Rib 2 (Right)",
+    "category": "Ribs & Thoracic Cage",
     "system": "ribs",
     "coords": [
       72.79,
@@ -1926,131 +2048,189 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
     ],
     "color": 1357990,
     "hex": "#14b8a6",
-    "side": "central",
+    "side": "anterior",
     "synonyms": [
       "second right rib"
     ]
   },
   {
-    "id": "brain",
-    "slot": 89,
-    "name": "Brain",
-    "category": "Head & Cranial",
-    "system": "cranial",
+    "id": "rib_right_3",
+    "slot": 112,
+    "name": "Rib 3 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
     "coords": [
-      -2.94,
-      55.26,
-      331.86
+      81.86,
+      50.33,
+      166.24
     ],
-    "color": 440020,
-    "hex": "#06b6d4",
-    "side": "central",
-    "synonyms": [
-      "cerebrum",
-      "encephalon",
-      "cranial cavity",
-      "brainstem"
-    ]
-  },
-  {
-    "id": "skull",
-    "slot": 90,
-    "name": "Skull",
-    "category": "Head & Cranial",
-    "system": "cranial",
-    "coords": [
-      0.82,
-      110.86,
-      270.07
-    ],
-    "color": 440020,
-    "hex": "#06b6d4",
+    "color": 1357990,
+    "hex": "#14b8a6",
     "side": "anterior",
     "synonyms": [
-      "cranium",
-      "calvarium",
-      "neurocranium"
+      "third right rib"
     ]
   },
   {
-    "id": "uterus",
+    "id": "rib_right_4",
+    "slot": 113,
+    "name": "Rib 4 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
+    "coords": [
+      88.59,
+      54.3,
+      139.34
+    ],
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "anterior",
+    "synonyms": [
+      "fourth right rib"
+    ]
+  },
+  {
+    "id": "rib_right_5",
+    "slot": 114,
+    "name": "Rib 5 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
+    "coords": [
+      93.14,
+      61.58,
+      115.31
+    ],
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "anterior",
+    "synonyms": [
+      "fifth right rib"
+    ]
+  },
+  {
+    "id": "rib_right_6",
+    "slot": 115,
+    "name": "Rib 6 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
+    "coords": [
+      101.77,
+      62.22,
+      94.05
+    ],
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "anterior",
+    "synonyms": [
+      "sixth right rib"
+    ]
+  },
+  {
+    "id": "rib_right_7",
+    "slot": 116,
+    "name": "Rib 7 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
+    "coords": [
+      110.66,
+      50.79,
+      73.58
+    ],
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "anterior",
+    "synonyms": [
+      "seventh right rib"
+    ]
+  },
+  {
+    "id": "rib_right_8",
     "slot": 117,
-    "name": "Uterus",
-    "category": "Pelvis, Urinary & Musculature",
-    "system": "pelvis",
+    "name": "Rib 8 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
     "coords": [
-      0.0,
-      42.0,
-      -255.0
+      113.43,
+      29.67,
+      55.42
     ],
-    "color": 14240751,
-    "hex": "#d946ef",
-    "side": "central",
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "lateral",
     "synonyms": [
-      "womb",
-      "uterine body",
-      "myometrium",
-      "female pelvis"
+      "eighth right rib"
     ]
   },
   {
-    "id": "ovary_left",
+    "id": "rib_right_9",
     "slot": 118,
-    "name": "Left Ovary",
-    "category": "Pelvis, Urinary & Musculature",
-    "system": "pelvis",
+    "name": "Rib 9 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
     "coords": [
-      -35.0,
-      38.0,
-      -250.0
+      109.79,
+      7.53,
+      37.97
     ],
-    "color": 15485337,
-    "hex": "#ec4899",
+    "color": 1357990,
+    "hex": "#14b8a6",
     "side": "lateral",
     "synonyms": [
-      "ovarium sinistrum",
-      "left adnexa",
-      "female gonad"
+      "ninth right rib"
     ]
   },
   {
-    "id": "ovary_right",
+    "id": "rib_right_10",
     "slot": 119,
-    "name": "Right Ovary",
-    "category": "Pelvis, Urinary & Musculature",
-    "system": "pelvis",
+    "name": "Rib 10 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
     "coords": [
-      35.0,
-      38.0,
-      -250.0
+      100.38,
+      -8.86,
+      15.53
     ],
-    "color": 15485337,
-    "hex": "#ec4899",
+    "color": 1357990,
+    "hex": "#14b8a6",
     "side": "lateral",
     "synonyms": [
-      "ovarium dextrum",
-      "right adnexa",
-      "female gonad"
+      "tenth right rib"
     ]
   },
   {
-    "id": "vagina",
+    "id": "rib_right_11",
     "slot": 120,
-    "name": "Vagina",
-    "category": "Pelvis, Urinary & Musculature",
-    "system": "pelvis",
+    "name": "Rib 11 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
     "coords": [
-      0.0,
-      30.0,
-      -290.0
+      83.31,
+      -19.97,
+      -8.36
     ],
-    "color": 13459146,
-    "hex": "#cd32ca",
-    "side": "central",
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "posterior",
     "synonyms": [
-      "vaginal canal",
-      "birth canal",
-      "colpos"
+      "eleventh right floating rib"
+    ]
+  },
+  {
+    "id": "rib_right_12",
+    "slot": 121,
+    "name": "Rib 12 (Right)",
+    "category": "Ribs & Thoracic Cage",
+    "system": "ribs",
+    "coords": [
+      58.41,
+      -20.83,
+      -25.56
+    ],
+    "color": 1357990,
+    "hex": "#14b8a6",
+    "side": "posterior",
+    "synonyms": [
+      "twelfth right floating rib"
     ]
   }
 ];
