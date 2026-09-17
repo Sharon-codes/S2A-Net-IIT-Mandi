@@ -23,13 +23,11 @@ export default function DemoPage() {
     "urinary_bladder",
   ]);
   const [activeFocusedTarget, setActiveFocusedTarget] = useState<string | null>("brain");
-  const [modelVariant, setModelVariant] = useState<string>("phase16_brain");
 
   const [predictions, setPredictions] = useState<Record<string, TargetPrediction> | null>(null);
   const [isPredicting, setIsPredicting] = useState(false);
   const [latencyMs, setLatencyMs] = useState<number | null>(48.5);
   const [prepLatencyMs, setPrepLatencyMs] = useState<number | null>(12.1);
-  const [coordinateFrame, setCoordinateFrame] = useState<"canonical" | "world">("canonical");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Auto-load whole body scan with brain on initial mount
@@ -46,7 +44,7 @@ export default function DemoPage() {
       .then((res) => res.json())
       .then((data) => {
         const initial: Record<string, TargetPrediction> = {};
-        for (const t of ["brain", "heart", "liver", "kidney_left", "urinary_bladder"]) {
+        for (const t of ["brain", "heart", "liver", "kidney_left", "uterus", "urinary_bladder"]) {
           if (data[t]) initial[t] = data[t];
         }
         setPredictions(initial);
@@ -109,7 +107,7 @@ export default function DemoPage() {
       const blob = new Blob([fileBuffer]);
       formData.append("file", blob, activeFileName);
       formData.append("targets", selectedTargets.join(","));
-      formData.append("model_variant", modelVariant);
+      formData.append("model_variant", "phase16_brain");
       formData.append("sex", patientSex);
 
       const endpoint = selectedTargets.length === 1 ? `${apiUrl}/predict` : `${apiUrl}/predict-multiple`;
@@ -209,8 +207,6 @@ export default function DemoPage() {
             onToggleTarget={handleToggleTarget}
             onClearTargets={() => setSelectedTargets([])}
             onSelectTargets={setSelectedTargets}
-            modelVariant={modelVariant}
-            onModelVariantChange={setModelVariant}
             onRunInference={handleRunInference}
             isPredicting={isPredicting}
             hasGeometry={!!fileBuffer}
@@ -224,19 +220,16 @@ export default function DemoPage() {
             onSelectTarget={setActiveFocusedTarget}
             latencyMs={latencyMs}
             prepLatencyMs={prepLatencyMs}
-            coordinateFrame={coordinateFrame}
-            onToggleFrame={setCoordinateFrame}
           />
         </div>
 
         {/* Right Column: 3D Canvas Viewer (7 cols) - Mobile Responsive Height */}
-        <div className="lg:col-span-7 h-[420px] sm:h-[560px] lg:h-[780px] lg:sticky lg:top-20 flex flex-col">
+        <div className="lg:col-span-7 h-[460px] sm:h-[600px] lg:h-[800px] lg:sticky lg:top-20 flex flex-col">
           <ThreeViewer
             surfacePoints={surfacePoints}
             predictions={predictions}
             selectedTarget={activeFocusedTarget}
             onSelectTarget={setActiveFocusedTarget}
-            coordinateFrame={coordinateFrame}
           />
         </div>
       </div>

@@ -20,7 +20,7 @@ interface ThreeViewerProps {
   predictions: Record<string, TargetPrediction> | null;
   selectedTarget: string | null;
   onSelectTarget?: (target: string) => void;
-  coordinateFrame?: "canonical" | "world";
+  coordinateFrame?: string;
 }
 
 /**
@@ -39,7 +39,6 @@ export function ThreeViewer({
   predictions,
   selectedTarget,
   onSelectTarget,
-  coordinateFrame = "canonical",
 }: ThreeViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -288,18 +287,15 @@ export function ThreeViewer({
     const midY = (minY + maxY) / 2; // Medical AP
     const midZ = (minZ + maxZ) / 2; // Medical SI
 
-    // Canonical alignment: lock skull apex at +375mm to prevent point clouds from shooting above cranium
+    // Anatomical alignment: lock skull apex at +375mm to align cleanly with mannequin
     let shiftX = 0;
     let shiftY = 0;
     let shiftZ = 0;
 
-    if (coordinateFrame === "canonical") {
-      if (Math.abs(midX) > 30) shiftX = midX;
-      if (Math.abs(midY - 48) > 30) shiftY = midY - 48;
-      // If point cloud extends above the mannequin skull (+385mm), align the cranial apex cleanly to +375mm
-      if (maxZ > 385) {
-        shiftZ = maxZ - 375;
-      }
+    if (Math.abs(midX) > 30) shiftX = midX;
+    if (Math.abs(midY - 48) > 30) shiftY = midY - 48;
+    if (maxZ > 385) {
+      shiftZ = maxZ - 375;
     }
 
     for (let i = 0; i < count; i++) {
@@ -346,7 +342,7 @@ export function ThreeViewer({
     const pointsMesh = new THREE.Points(geometry, material);
     scene.add(pointsMesh);
     pointsMeshRef.current = pointsMesh;
-  }, [surfacePoints, showPoints, coordinateFrame]);
+  }, [surfacePoints, showPoints]);
 
   // Update Target Centroid Pins & Uncertainty Halos
   useEffect(() => {
@@ -363,7 +359,7 @@ export function ThreeViewer({
     if (!predictions) return;
 
     Object.entries(predictions).forEach(([name, pred]) => {
-      const rawCoords = coordinateFrame === "world" ? pred.centroid_input_world_mm : pred.centroid_canonical_mm;
+      const rawCoords = pred.centroid_canonical_mm ?? pred.centroid_input_world_mm;
       const [tx, ty, tz] = toThreeCoord(rawCoords);
       const isSelected = selectedTarget === name;
 
@@ -411,7 +407,7 @@ export function ThreeViewer({
       const line = new THREE.Line(lineGeo, lineMat);
       group.add(line);
     });
-  }, [predictions, selectedTarget, coordinateFrame]);
+  }, [predictions, selectedTarget]);
 
   const setViewPreset = (preset: "iso" | "coronal_front" | "coronal_back" | "sagittal" | "axial") => {
     if (preset === "coronal_front") {
@@ -510,7 +506,7 @@ export function ThreeViewer({
           </div>
         </div>
         <span className="text-[10px] text-text-muted/80">
-          Rotate: Drag mouse | Zoom: Scroll wheel | Upright Canonical Frame
+          Interactive 3D: Drag to rotate &bull; Scroll to zoom &bull; Standard anatomical coordinates (mm)
         </span>
       </div>
     </div>

@@ -8,8 +8,6 @@ interface TargetSelectorProps {
   onToggleTarget: (target: string) => void;
   onClearTargets: () => void;
   onSelectTargets: (targets: string[]) => void;
-  modelVariant: string;
-  onModelVariantChange: (variant: string) => void;
   onRunInference: () => void;
   isPredicting: boolean;
   hasGeometry: boolean;
@@ -45,8 +43,6 @@ export function TargetSelector({
   onToggleTarget,
   onClearTargets,
   onSelectTargets,
-  modelVariant,
-  onModelVariantChange,
   onRunInference,
   isPredicting,
   hasGeometry,
@@ -165,22 +161,14 @@ export function TargetSelector({
 
   return (
     <div className="flex flex-col gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-border shadow-sm">
-      {/* Header with Model Variant */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
         <h3 className="text-xs font-bold text-text-main uppercase tracking-wider">
-          1. Biological Sex & Anatomy Specification
+          2. Target Organs & Biological Sex
         </h3>
-        <div className="flex items-center gap-2">
-          <label className="text-[11px] text-text-muted font-medium">Model:</label>
-          <select
-            value={modelVariant}
-            onChange={(e) => onModelVariantChange(e.target.value)}
-            className="text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="phase16_brain">Sex-Aware Ensemble (121 Targets with Uterus & Ovaries)</option>
-            <option value="phase10r">Phase 10R Baseline (104 Unisex Targets)</option>
-          </select>
-        </div>
+        <span className="text-[11px] font-mono text-primary-dark font-medium bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 w-fit">
+          Sex-Aware 121-Organ Ensemble
+        </span>
       </div>
 
       {/* Patient Biological Sex & Reproductive Anatomy */}
