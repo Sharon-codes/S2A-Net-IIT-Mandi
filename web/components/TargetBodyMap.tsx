@@ -415,8 +415,9 @@ export function TargetBodyMap({
       </div>
 
       {/* 3D Viewer Canvas Container */}
-      <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[540px] rounded-3xl overflow-hidden border border-border bg-[#F8FAFC] shadow-sm select-none">
+      <div className="relative w-full h-[420px] sm:h-[540px] lg:h-[660px] rounded-3xl overflow-hidden border border-border bg-[#F8FAFC] shadow-sm select-none">
         <div
+
           ref={mountRef}
           className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
         />

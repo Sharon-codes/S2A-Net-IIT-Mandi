@@ -949,9 +949,6 @@ export default function TargetsPage() {
   const [query, setQuery] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>("all");
   const [selectedPin, setSelectedPin] = useState<string | null>(null);
-  // Track which categories have been expanded past the preview limit
-  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
-  const PREVIEW_LIMIT = 9; // items shown per category before "Show all"
 
 
   const totalTargetsCount = Object.values(ALL_CATEGORIES).reduce(
@@ -983,188 +980,171 @@ export default function TargetsPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
-            121 Canonical Landmarks Active
-          </span>
-          <span className="text-xs font-mono text-slate-500">
-            Cranial (1-2) • Thorax (3-11) • Vascular (12-28) • Abdomen (29-42) • Pelvis (43-61) • Spine (62-89) • Ribs (90-121)
-          </span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-text-main mt-2">121 Anatomical Target Catalog</h1>
-        <p className="text-xs sm:text-sm text-text-muted mt-2 max-w-3xl leading-relaxed">
-          Interactive 3D body map and systematic clinical directory of all 121 internal anatomical landmarks. Allotted consecutively by anatomical region (Slots 1 to 121) for intuitive navigation, covering Cranial (Brain, Skull), Thoracic, Great Vessels, Abdominal Viscera, Pelvic &amp; Reproductive structures (Uterus, Ovaries, Vagina, Prostate), Complete Spine (C1-L5), and Bilateral Ribs (1-12 Left &amp; Right). Orbit 360° around the mannequin to view all landmarks.
-        </p>
-      </div>
-
-      {/* Interactive 3D Mannequin Body Map with all 121 targets */}
-      <TargetBodyMap
-        onSelectTarget={handlePinSelect}
-        selectedTarget={selectedPin}
-        activeSystemFilter={selectedCat === "all" ? null : selectedCat}
-        onSelectSystemFilter={handleSystemFilterFrom3D}
-      />
-
-      {/* Active Pin Focus HUD if selected */}
-      {selectedPin && (
-        <div className="bg-white p-4 rounded-xl border border-primary/30 shadow-xs flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs text-text-muted">Focused Landmark:</span>
-            <span className="text-sm font-bold text-slate-900 capitalize">
-              {selectedPin.replace(/_/g, " ")}
+    <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-5">
+      {/* Header Banner */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
+              121 Canonical Landmarks Active
+            </span>
+            <span className="text-xs font-mono text-slate-500 hidden md:inline">
+              Cranial (1-2) • Thorax (3-11) • Vascular (12-28) • Abdomen (29-42) • Pelvis (43-61) • Spine (62-89) • Ribs (90-121)
             </span>
           </div>
-          <button
-            onClick={() => setSelectedPin(null)}
-            className="text-xs font-medium px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-          >
-            Clear Landmark Focus
-          </button>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-main mt-1.5">121 Anatomical Target Catalog</h1>
+          <p className="text-xs text-text-muted mt-0.5 max-w-3xl leading-relaxed">
+            Interactive 3D body map and systematic clinical directory of all 121 internal anatomical landmarks. Click any organ on the right to inspect its 3D spatial position on the doll, or drag to orbit 360°.
+          </p>
         </div>
-      )}
+      </div>
 
-      {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-3 items-center justify-between shadow-xs">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-text-muted" />
-          <input
-            type="text"
-            placeholder="Search 121 targets or slot #..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border bg-background/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+      {/* Side-by-Side Dashboard Layout: 3D Doll on Left | Organ Catalog on Right */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Left Column: 3D Body Map Doll (lg:col-span-7) */}
+        <div className="lg:col-span-7 flex flex-col gap-3 lg:sticky lg:top-20">
+          <TargetBodyMap
+            onSelectTarget={handlePinSelect}
+            selectedTarget={selectedPin}
+            activeSystemFilter={selectedCat === "all" ? null : selectedCat}
+            onSelectSystemFilter={handleSystemFilterFrom3D}
           />
         </div>
 
-        {/* Region Filter Chips */}
-        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 text-xs font-medium">
-          <button
-            onClick={() => setSelectedCat("all")}
-            className={`px-3 py-1.5 rounded-lg border transition-colors ${
-              selectedCat === "all"
-                ? "bg-primary text-white border-primary font-bold shadow-xs"
-                : "bg-white hover:bg-background text-text-muted border-border"
-            }`}
-          >
-            All 121
-          </button>
-          {Object.entries(ALL_CATEGORIES).map(([key, cat]) => (
+        {/* Right Column: 121 Target Organs Directory (lg:col-span-5) */}
+        <div className="lg:col-span-5 flex flex-col gap-3 bg-white p-4 sm:p-5 rounded-3xl border border-border shadow-xs h-[560px] sm:h-[640px] lg:h-[720px] lg:sticky lg:top-20">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Search 121 targets or slot #..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Region Filter Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs shrink-0">
             <button
-              key={key}
-              onClick={() => setSelectedCat(key)}
-              className={`px-2.5 py-1.5 rounded-lg border transition-colors whitespace-nowrap ${
-                selectedCat === key
-                  ? "bg-primary text-white border-primary font-bold shadow-xs"
-                  : "bg-white hover:bg-background text-text-muted border-border"
+              onClick={() => setSelectedCat("all")}
+              className={`px-2.5 py-1 rounded-xl text-[11px] font-medium border transition-colors shrink-0 ${
+                selectedCat === "all"
+                  ? "bg-slate-900 text-white font-semibold shadow-xs"
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
               }`}
             >
-              {cat.name.split(" ")[0]} ({cat.targets.length})
+              All 121
             </button>
-          ))}
-        </div>
-      </div>
+            {Object.entries(ALL_CATEGORIES).map(([key, cat]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedCat(key)}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-medium border transition-colors whitespace-nowrap shrink-0 ${
+                  selectedCat === key
+                    ? "bg-slate-900 text-white font-semibold shadow-xs"
+                    : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+                }`}
+              >
+                {cat.name.split(" ")[0]} ({cat.targets.length})
+              </button>
+            ))}
+          </div>
 
-      {/* Target Directory Cards */}
-      <div className="flex flex-col gap-6">
-        {filteredCategories.map(([key, cat]) => {
-          const filteredTargets = cat.targets.filter((t) => {
-            if (!query.trim()) return true;
-            const q = query.toLowerCase().trim();
-            if (t.name.toLowerCase().includes(q)) return true;
-            if (String(t.slot) === q) return true;
-            if (t.synonyms.some((s) => s.toLowerCase().includes(q))) return true;
-            return false;
-          });
-
-          if (filteredTargets.length === 0) return null;
-
-          // In "All" mode without a search query, limit displayed items per category
-          const isAllMode = selectedCat === "all" && !query.trim();
-          const isExpanded = expandedCats.has(key);
-          const displayTargets = isAllMode && !isExpanded
-            ? filteredTargets.slice(0, PREVIEW_LIMIT)
-            : filteredTargets;
-          const hasMore = isAllMode && !isExpanded && filteredTargets.length > PREVIEW_LIMIT;
-
-          return (
-            <div key={key} className="bg-white rounded-xl border border-border p-5 shadow-xs flex flex-col gap-4">
-              <div className="border-b border-border/80 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <div>
-                  <h2 className="text-base font-bold text-text-main flex items-center gap-2">
-                    <span>{cat.name}</span>
-                    <span className="text-xs font-mono font-normal text-text-muted px-2 py-0.5 rounded bg-background border border-border">
-                      {filteredTargets.length} targets
-                    </span>
-                  </h2>
-                  <p className="text-xs text-text-muted mt-0.5">{cat.description}</p>
+          {/* Active Pin Focus HUD Card (if selected) */}
+          {selectedPin && (
+            <div className="bg-amber-50/80 p-3 rounded-2xl border border-amber-300 flex items-center justify-between gap-3 shrink-0 animate-fade-in">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[10px] text-amber-800 uppercase font-mono font-bold">Focused 3D Landmark</div>
+                  <div className="text-sm font-bold text-slate-900 capitalize truncate">
+                    {selectedPin.replace(/_/g, " ")}
+                  </div>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                {displayTargets.map((t) => {
-                  const isSelected = selectedPin === t.name;
-                  return (
-                    <div
-                      key={t.name}
-                      id={`target-card-${t.name}`}
-                      onClick={() => handlePinSelect(t.name)}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer flex flex-col gap-1.5 ${
-                        isSelected
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/40 shadow-xs"
-                          : "border-border hover:border-border/80 bg-background/30 hover:bg-background/70"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-text-main capitalize">
-                          {t.name.replace(/_/g, " ")}
-                        </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white border border-border font-bold text-primary-dark">
-                          Slot #{t.slot}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-0.5">
-                        {t.synonyms.map((syn, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[10px] font-sans px-1.5 py-0.2 rounded bg-white/70 text-text-muted border border-border/60"
-                          >
-                            {syn}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Expand button for "All" mode when there are more items */}
-              {hasMore && (
-                <button
-                  onClick={() => setExpandedCats(prev => new Set(Array.from(prev).concat(key)))}
-                  className="self-start text-xs font-medium text-primary hover:text-primary-dark flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-colors"
-                >
-                  <span>Show all {filteredTargets.length} in {cat.name.split(" ")[0]}</span>
-                  <span className="text-[10px] opacity-70">↓</span>
-                </button>
-              )}
-              {isAllMode && isExpanded && filteredTargets.length > PREVIEW_LIMIT && (
-                <button
-                  onClick={() => setExpandedCats(prev => { const n = new Set(Array.from(prev)); n.delete(key); return n; })}
-                  className="self-start text-xs font-medium text-text-muted hover:text-text-main flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-border transition-colors"
-                >
-                  <span>Collapse</span>
-                  <span className="text-[10px] opacity-70">↑</span>
-                </button>
-              )}
-
+              <button
+                onClick={() => setSelectedPin(null)}
+                className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 transition-colors shrink-0"
+              >
+                Clear Focus
+              </button>
             </div>
-          );
-        })}
+          )}
+
+          {/* Scrollable Target Cards List */}
+          <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4">
+            {filteredCategories.map(([key, cat]) => {
+              const filteredTargets = cat.targets.filter((t) => {
+                if (!query.trim()) return true;
+                const q = query.toLowerCase().trim();
+                if (t.name.toLowerCase().includes(q)) return true;
+                if (String(t.slot) === q) return true;
+                if (t.synonyms.some((s) => s.toLowerCase().includes(q))) return true;
+                return false;
+              });
+
+              if (filteredTargets.length === 0) return null;
+
+              return (
+                <div key={key} className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between border-b border-border/80 pb-1.5 pt-1">
+                    <h3 className="text-xs font-bold text-text-main flex items-center gap-1.5">
+                      <span>{cat.name}</span>
+                      <span className="text-[10px] font-mono font-normal text-text-muted px-1.5 py-0.2 rounded bg-slate-100 border border-slate-200">
+                        {filteredTargets.length}
+                      </span>
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {filteredTargets.map((t) => {
+                      const isSelected = selectedPin === t.name;
+                      return (
+                        <div
+                          key={t.name}
+                          id={`target-card-${t.name}`}
+                          onClick={() => handlePinSelect(t.name)}
+                          className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1 ${
+                            isSelected
+                              ? "border-amber-400 bg-amber-50/60 ring-2 ring-amber-400/40 shadow-xs"
+                              : "border-slate-200 hover:border-primary/40 bg-slate-50/50 hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-xs font-bold text-text-main capitalize truncate">
+                              {t.name.replace(/_/g, " ")}
+                            </span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-white border border-slate-200 font-bold text-primary-dark shrink-0">
+                              #{t.slot}
+                            </span>
+                          </div>
+                          {t.synonyms.length > 0 && (
+                            <span className="text-[10px] text-text-muted truncate">
+                              {t.synonyms[0]}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
 

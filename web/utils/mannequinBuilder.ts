@@ -43,54 +43,56 @@ export function createHumanMannequin(): THREE.Group {
     group.add(mesh);
   }
 
-  // 1. Head & Cranial Vault (Y: ~320 to 410mm, Z: ~45mm)
-  // Cranium
-  const craniumGeo = new THREE.SphereGeometry(66, 32, 24);
-  addSmoothPart(craniumGeo, [0, 360, 48], [1.0, 1.15, 1.12]);
+  // 1. Head & Cranial Vault (Brain is at Y = 350mm)
+  const craniumGeo = new THREE.SphereGeometry(62, 32, 24);
+  addSmoothPart(craniumGeo, [0, 350, 48], [1.0, 1.15, 1.12]);
 
-  // Jaw / Chin contour
-  const jawGeo = new THREE.CylinderGeometry(38, 26, 48, 24);
-  addSmoothPart(jawGeo, [0, 308, 52], [1.0, 1.0, 1.08]);
+  // Jaw / Chin contour (Y: 285 to 325mm)
+  const jawGeo = new THREE.CylinderGeometry(36, 24, 45, 24);
+  addSmoothPart(jawGeo, [0, 305, 52], [1.0, 1.0, 1.08]);
 
-  // 2. Cervical Neck (Y: 250 - 290mm)
-  const neckGeo = new THREE.CylinderGeometry(34, 42, 50, 24);
-  addSmoothPart(neckGeo, [0, 268, 48], [1.0, 1.0, 0.95]);
+  // 2. Cervical Neck (Y: 235 - 285mm; C1-C7 vertebrae are at 231 - 280mm)
+  const neckGeo = new THREE.CylinderGeometry(32, 38, 50, 24);
+  addSmoothPart(neckGeo, [0, 260, 48], [1.0, 1.0, 0.95]);
 
-  // 3. Clavicles / Shoulder Girdle Bridge (Y: ~240mm)
-  const shoulderGeo = new THREE.CapsuleGeometry(28, 240, 16, 24);
-  addSmoothPart(shoulderGeo, [0, 240, 45], [1.0, 0.75, 0.85], [0, 0, Math.PI / 2]);
+  // 3. Clavicles / Shoulder Girdle Bridge (Y: ~215mm; clavicles are at 210mm)
+  const shoulderGeo = new THREE.CapsuleGeometry(24, 240, 16, 24);
+  addSmoothPart(shoulderGeo, [0, 215, 45], [1.0, 0.75, 0.85], [0, 0, Math.PI / 2]);
 
-  // 4. Thorax & Ribcage (Y: 100 - 230mm)
-  const thoraxGeo = new THREE.CylinderGeometry(136, 118, 140, 32);
-  addSmoothPart(thoraxGeo, [0, 160, 50], [1.1, 1.0, 0.88]);
+  // 4. Thorax & Ribcage (Y: 20 to 200mm, height 180mm, center at 110mm)
+  // Heart is at Y = 75.8mm, Ribs 1-10 are from 199mm down to 16mm
+  const thoraxGeo = new THREE.CylinderGeometry(132, 114, 180, 32);
+  addSmoothPart(thoraxGeo, [0, 110, 48], [1.08, 1.0, 0.88]);
 
-  // 5. Abdomen & Waist (Y: -10 to 100mm)
-  const abdomenGeo = new THREE.CylinderGeometry(116, 124, 120, 32);
-  addSmoothPart(abdomenGeo, [0, 45, 46], [1.05, 1.0, 0.88]);
+  // 5. Abdomen & Waist (Y: -60 to 20mm, height 80mm, center at -20mm)
+  // Liver is at Y = 5.2mm, Spleen at Y = 0.4mm, Kidneys at Y = -49.5mm
+  const abdomenGeo = new THREE.CylinderGeometry(112, 118, 80, 32);
+  addSmoothPart(abdomenGeo, [0, -20, 44], [1.04, 1.0, 0.88]);
 
-  // 6. Pelvis & Lower Abdomen (Y: -140 to -10mm)
-  const pelvisGeo = new THREE.CylinderGeometry(124, 108, 120, 32);
-  addSmoothPart(pelvisGeo, [0, -75, 42], [1.14, 1.0, 0.95]);
+  // 6. Pelvis & Lower Abdomen (Y: -140 to -60mm, height 80mm, center at -100mm)
+  // Uterus is at -78mm, Bladder at -95mm, Prostate at -105mm
+  const pelvisGeo = new THREE.CylinderGeometry(120, 102, 80, 32);
+  addSmoothPart(pelvisGeo, [0, -100, 42], [1.12, 1.0, 0.95]);
 
   // 7. Upper Arms (Left & Right)
-  const armGeo = new THREE.CapsuleGeometry(19, 160, 12, 16);
-  addSmoothPart(armGeo, [-162, 140, 40], [1.0, 1.0, 0.9], [0, 0, 0.1]);
-  addSmoothPart(armGeo, [162, 140, 40], [1.0, 1.0, 0.9], [0, 0, -0.1]);
+  const armGeo = new THREE.CapsuleGeometry(18, 160, 12, 16);
+  addSmoothPart(armGeo, [-158, 120, 42], [1.0, 1.0, 0.9], [0, 0, 0.08]);
+  addSmoothPart(armGeo, [158, 120, 42], [1.0, 1.0, 0.9], [0, 0, -0.08]);
 
   // 8. Forearms
-  const forearmGeo = new THREE.CapsuleGeometry(16, 150, 12, 16);
-  addSmoothPart(forearmGeo, [-180, 0, 42], [1.0, 1.0, 0.9], [0, 0, 0.05]);
-  addSmoothPart(forearmGeo, [180, 0, 42], [1.0, 1.0, 0.9], [0, 0, -0.05]);
+  const forearmGeo = new THREE.CapsuleGeometry(15, 140, 12, 16);
+  addSmoothPart(forearmGeo, [-174, -20, 42], [1.0, 1.0, 0.9], [0, 0, 0.04]);
+  addSmoothPart(forearmGeo, [174, -20, 42], [1.0, 1.0, 0.9], [0, 0, -0.04]);
 
   // 9. Thighs (Left & Right)
-  const thighGeo = new THREE.CapsuleGeometry(40, 190, 16, 20);
-  addSmoothPart(thighGeo, [-66, -220, 42], [1.0, 1.0, 0.95], [0, 0, -0.04]);
-  addSmoothPart(thighGeo, [66, -220, 42], [1.0, 1.0, 0.95], [0, 0, 0.04]);
+  const thighGeo = new THREE.CapsuleGeometry(38, 170, 16, 20);
+  addSmoothPart(thighGeo, [-64, -235, 42], [1.0, 1.0, 0.95], [0, 0, -0.03]);
+  addSmoothPart(thighGeo, [64, -235, 42], [1.0, 1.0, 0.95], [0, 0, 0.03]);
 
   // 10. Lower Legs (Calves)
-  const calfGeo = new THREE.CapsuleGeometry(30, 180, 16, 20);
-  addSmoothPart(calfGeo, [-70, -375, 40], [0.95, 1.0, 0.9]);
-  addSmoothPart(calfGeo, [70, -375, 40], [0.95, 1.0, 0.9]);
+  const calfGeo = new THREE.CapsuleGeometry(28, 150, 16, 20);
+  addSmoothPart(calfGeo, [-66, -400, 40], [0.95, 1.0, 0.9]);
+  addSmoothPart(calfGeo, [66, -400, 40], [0.95, 1.0, 0.9]);
 
   // 11. Sleek Turntable Pedestal Base
   const pedestalGeo = new THREE.CylinderGeometry(190, 200, 8, 36);
@@ -100,7 +102,7 @@ export function createHumanMannequin(): THREE.Group {
     metalness: 0.3,
   });
   const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
-  pedestal.position.set(0, -470, 40);
+  pedestal.position.set(0, -490, 40);
   group.add(pedestal);
 
   // Pedestal glowing ring
@@ -113,7 +115,7 @@ export function createHumanMannequin(): THREE.Group {
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.rotation.x = Math.PI / 2;
-  ring.position.set(0, -465, 40);
+  ring.position.set(0, -485, 40);
   group.add(ring);
 
   return group;

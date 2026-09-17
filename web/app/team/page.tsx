@@ -4,7 +4,7 @@ import { User, Award, GraduationCap, Building2, Cpu, Sparkles } from "lucide-rea
 
 export default function TeamPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 flex flex-col gap-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 flex flex-col gap-10">
       {/* Logos & Header Section */}
       <div className="text-center max-w-3xl mx-auto flex flex-col items-center gap-4">
         {/* Dual Institution Logos: CAIR + IIT Mandi */}
@@ -35,109 +35,124 @@ export default function TeamPage() {
         </p>
       </div>
 
-      {/* Faculty Supervisor Section */}
-      <div className="bg-white rounded-2xl border border-border p-8 shadow-xs flex flex-col md:flex-row items-center gap-8">
-        <div className="relative w-36 h-36 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-md shrink-0 bg-slate-100">
-          <img
-            src="/team/deepak_raina.png"
-            alt="Dr. Deepak Raina"
-            className="w-full h-full object-cover object-top"
-          />
-        </div>
-
-        <div className="flex flex-col gap-3 text-center md:text-left flex-grow">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-mono text-accent-green font-semibold uppercase tracking-wider mb-1">
-                <Award className="w-4 h-4" />
-                <span>Academic Project Supervisor</span>
+      {/* 3-Column Team Grid: All 3 Members in ONE Single Line */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        {/* Card 1: Dr. Deepak Raina - Academic Project Supervisor */}
+        <div className="bg-white rounded-2xl border-2 border-primary/30 p-6 shadow-xs flex flex-col justify-between gap-4 relative">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+                <img
+                  src="/team/deepak_raina.png"
+                  alt="Dr. Deepak Raina"
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
-              <h2 className="text-2xl font-bold text-text-main">Dr. Deepak Raina</h2>
-            </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-background border border-border text-text-muted self-center sm:self-auto">
-              Faculty Supervisor
-            </span>
-          </div>
-
-          <p className="text-sm font-medium text-primary-dark">
-            Assistant Professor &bull; Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi
-          </p>
-          <p className="text-xs text-text-muted leading-relaxed">
-            Supervised the architectural formulation, medical coordinate system invariance, cross-attention mechanism design, and scientific validation paradigms for radiation-free internal organ localization.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2 text-xs text-text-muted font-mono">
-            <span className="flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-primary" />
-              <span>CAIR, Indian Institute of Technology Mandi</span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Project Contributors & Interns Section */}
-      <div className="flex flex-col gap-6">
-        <div className="border-b border-border pb-3">
-          <h2 className="text-xl font-bold text-text-main">Project Contributors &amp; Researchers</h2>
-          <p className="text-xs text-text-muted mt-0.5">
-            Research Interns at the Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Khushi Mhamane - Project Lead */}
-          <div className="bg-white rounded-xl border-2 border-primary/40 p-6 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-mono px-3 py-0.5 rounded-bl-lg font-semibold tracking-wider uppercase">
-              Project Lead
-            </div>
-
-            <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
-              <img
-                src="/team/khushi_mhamane.jpg"
-                alt="Khushi Mhamane"
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2 text-center sm:text-left flex-grow">
-              <span className="text-[11px] font-mono text-primary font-bold uppercase tracking-wider">
-                Project Lead &bull; Research Intern
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark border border-primary/20 shrink-0">
+                Faculty Supervisor
               </span>
-              <h3 className="text-xl font-bold text-text-main">Khushi Mhamane</h3>
-              <p className="text-xs font-medium text-primary-dark">
-                Research Intern &bull; Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi
-              </p>
-              <p className="text-xs text-text-muted leading-relaxed mt-1">
-                Led the project formulation, 3D point cloud transformer architecture design, multi-organ loss balancing, and clinical validation across FLARE22, AMOS22, and CT-ORG benchmarks.
+            </div>
+
+            <div>
+              <div className="text-[11px] font-mono text-accent-green font-semibold uppercase tracking-wider mb-0.5">
+                Academic Project Supervisor
+              </div>
+              <h2 className="text-xl font-bold text-text-main">Dr. Deepak Raina</h2>
+              <p className="text-xs font-medium text-primary-dark mt-0.5">
+                Assistant Professor &bull; CAIR, IIT Mandi
               </p>
             </div>
+
+            <p className="text-xs text-text-muted leading-relaxed">
+              Supervised the architectural formulation, medical coordinate system invariance, cross-attention mechanism design, and scientific validation paradigms for radiation-free internal organ localization.
+            </p>
           </div>
 
-          {/* Sharon Melhi - Research Intern */}
-          <div className="bg-white rounded-xl border border-border p-6 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <div className="w-28 h-28 rounded-xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
-              <img
-                src="/team/sharon_melhi.png"
-                alt="Sharon Melhi"
-                className="w-full h-full object-cover object-top"
-              />
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
+            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="truncate">CAIR, IIT Mandi</span>
+          </div>
+        </div>
+
+        {/* Card 2: Khushi Mhamane - Project Lead */}
+        <div className="bg-white rounded-2xl border-2 border-primary/40 p-6 shadow-xs flex flex-col justify-between gap-4 relative overflow-hidden">
+          <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-mono px-3 py-0.5 rounded-bl-lg font-semibold tracking-wider uppercase">
+            Project Lead
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+                <img
+                  src="/team/khushi_mhamane.jpg"
+                  alt="Khushi Mhamane"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 shrink-0 mr-16">
+                Lead Intern
+              </span>
             </div>
 
-            <div className="flex flex-col gap-2 text-center sm:text-left flex-grow">
-              <span className="text-[11px] font-mono text-primary font-bold uppercase tracking-wider">
+            <div>
+              <div className="text-[11px] font-mono text-primary font-bold uppercase tracking-wider mb-0.5">
+                Project Lead &bull; Research Intern
+              </div>
+              <h2 className="text-xl font-bold text-text-main">Khushi Mhamane</h2>
+              <p className="text-xs font-medium text-primary-dark mt-0.5">
+                Research Intern &bull; CAIR, IIT Mandi
+              </p>
+            </div>
+
+            <p className="text-xs text-text-muted leading-relaxed">
+              Led the project formulation, 3D point cloud transformer architecture design, multi-organ loss balancing, and clinical validation across FLARE22, AMOS22, and CT-ORG benchmarks.
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
+            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="truncate">CAIR, IIT Mandi</span>
+          </div>
+        </div>
+
+        {/* Card 3: Sharon Melhi - Research Intern */}
+        <div className="bg-white rounded-2xl border-2 border-primary/30 p-6 shadow-xs flex flex-col justify-between gap-4 relative">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-sm shrink-0 bg-slate-100">
+                <img
+                  src="/team/sharon_melhi.png"
+                  alt="Sharon Melhi"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark border border-primary/20 shrink-0">
                 Research Intern
               </span>
-              <h3 className="text-xl font-bold text-text-main">Sharon Melhi</h3>
-              <p className="text-xs font-medium text-primary-dark">
-                Research Intern &bull; Centre for Artificial Intelligence and Robotics (CAIR), IIT Mandi
-              </p>
-              <p className="text-xs text-text-muted leading-relaxed mt-1">
-                Engineered the frozen Ridge canonical alignment pipeline, 3-seed ensemble epistemic uncertainty estimation, whole-body brain-aware augmentation, and GPU inference web deployment.
+            </div>
+
+            <div>
+              <div className="text-[11px] font-mono text-primary font-bold uppercase tracking-wider mb-0.5">
+                Research Intern
+              </div>
+              <h2 className="text-xl font-bold text-text-main">Sharon Melhi</h2>
+              <p className="text-xs font-medium text-primary-dark mt-0.5">
+                Research Intern &bull; CAIR, IIT Mandi
               </p>
             </div>
+
+            <p className="text-xs text-text-muted leading-relaxed">
+              Engineered the frozen Ridge canonical alignment pipeline, 3-seed ensemble epistemic uncertainty estimation, whole-body brain-aware augmentation, and GPU inference web deployment.
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-border text-[11px] text-text-muted font-mono flex items-center gap-1.5">
+            <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span className="truncate">CAIR, IIT Mandi</span>
           </div>
         </div>
       </div>
+
 
       {/* Institutional Banner */}
       <div className="bg-[#FAF8F5] border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">

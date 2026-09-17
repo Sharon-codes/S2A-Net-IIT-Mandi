@@ -148,8 +148,9 @@ export function ThreeViewer({
 
     // Grid Floor below feet
     const gridHelper = new THREE.GridHelper(1000, 24, 0xb8c2ad, 0xdce2d5);
-    gridHelper.position.y = -520;
+    gridHelper.position.y = -490;
     scene.add(gridHelper);
+
 
     // 1. Mannequin Group (For 3D Mesh Scans)
     const mannequin = createHumanMannequin();
@@ -392,12 +393,12 @@ export function ThreeViewer({
         texture.colorSpace = THREE.SRGBColorSpace;
 
         // Anatomically calibrated dimensioning and vertical registration:
-        // - Female bust photo: head to breasts (height 360mm, center Y=+190mm, Z=-35mm)
-        // - Male torso photo: chin to thighs (height 500mm, center Y=-10mm, Z=-35mm)
-        // - Depth camera: full body from head to floor (height 840mm, center Y=-50mm, Z=-35mm)
-        let planeW = 380;
-        let planeH = 650;
-        let planeY = 40;
+        // - Female bust photo: hair top (+410mm) to lower epigastrium (-120mm) -> height 530mm, center Y=+145mm
+        // - Male torso photo: chin (+345mm) to mid-thighs (-255mm) -> height 600mm, center Y=+45mm
+        // - Depth camera: full body from head to floor (height 840mm, center Y=-50mm)
+        let planeW = 420;
+        let planeH = 600;
+        let planeY = 45;
 
         const isFemalePhoto =
           patientSex === "female" && (modality === "rgb" || textureUrl.includes("female"));
@@ -407,13 +408,13 @@ export function ThreeViewer({
           modality === "depth" || textureUrl.includes("depth");
 
         if (isFemalePhoto) {
-          planeW = 360;
-          planeH = 360;
-          planeY = 190;
-        } else if (isMalePhoto) {
           planeW = 400;
-          planeH = 500;
-          planeY = -10;
+          planeH = 530;
+          planeY = 145;
+        } else if (isMalePhoto) {
+          planeW = 420;
+          planeH = 600;
+          planeY = 45;
         } else if (isDepth) {
           planeW = 420;
           planeH = 840;
@@ -666,8 +667,9 @@ export function ThreeViewer({
       });
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(tx, ty, tz),
-        new THREE.Vector3(tx, -520, tz),
+        new THREE.Vector3(tx, -490, tz),
       ]);
+
       const line = new THREE.Line(lineGeo, lineMat);
       line.userData = { targetName: name };
       group.add(line);

@@ -172,13 +172,13 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
       let zTop = 370;
       let zBottom = -470;
       if (isFemalePhoto) {
-        // Bust photo: cranial top (+370mm) to lower breasts / epigastrium (+10mm)
-        zTop = 370;
-        zBottom = 10;
+        // Bust photo: cranial hair (+410mm) to lower epigastrium (-120mm)
+        zTop = 410;
+        zBottom = -120;
       } else if (isMalePhoto) {
-        // Torso photo: chin (+240mm) to mid-thigh (-260mm)
-        zTop = 240;
-        zBottom = -260;
+        // Torso photo: chin (+345mm) to mid-thigh (-255mm)
+        zTop = 345;
+        zBottom = -255;
       } else if (isDepth) {
         // Full-body depth stream: cranium (+370mm) to floor (-470mm)
         zTop = 370;
@@ -219,30 +219,30 @@ export async function parseImageTo3DPoints(filename: string, buffer: ArrayBuffer
       // If input was a cropped image (bust or torso), complement with anatomical
       // full-body points to create a complete 4,096-point whole-body digital twin
       if (isFemalePhoto) {
-        // Complement female pelvis and lower limbs (Z: -470mm to +10mm)
+        // Complement female pelvis and lower limbs (Z: -470mm to -120mm)
         for (let i = 0; i < 2048; i++) {
           const theta = Math.random() * 2 * Math.PI;
-          const pz = 10 - Math.random() * 480;
-          const rX = pz > -150 ? 142 : 80;
-          const rY = pz > -150 ? 105 : 75;
+          const pz = -120 - Math.random() * 350;
+          const rX = pz > -220 ? 142 : 80;
+          const rY = pz > -220 ? 105 : 75;
           const px = Math.cos(theta) * rX * (0.8 + 0.2 * Math.random());
           const py = Math.sin(theta) * rY * (0.8 + 0.2 * Math.random()) + 40;
           rawPoints.push([px, py, pz]);
         }
       } else if (isMalePhoto) {
-        // Complement male cranium (+240mm to +370mm) and lower legs (-260mm to -470mm)
-        for (let i = 0; i < 1024; i++) {
-          // Head
+        // Complement male cranium (+345mm to +375mm) and lower legs (-255mm to -470mm)
+        for (let i = 0; i < 512; i++) {
+          // Head vault
           const theta = Math.random() * 2 * Math.PI;
-          const pz = 240 + Math.random() * 130;
-          const px = Math.cos(theta) * 78 * (0.85 + 0.15 * Math.random());
-          const py = Math.sin(theta) * 92 * (0.85 + 0.15 * Math.random()) + 45;
+          const pz = 345 + Math.random() * 30;
+          const px = Math.cos(theta) * 75 * (0.85 + 0.15 * Math.random());
+          const py = Math.sin(theta) * 90 * (0.85 + 0.15 * Math.random()) + 45;
           rawPoints.push([px, py, pz]);
         }
-        for (let i = 0; i < 1024; i++) {
+        for (let i = 0; i < 1536; i++) {
           // Lower legs
           const theta = Math.random() * 2 * Math.PI;
-          const pz = -260 - Math.random() * 210;
+          const pz = -255 - Math.random() * 215;
           const legOffset = Math.random() > 0.5 ? 70 : -70;
           const px = legOffset + Math.cos(theta) * 35;
           const py = Math.sin(theta) * 35 + 40;
