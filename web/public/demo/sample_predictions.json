@@ -4,113 +4,113 @@
     "target_index": 0,
     "centroid_canonical_mm": [
       -94.56,
-      21.02,
+      32.0,
       0.4
     ],
     "centroid_input_world_mm": [
-      -89.18,
-      110.8,
-      296.64
+      -94.56,
+      57.0,
+      450.4
     ],
     "seed_predictions_mm": {
       "42": [
-        -93.76,
-        20.42,
-        1.6
+        -94.16,
+        31.7,
+        0.9
       ],
       "43": [
-        -95.46,
-        21.72,
-        -0.6
+        -95.06,
+        32.4,
+        0.0
       ],
       "44": [
         -94.46,
-        20.92,
-        0.2
+        31.9,
+        0.3
       ]
     },
     "ensemble_prediction_mm": [
       -94.56,
-      21.02,
+      32.0,
       0.4
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 3.9,
     "uncertainty_level": "low"
   },
   "kidney_right": {
     "target": "kidney_right",
     "target_index": 1,
     "centroid_canonical_mm": [
-      65.58,
-      23.35,
-      -54.76
+      68.5,
+      25.0,
+      -49.5
     ],
     "centroid_input_world_mm": [
-      70.96,
-      113.13,
-      241.48
+      68.5,
+      50.0,
+      400.5
     ],
     "seed_predictions_mm": {
       "42": [
-        66.38,
-        22.75,
-        -53.56
+        68.9,
+        24.7,
+        -49.0
       ],
       "43": [
-        64.68,
-        24.05,
-        -55.76
+        68.0,
+        25.4,
+        -49.9
       ],
       "44": [
-        65.68,
-        23.25,
-        -54.96
+        68.6,
+        24.9,
+        -49.6
       ]
     },
     "ensemble_prediction_mm": [
-      65.58,
-      23.35,
-      -54.76
+      68.5,
+      25.0,
+      -49.5
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 3.1,
     "uncertainty_level": "low"
   },
   "kidney_left": {
     "target": "kidney_left",
     "target_index": 2,
     "centroid_canonical_mm": [
-      -68.45,
-      22.1,
-      -49.51
+      -68.5,
+      25.0,
+      -49.5
     ],
     "centroid_input_world_mm": [
-      -63.07,
-      111.88,
-      246.73
+      -68.5,
+      50.0,
+      400.5
     ],
     "seed_predictions_mm": {
       "42": [
-        -67.65,
-        21.5,
-        -48.31
+        -68.1,
+        24.7,
+        -49.0
       ],
       "43": [
-        -69.35,
-        22.8,
-        -50.51
+        -69.0,
+        25.4,
+        -49.9
       ],
       "44": [
-        -68.35,
-        22.0,
-        -49.71
+        -68.4,
+        24.9,
+        -49.6
       ]
     },
     "ensemble_prediction_mm": [
-      -68.45,
-      22.1,
-      -49.51
+      -68.5,
+      25.0,
+      -49.5
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 3.2,
     "uncertainty_level": "low"
   },
   "gallbladder": {
@@ -155,38 +155,38 @@
     "target": "liver",
     "target_index": 4,
     "centroid_canonical_mm": [
-      63.13,
-      74.22,
+      63.1,
+      72.0,
       5.2
     ],
     "centroid_input_world_mm": [
-      68.51,
-      164.0,
-      301.44
+      63.1,
+      97.0,
+      455.2
     ],
     "seed_predictions_mm": {
       "42": [
-        63.93,
-        73.62,
-        6.4
+        63.5,
+        71.7,
+        5.7
       ],
       "43": [
-        62.23,
-        74.92,
-        4.2
+        62.6,
+        72.4,
+        4.8
       ],
       "44": [
-        63.23,
-        74.12,
-        5.0
+        63.2,
+        71.9,
+        5.1
       ]
     },
     "ensemble_prediction_mm": [
-      63.13,
-      74.22,
+      63.1,
+      72.0,
       5.2
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 2.8,
     "uncertainty_level": "low"
   },
   "stomach": {
@@ -231,38 +231,38 @@
     "target": "pancreas",
     "target_index": 6,
     "centroid_canonical_mm": [
-      -18.25,
-      77.32,
-      -32.19
+      8.0,
+      50.0,
+      15.0
     ],
     "centroid_input_world_mm": [
-      -12.87,
-      167.1,
-      264.05
+      8.0,
+      75.0,
+      465.0
     ],
     "seed_predictions_mm": {
       "42": [
-        -17.45,
-        76.72,
-        -30.99
+        8.4,
+        49.7,
+        15.5
       ],
       "43": [
-        -19.15,
-        78.02,
-        -33.19
+        7.5,
+        50.4,
+        14.6
       ],
       "44": [
-        -18.15,
-        77.22,
-        -32.39
+        8.1,
+        49.9,
+        14.9
       ]
     },
     "ensemble_prediction_mm": [
-      -18.25,
-      77.32,
-      -32.19
+      8.0,
+      50.0,
+      15.0
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 4.1,
     "uncertainty_level": "low"
   },
   "adrenal_gland_right": {
@@ -763,76 +763,76 @@
     "target": "urinary_bladder",
     "target_index": 20,
     "centroid_canonical_mm": [
-      1.33,
-      62.23,
-      -244.09
+      0.0,
+      46.0,
+      -180.0
     ],
     "centroid_input_world_mm": [
-      6.71,
-      152.01,
-      52.15
+      0.0,
+      71.0,
+      270.0
     ],
     "seed_predictions_mm": {
       "42": [
-        2.13,
-        61.63,
-        -242.89
+        0.4,
+        45.7,
+        -179.5
       ],
       "43": [
-        0.43,
-        62.93,
-        -245.09
+        -0.5,
+        46.4,
+        -180.4
       ],
       "44": [
-        1.43,
-        62.13,
-        -244.29
+        0.1,
+        45.9,
+        -180.1
       ]
     },
     "ensemble_prediction_mm": [
-      1.33,
-      62.23,
-      -244.09
+      0.0,
+      46.0,
+      -180.0
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 3.6,
     "uncertainty_level": "low"
   },
   "prostate": {
     "target": "prostate",
     "target_index": 21,
     "centroid_canonical_mm": [
-      -1.64,
-      35.87,
-      -273.35
+      0.0,
+      35.0,
+      -170.0
     ],
     "centroid_input_world_mm": [
-      3.74,
-      125.65,
-      22.89
+      0.0,
+      60.0,
+      280.0
     ],
     "seed_predictions_mm": {
       "42": [
-        -0.84,
-        35.27,
-        -272.15
+        0.4,
+        34.7,
+        -169.5
       ],
       "43": [
-        -2.54,
-        36.57,
-        -274.35
+        -0.5,
+        35.4,
+        -170.4
       ],
       "44": [
-        -1.54,
-        35.77,
-        -273.55
+        0.1,
+        34.9,
+        -170.1
       ]
     },
     "ensemble_prediction_mm": [
-      -1.64,
-      35.87,
-      -273.35
+      0.0,
+      35.0,
+      -170.0
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 2.9,
     "uncertainty_level": "low"
   },
   "kidney_cyst_left": {
@@ -1901,78 +1901,78 @@
   },
   "heart": {
     "target": "heart",
-    "target_index": 50,
+    "target_index": 48,
     "centroid_canonical_mm": [
       -25.8,
-      87.16,
-      75.84
+      85.0,
+      75.8
     ],
     "centroid_input_world_mm": [
-      -20.42,
-      176.94,
-      372.08
+      -25.8,
+      110.0,
+      525.8
     ],
     "seed_predictions_mm": {
       "42": [
-        -25.0,
-        86.56,
-        77.04
+        -25.4,
+        84.7,
+        76.3
       ],
       "43": [
-        -26.7,
-        87.86,
-        74.84
+        -26.3,
+        85.4,
+        75.4
       ],
       "44": [
         -25.7,
-        87.06,
-        75.64
+        84.9,
+        75.7
       ]
     },
     "ensemble_prediction_mm": [
       -25.8,
-      87.16,
-      75.84
+      85.0,
+      75.8
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 3.4,
     "uncertainty_level": "low"
   },
   "aorta": {
     "target": "aorta",
-    "target_index": 51,
+    "target_index": 49,
     "centroid_canonical_mm": [
-      -11.61,
-      48.93,
-      58.28
+      -12.0,
+      28.0,
+      45.0
     ],
     "centroid_input_world_mm": [
-      -6.23,
-      138.71,
-      354.52
+      -12.0,
+      53.0,
+      495.0
     ],
     "seed_predictions_mm": {
       "42": [
-        -10.81,
-        48.33,
-        59.48
+        -11.6,
+        27.7,
+        45.5
       ],
       "43": [
-        -12.51,
-        49.63,
-        57.28
+        -12.5,
+        28.4,
+        44.6
       ],
       "44": [
-        -11.51,
-        48.83,
-        58.08
+        -11.9,
+        27.9,
+        44.9
       ]
     },
     "ensemble_prediction_mm": [
-      -11.61,
-      48.93,
-      58.28
+      -12.0,
+      28.0,
+      45.0
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 2.5,
     "uncertainty_level": "low"
   },
   "pulmonary_vein": {
@@ -3383,40 +3383,40 @@
   },
   "brain": {
     "target": "brain",
-    "target_index": 89,
+    "target_index": 84,
     "centroid_canonical_mm": [
-      -2.94,
-      55.26,
+      -2.9,
+      52.0,
       350.0
     ],
     "centroid_input_world_mm": [
-      2.44,
-      145.04,
-      646.24
+      -2.9,
+      77.0,
+      800.0
     ],
     "seed_predictions_mm": {
       "42": [
-        -2.14,
-        54.66,
-        351.2
+        -2.5,
+        51.7,
+        350.5
       ],
       "43": [
-        -3.84,
-        55.96,
-        349.0
+        -3.4,
+        52.4,
+        349.6
       ],
       "44": [
-        -2.84,
-        55.16,
-        349.8
+        -2.8,
+        51.9,
+        349.9
       ]
     },
     "ensemble_prediction_mm": [
-      -2.94,
-      55.26,
+      -2.9,
+      52.0,
       350.0
     ],
-    "uncertainty_mm": 1.26,
+    "uncertainty_mm": 2.1,
     "uncertainty_level": "low"
   },
   "skull": {
@@ -4448,57 +4448,153 @@
   "uterus": {
     "target": "uterus",
     "target_index": 117,
-    "centroid_canonical_mm": [0.0, 42.0, -255.0],
-    "centroid_input_world_mm": [5.38, 131.78, 41.24],
+    "centroid_canonical_mm": [
+      0.0,
+      40.0,
+      -145.0
+    ],
+    "centroid_input_world_mm": [
+      0.0,
+      65.0,
+      305.0
+    ],
     "seed_predictions_mm": {
-      "42": [0.8, 41.4, -254.2],
-      "43": [-0.9, 42.7, -256.1],
-      "44": [0.1, 41.9, -254.7]
+      "42": [
+        0.4,
+        39.7,
+        -144.5
+      ],
+      "43": [
+        -0.5,
+        40.4,
+        -145.4
+      ],
+      "44": [
+        0.1,
+        39.9,
+        -145.1
+      ]
     },
-    "ensemble_prediction_mm": [0.0, 42.0, -255.0],
-    "uncertainty_mm": 2.14,
+    "ensemble_prediction_mm": [
+      0.0,
+      40.0,
+      -145.0
+    ],
+    "uncertainty_mm": 2.4,
     "uncertainty_level": "low"
   },
   "ovary_left": {
     "target": "ovary_left",
     "target_index": 118,
-    "centroid_canonical_mm": [-35.0, 38.0, -250.0],
-    "centroid_input_world_mm": [-29.62, 127.78, 46.24],
+    "centroid_canonical_mm": [
+      -35.0,
+      38.0,
+      -150.0
+    ],
+    "centroid_input_world_mm": [
+      -35.0,
+      63.0,
+      300.0
+    ],
     "seed_predictions_mm": {
-      "42": [-34.2, 37.5, -249.1],
-      "43": [-35.9, 38.6, -251.2],
-      "44": [-34.9, 37.9, -249.7]
+      "42": [
+        -34.6,
+        37.7,
+        -149.5
+      ],
+      "43": [
+        -35.5,
+        38.4,
+        -150.4
+      ],
+      "44": [
+        -34.9,
+        37.9,
+        -150.1
+      ]
     },
-    "ensemble_prediction_mm": [-35.0, 38.0, -250.0],
-    "uncertainty_mm": 2.85,
+    "ensemble_prediction_mm": [
+      -35.0,
+      38.0,
+      -150.0
+    ],
+    "uncertainty_mm": 2.7,
     "uncertainty_level": "low"
   },
   "ovary_right": {
     "target": "ovary_right",
     "target_index": 119,
-    "centroid_canonical_mm": [35.0, 38.0, -250.0],
-    "centroid_input_world_mm": [40.38, 127.78, 46.24],
+    "centroid_canonical_mm": [
+      35.0,
+      38.0,
+      -150.0
+    ],
+    "centroid_input_world_mm": [
+      35.0,
+      63.0,
+      300.0
+    ],
     "seed_predictions_mm": {
-      "42": [35.8, 37.4, -249.2],
-      "43": [34.1, 38.7, -251.1],
-      "44": [35.1, 37.9, -249.7]
+      "42": [
+        35.4,
+        37.7,
+        -149.5
+      ],
+      "43": [
+        34.5,
+        38.4,
+        -150.4
+      ],
+      "44": [
+        35.1,
+        37.9,
+        -150.1
+      ]
     },
-    "ensemble_prediction_mm": [35.0, 38.0, -250.0],
-    "uncertainty_mm": 2.91,
+    "ensemble_prediction_mm": [
+      35.0,
+      38.0,
+      -150.0
+    ],
+    "uncertainty_mm": 2.6,
     "uncertainty_level": "low"
   },
   "vagina": {
     "target": "vagina",
     "target_index": 120,
-    "centroid_canonical_mm": [0.0, 30.0, -290.0],
-    "centroid_input_world_mm": [5.38, 119.78, 6.24],
+    "centroid_canonical_mm": [
+      0.0,
+      30.0,
+      -200.0
+    ],
+    "centroid_input_world_mm": [
+      0.0,
+      55.0,
+      250.0
+    ],
     "seed_predictions_mm": {
-      "42": [0.8, 29.5, -289.0],
-      "43": [-0.9, 30.7, -291.2],
-      "44": [0.1, 29.8, -289.8]
+      "42": [
+        0.4,
+        29.7,
+        -199.5
+      ],
+      "43": [
+        -0.5,
+        30.4,
+        -200.4
+      ],
+      "44": [
+        0.1,
+        29.9,
+        -200.1
+      ]
     },
-    "ensemble_prediction_mm": [0.0, 30.0, -290.0],
-    "uncertainty_mm": 3.42,
+    "ensemble_prediction_mm": [
+      0.0,
+      30.0,
+      -200.0
+    ],
+    "uncertainty_mm": 3.5,
     "uncertainty_level": "low"
   }
 }

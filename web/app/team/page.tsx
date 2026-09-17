@@ -37,11 +37,12 @@ export default function TeamPage() {
 
       {/* Faculty Supervisor Section */}
       <div className="bg-white rounded-2xl border border-border p-8 shadow-xs flex flex-col md:flex-row items-center gap-8">
-        <div className="relative w-36 h-36 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/25 border-2 border-dashed border-primary/40 flex flex-col items-center justify-center text-primary-dark shrink-0 shadow-inner">
-          <span className="text-3xl font-black font-mono tracking-wider">DR</span>
-          <span className="text-[10px] uppercase font-mono mt-2 text-text-muted text-center px-2">
-            Photo to be uploaded
-          </span>
+        <div className="relative w-36 h-36 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-md shrink-0 bg-slate-100">
+          <img
+            src="/team/deepak_raina.png"
+            alt="Dr. Deepak Raina"
+            className="w-full h-full object-cover object-top"
+          />
         </div>
 
         <div className="flex flex-col gap-3 text-center md:text-left flex-grow">

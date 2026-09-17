@@ -166,27 +166,22 @@ export default function DemoPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
       {/* Title & Description Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-border shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-text-main flex flex-wrap items-center gap-2">
             <span>3D Interactive Anatomy Localization</span>
-            <span className="text-xs font-mono font-normal px-2 py-0.5 rounded bg-primary/10 text-primary-dark border border-primary/20">
-              GPU-Accelerated Cross-Attention
+            <span className="text-[11px] font-mono font-normal px-2 py-0.5 rounded bg-primary/10 text-primary-dark border border-primary/20">
+              CAIR IIT Mandi &bull; Sex-Aware GNN
             </span>
           </h1>
-          <p className="text-sm text-text-muted mt-1 max-w-2xl">
-            Upload an external patient body scan (.PLY, .OBJ, .STL) to predict 3D centroid positions and multi-seed disagreement halos for internal anatomical organs without ionizing radiation.
+          <p className="text-xs sm:text-sm text-text-muted mt-1 max-w-3xl">
+            Input external patient surface geometry via 3D scans, depth cameras, or clinical photographs to predict 3D centroid coordinates and calibrated uncertainty for 121 anatomical organs.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRunInference}
-            disabled={isPredicting || !fileBuffer}
-            className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white font-semibold text-sm shadow-sm transition-all disabled:opacity-50"
-          >
-            {isPredicting ? "Computing Centroids..." : "Predict 3D Centroids"}
-          </button>
+        <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
+          <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" />
+          <span>Model Ensemble: 121 Targets</span>
         </div>
       </div>
 

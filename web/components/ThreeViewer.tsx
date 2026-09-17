@@ -288,16 +288,25 @@ export function ThreeViewer({
     const midY = (minY + maxY) / 2; // Medical AP
     const midZ = (minZ + maxZ) / 2; // Medical SI
 
-    // If point cloud has large uncentered scanner offset in canonical mode, align to canonical center
-    const offsetX = (coordinateFrame === "canonical" && Math.abs(midX) > 40) ? midX : 0;
-    const offsetY = (coordinateFrame === "canonical" && (midY > 120 || midY < -40)) ? (midY - 45) : 0;
-    const offsetZ = (coordinateFrame === "canonical" && (midZ > 200 || midZ < -150)) ? (midZ - 40) : 0;
+    // Canonical alignment: lock skull apex at +375mm to prevent point clouds from shooting above cranium
+    let shiftX = 0;
+    let shiftY = 0;
+    let shiftZ = 0;
+
+    if (coordinateFrame === "canonical") {
+      if (Math.abs(midX) > 30) shiftX = midX;
+      if (Math.abs(midY - 48) > 30) shiftY = midY - 48;
+      // If point cloud extends above the mannequin skull (+385mm), align the cranial apex cleanly to +375mm
+      if (maxZ > 385) {
+        shiftZ = maxZ - 375;
+      }
+    }
 
     for (let i = 0; i < count; i++) {
       const p = surfacePoints[i];
-      const cx = p[0] - offsetX;
-      const cy = p[1] - offsetY;
-      const cz = p[2] - offsetZ;
+      const cx = p[0] - shiftX;
+      const cy = p[1] - shiftY;
+      const cz = p[2] - shiftZ;
 
       // Map medical (X, Y, Z) to Three.js upright (X: X, Y: Z, Z: Y)
       const [tx, ty, tz] = toThreeCoord([cx, cy, cz]);

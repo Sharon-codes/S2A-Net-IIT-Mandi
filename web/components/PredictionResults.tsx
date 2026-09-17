@@ -143,9 +143,6 @@ export function PredictionResults({
                   <span className="font-semibold text-sm text-text-main capitalize">
                     {name.replace(/_/g, " ")}
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white border border-border text-text-muted">
-                    Slot #{pred.target_index}
-                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
