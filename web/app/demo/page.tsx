@@ -13,11 +13,13 @@ export default function DemoPage() {
   const [activeFileName, setActiveFileName] = useState<string | null>(null);
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
 
+  const [patientSex, setPatientSex] = useState<"auto" | "female" | "male">("female");
   const [selectedTargets, setSelectedTargets] = useState<string[]>([
     "brain",
     "heart",
     "liver",
     "kidney_left",
+    "uterus",
     "urinary_bladder",
   ]);
   const [activeFocusedTarget, setActiveFocusedTarget] = useState<string | null>("brain");
@@ -108,6 +110,7 @@ export default function DemoPage() {
       formData.append("file", blob, activeFileName);
       formData.append("targets", selectedTargets.join(","));
       formData.append("model_variant", modelVariant);
+      formData.append("sex", patientSex);
 
       const endpoint = selectedTargets.length === 1 ? `${apiUrl}/predict` : `${apiUrl}/predict-multiple`;
       const res = await fetch(endpoint, {
@@ -216,6 +219,8 @@ export default function DemoPage() {
             onRunInference={handleRunInference}
             isPredicting={isPredicting}
             hasGeometry={!!fileBuffer}
+            patientSex={patientSex}
+            onPatientSexChange={setPatientSex}
           />
 
           <PredictionResults
@@ -229,8 +234,8 @@ export default function DemoPage() {
           />
         </div>
 
-        {/* Right Column: 3D Canvas Viewer (7 cols) */}
-        <div className="lg:col-span-7 h-[780px] sticky top-20 flex flex-col">
+        {/* Right Column: 3D Canvas Viewer (7 cols) - Mobile Responsive Height */}
+        <div className="lg:col-span-7 h-[420px] sm:h-[560px] lg:h-[780px] lg:sticky lg:top-20 flex flex-col">
           <ThreeViewer
             surfacePoints={surfacePoints}
             predictions={predictions}

@@ -58,6 +58,7 @@ experiments/phase5/
 experiments/phase6/
 experiments/phase7/
 experiments/scaling_v3/
+experiments/sex_aware/
 experiments/phase10R/checkpoints/D*
 experiments/phase10R/checkpoints/Domain*
 experiments/phase10R/checkpoints/E*

@@ -14,13 +14,13 @@ interface TargetBodyMapProps {
 }
 
 const SYSTEM_OPTIONS = [
-  { id: "all", label: "All 107 Targets", count: 107, color: "#475569" },
+  { id: "all", label: "All 111 Targets", count: 111, color: "#475569" },
   { id: "cranial", label: "Cranial", count: 2, color: "#06b6d4" },
   { id: "thoracic", label: "Thorax", count: 9, color: "#f43f5e" },
   { id: "vascular", label: "Vascular", count: 17, color: "#ef4444" },
   { id: "abdominal", label: "Abdomen", count: 14, color: "#10b981" },
   { id: "spine", label: "Spine & Vertebrae", count: 28, color: "#f59e0b" },
-  { id: "pelvis", label: "Pelvis & Muscles", count: 15, color: "#8b5cf6" },
+  { id: "pelvis", label: "Pelvis & Reproductive", count: 19, color: "#d946ef" },
   { id: "ribs", label: "Ribs & Skeleton", count: 22, color: "#14b8a6" },
 ];
 
@@ -101,21 +101,29 @@ export function TargetBodyMap({
     const mannequin = createHumanMannequin();
     scene.add(mannequin);
 
-    // Create Interactive Organ Landmark Pins for ALL 107 Targets
-    const pinMeshes: THREE.Mesh[] = [];
+    // Add Pedestal Floor Turntable Disc
+    const discGeo = new THREE.CylinderGeometry(280, 290, 8, 48);
+    const discMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.3,
+      metalness: 0.2,
+    });
+    const turntableDisc = new THREE.Mesh(discGeo, discMat);
+    turntableDisc.position.set(0, -525, 0);
+    scene.add(turntableDisc);
 
+    // Add 3D Landmark Pin Spheres
+    const pinMeshes: THREE.Mesh[] = [];
     ALL_ATLAS_TARGETS.forEach((pin) => {
-      // Map medical [X, Y, Z] to Three.js [X, Z, Y]
+      // Map coordinates: [X, Y, Z] -> Three.js [X, Z, Y]
       const tx = pin.coords[0];
-      const ty = pin.coords[2]; // Medical Z -> Three Y
-      const tz = pin.coords[1]; // Medical Y -> Three Z
+      const ty = pin.coords[2];
+      const tz = pin.coords[1];
 
       const isSel = selectedTarget === pin.id;
-      const isFilteredOut = systemFilter && systemFilter !== "all" && pin.system !== systemFilter;
+      const isFilteredOut = systemFilter !== null && pin.system !== systemFilter;
 
-      const radius = isSel ? 7.5 : isFilteredOut ? 2.0 : 3.8;
-      const sphereGeo = new THREE.SphereGeometry(radius, 16, 16);
-
+      const sphereGeo = new THREE.SphereGeometry(isSel ? 7.5 : 5.0, 16, 16);
       const sphereMat = new THREE.MeshStandardMaterial({
         color: isSel ? 0xffffff : pin.color,
         emissive: isSel ? 0x38bdf8 : pin.color,
@@ -227,10 +235,88 @@ export function TargetBodyMap({
       updateCamera();
     };
 
+    // Touch Controls for Mobile Devices
+    let initialPinchDist = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      setAutoRotate(false);
+      if (e.touches.length === 1) {
+        isDraggingRef.current = true;
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDraggingRef.current = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDist = Math.hypot(dx, dy);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1 && isDraggingRef.current) {
+        const deltaX = e.touches[0].clientX - previousMousePositionRef.current.x;
+        const deltaY = e.touches[0].clientY - previousMousePositionRef.current.y;
+
+        cameraSphericalRef.current.theta -= deltaX * 0.008;
+        cameraSphericalRef.current.phi = Math.max(
+          0.05,
+          Math.min(Math.PI - 0.05, cameraSphericalRef.current.phi - deltaY * 0.008)
+        );
+
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        updateCamera();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const currentDist = Math.hypot(dx, dy);
+        const pinchDelta = initialPinchDist - currentDist;
+
+        cameraSphericalRef.current.radius = Math.max(
+          350,
+          Math.min(1800, cameraSphericalRef.current.radius + pinchDelta * 1.2)
+        );
+        initialPinchDist = currentDist;
+        updateCamera();
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      isDraggingRef.current = false;
+      if (e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        const rect = container.getBoundingClientRect();
+        const mouseX = ((touch.clientX - rect.left) / container.clientWidth) * 2 - 1;
+        const mouseY = -((touch.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+        const intersects = raycaster.intersectObjects(pinMeshesRef.current);
+
+        if (intersects.length > 0) {
+          const hit = intersects[0].object as any;
+          const pin = hit.userData.pinData as AtlasTargetDef;
+          onSelectTarget(pin.id);
+        }
+      }
+    };
+
+    // Resize Handler
+    const handleResize = () => {
+      if (!container || !camera || !renderer) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener("resize", handleResize);
+
     container.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     container.addEventListener("wheel", onWheel, { passive: false });
+
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
@@ -238,6 +324,12 @@ export function TargetBodyMap({
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
       container.removeEventListener("wheel", onWheel);
+
+      container.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("resize", handleResize);
+
       renderer.dispose();
     };
   }, [selectedTarget, systemFilter]);
@@ -264,11 +356,11 @@ export function TargetBodyMap({
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      {/* System Filter Tabs Bar above 3D Viewer */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-white p-2 rounded-xl border border-border shadow-xs">
-        <span className="text-xs font-semibold text-text-muted px-2 flex items-center gap-1.5">
+      {/* System Filter Tabs Bar above 3D Viewer - Horizontally Scrollable on Mobile */}
+      <div className="flex items-center gap-1.5 bg-white p-2 rounded-2xl border border-border shadow-xs overflow-x-auto no-scrollbar">
+        <span className="text-xs font-semibold text-text-muted px-2 flex items-center gap-1.5 shrink-0">
           <Layers className="w-3.5 h-3.5 text-primary" />
-          <span>Filter 3D Anatomical System:</span>
+          <span className="hidden sm:inline">Filter 3D System:</span>
         </span>
         {SYSTEM_OPTIONS.map((sys) => {
           const isActive = (systemFilter === null && sys.id === "all") || systemFilter === sys.id;
@@ -276,7 +368,7 @@ export function TargetBodyMap({
             <button
               key={sys.id}
               onClick={() => handleFilterClick(sys.id)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 shrink-0 ${
                 isActive
                   ? "bg-slate-900 text-white font-semibold shadow-xs"
                   : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
@@ -294,70 +386,72 @@ export function TargetBodyMap({
       </div>
 
       {/* 3D Viewer Canvas Container */}
-      <div className="relative w-full h-[520px] rounded-2xl overflow-hidden border border-border bg-[#F8FAFC] shadow-sm">
-        <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[540px] rounded-3xl overflow-hidden border border-border bg-[#F8FAFC] shadow-sm select-none">
+        <div
+          ref={mountRef}
+          className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
+        />
 
         {/* Viewport Presets & Rotation Controls Top-Right */}
-        <div className="absolute top-4 right-4 flex items-center gap-1 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-slate-700 z-10">
+        <div className="absolute top-3 right-3 flex flex-wrap max-w-[210px] sm:max-w-none justify-end gap-1 bg-white/95 backdrop-blur px-2 py-1.5 rounded-2xl border border-border shadow-xs text-xs font-medium text-slate-700 z-10">
           <button
             onClick={() => setView("front")}
-            className="px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
           >
-            Anterior (Front)
+            Anterior
           </button>
           <button
             onClick={() => setView("back")}
-            className="px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
           >
-            Posterior (Spine & Kidneys)
+            Posterior
           </button>
           <button
             onClick={() => setView("side")}
-            className="px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors"
+            className="px-2 py-0.5 rounded-lg hover:bg-slate-100 transition-colors text-[11px]"
           >
             Lateral
           </button>
           <button
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-2 py-0.5 rounded-lg transition-colors text-[11px] ${
               autoRotate ? "bg-primary text-white font-semibold shadow-xs" : "hover:bg-slate-100 text-slate-600"
             }`}
           >
-            {autoRotate ? "Turntable Active" : "Pause Orbit"}
+            {autoRotate ? "Orbit On" : "Paused"}
           </button>
         </div>
 
         {/* Floating Hover Card Top-Left */}
         {hoveredPin && (
-          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur px-4 py-3 rounded-xl border border-slate-200 shadow-lg text-xs flex flex-col gap-1.5 z-10 pointer-events-none animate-fadeIn max-w-sm">
+          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-2 sm:px-4 sm:py-3 rounded-2xl border border-slate-200 shadow-lg text-xs flex flex-col gap-1 z-10 pointer-events-none animate-fadeIn max-w-[240px] sm:max-w-sm">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: hoveredPin.hex }} />
-              <span className="font-bold text-sm text-slate-900">{hoveredPin.name}</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                Slot #{hoveredPin.slot}
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: hoveredPin.hex }} />
+              <span className="font-bold text-xs sm:text-sm text-slate-900 truncate">{hoveredPin.name}</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
+                #{hoveredPin.slot}
               </span>
             </div>
-            <div className="flex items-center justify-between text-slate-500 text-[11px]">
-              <span>{hoveredPin.category}</span>
-              <span className="font-mono text-slate-700 font-medium">
-                [{hoveredPin.coords[0].toFixed(1)}, {hoveredPin.coords[1].toFixed(1)}, {hoveredPin.coords[2].toFixed(1)}] mm
+            <div className="flex items-center justify-between text-slate-500 text-[10px] sm:text-[11px]">
+              <span className="truncate">{hoveredPin.category}</span>
+              <span className="font-mono text-slate-700 font-medium ml-1">
+                [{hoveredPin.coords[0].toFixed(0)}, {hoveredPin.coords[1].toFixed(0)}, {hoveredPin.coords[2].toFixed(0)}]
               </span>
             </div>
-            <span className="text-[10px] text-primary-dark font-mono font-medium">
-              Click landmark sphere to filter organ card below &darr;
+            <span className="text-[10px] text-primary font-mono">
+              Tap sphere to inspect &darr;
             </span>
           </div>
         )}
 
         {/* Informative Footer Badge */}
-        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-xs text-xs text-slate-600 z-10 flex items-center gap-2">
+        <div className="absolute bottom-3 left-3 right-3 sm:right-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-2xl border border-slate-200 shadow-xs text-[11px] sm:text-xs text-slate-600 z-10 flex items-center gap-2">
           <Compass className="w-4 h-4 text-primary shrink-0" />
           <span>
-            <strong>107 Anatomical Targets:</strong> Spheres show true canonical 3D coordinates. Rotate 360° to inspect anterior, posterior, cranial, and pelvic structures.
+            <strong>111 Anatomical Targets:</strong> 3D pins show canonical coordinates including female reproductive structures. Drag to orbit 360°.
           </span>
         </div>
       </div>
     </div>
   );
 }
-

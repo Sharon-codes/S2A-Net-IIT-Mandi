@@ -172,11 +172,61 @@ export function ThreeViewer({
       renderer.setSize(w, h);
     };
 
+    // Touch Navigation Controls for Mobile Devices
+    let initialPinchDist = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isDraggingRef.current = true;
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDraggingRef.current = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDist = Math.hypot(dx, dy);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1 && isDraggingRef.current) {
+        const deltaX = e.touches[0].clientX - previousMousePositionRef.current.x;
+        const deltaY = e.touches[0].clientY - previousMousePositionRef.current.y;
+
+        cameraSphericalRef.current.theta -= deltaX * 0.008;
+        cameraSphericalRef.current.phi = Math.max(
+          0.05,
+          Math.min(Math.PI - 0.05, cameraSphericalRef.current.phi - deltaY * 0.008)
+        );
+
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        updateCamera();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const currentDist = Math.hypot(dx, dy);
+        const pinchDelta = initialPinchDist - currentDist;
+
+        cameraSphericalRef.current.radius = Math.max(
+          250,
+          Math.min(2200, cameraSphericalRef.current.radius + pinchDelta * 1.2)
+        );
+        initialPinchDist = currentDist;
+        updateCamera();
+      }
+    };
+
+    const onTouchEnd = () => {
+      isDraggingRef.current = false;
+    };
+
     container.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     container.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("resize", handleResize);
+
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
@@ -185,6 +235,10 @@ export function ThreeViewer({
       window.removeEventListener("mouseup", onMouseUp);
       container.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", handleResize);
+
+      container.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       renderer.dispose();
     };
   }, []);
@@ -373,48 +427,48 @@ export function ThreeViewer({
   return (
     <div className="relative w-full h-full min-h-[520px] rounded-xl overflow-hidden border border-border bg-[#F6F7F2] shadow-inner">
       {/* 3D Canvas Mounting Element */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-none" />
 
       {/* Preset Viewport Buttons Top Bar */}
-      <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-lg border border-border shadow-xs text-xs font-medium text-text-muted z-10">
-        <span className="text-[10px] uppercase font-mono px-1">View:</span>
+      <div className="absolute top-3 right-3 flex flex-wrap max-w-[210px] sm:max-w-none justify-end items-center gap-1 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-xs font-medium text-text-muted z-10">
+        <span className="text-[10px] uppercase font-mono px-1 hidden sm:inline">View:</span>
         <button
           onClick={() => setViewPreset("iso")}
-          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
         >
           Perspective
         </button>
         <button
           onClick={() => setViewPreset("coronal_front")}
-          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Front (AP)
+          Front
         </button>
         <button
           onClick={() => setViewPreset("coronal_back")}
-          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Back (PA)
+          Back
         </button>
         <button
           onClick={() => setViewPreset("sagittal")}
-          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Side (Lat)
+          Side
         </button>
         <button
           onClick={() => setViewPreset("axial")}
-          className="px-2 py-1 rounded hover:bg-background hover:text-text-main transition-colors"
+          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] rounded hover:bg-background hover:text-text-main transition-colors"
         >
-          Top (Axial)
+          Top
         </button>
       </div>
 
       {/* Visibility Toggles Top-Left */}
-      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1.5 rounded-lg border border-border shadow-xs text-xs font-medium text-text-muted z-10">
+      <div className="absolute top-3 left-3 flex items-center gap-1 bg-white/95 backdrop-blur px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-border shadow-xs text-[11px] sm:text-xs font-medium text-text-muted z-10">
         <button
           onClick={() => setShowMannequin(!showMannequin)}
-          className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
+          className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition-colors ${
             showMannequin ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
           }`}
         >
@@ -422,11 +476,11 @@ export function ThreeViewer({
         </button>
         <button
           onClick={() => setShowPoints(!showPoints)}
-          className={`flex items-center gap-1.5 px-2 py-1 rounded transition-colors ${
+          className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition-colors ${
             showPoints ? "bg-primary text-white font-semibold" : "hover:bg-background text-text-muted"
           }`}
         >
-          <span>✨ Surface Cloud</span>
+          <span>✨ Cloud</span>
         </button>
       </div>
 

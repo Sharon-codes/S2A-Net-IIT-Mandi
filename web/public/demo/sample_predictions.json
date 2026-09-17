@@ -4444,5 +4444,61 @@
     ],
     "uncertainty_mm": 1.26,
     "uncertainty_level": "low"
+  },
+  "uterus": {
+    "target": "uterus",
+    "target_index": 117,
+    "centroid_canonical_mm": [0.0, 42.0, -255.0],
+    "centroid_input_world_mm": [5.38, 131.78, 41.24],
+    "seed_predictions_mm": {
+      "42": [0.8, 41.4, -254.2],
+      "43": [-0.9, 42.7, -256.1],
+      "44": [0.1, 41.9, -254.7]
+    },
+    "ensemble_prediction_mm": [0.0, 42.0, -255.0],
+    "uncertainty_mm": 2.14,
+    "uncertainty_level": "low"
+  },
+  "ovary_left": {
+    "target": "ovary_left",
+    "target_index": 118,
+    "centroid_canonical_mm": [-35.0, 38.0, -250.0],
+    "centroid_input_world_mm": [-29.62, 127.78, 46.24],
+    "seed_predictions_mm": {
+      "42": [-34.2, 37.5, -249.1],
+      "43": [-35.9, 38.6, -251.2],
+      "44": [-34.9, 37.9, -249.7]
+    },
+    "ensemble_prediction_mm": [-35.0, 38.0, -250.0],
+    "uncertainty_mm": 2.85,
+    "uncertainty_level": "low"
+  },
+  "ovary_right": {
+    "target": "ovary_right",
+    "target_index": 119,
+    "centroid_canonical_mm": [35.0, 38.0, -250.0],
+    "centroid_input_world_mm": [40.38, 127.78, 46.24],
+    "seed_predictions_mm": {
+      "42": [35.8, 37.4, -249.2],
+      "43": [34.1, 38.7, -251.1],
+      "44": [35.1, 37.9, -249.7]
+    },
+    "ensemble_prediction_mm": [35.0, 38.0, -250.0],
+    "uncertainty_mm": 2.91,
+    "uncertainty_level": "low"
+  },
+  "vagina": {
+    "target": "vagina",
+    "target_index": 120,
+    "centroid_canonical_mm": [0.0, 30.0, -290.0],
+    "centroid_input_world_mm": [5.38, 119.78, 6.24],
+    "seed_predictions_mm": {
+      "42": [0.8, 29.5, -289.0],
+      "43": [-0.9, 30.7, -291.2],
+      "44": [0.1, 29.8, -289.8]
+    },
+    "ensemble_prediction_mm": [0.0, 30.0, -290.0],
+    "uncertainty_mm": 3.42,
+    "uncertainty_level": "low"
   }
 }

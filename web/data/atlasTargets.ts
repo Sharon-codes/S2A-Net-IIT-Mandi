@@ -1971,5 +1971,86 @@ export const ALL_ATLAS_TARGETS: AtlasTargetDef[] = [
       "calvarium",
       "neurocranium"
     ]
+  },
+  {
+    "id": "uterus",
+    "slot": 117,
+    "name": "Uterus",
+    "category": "Pelvis, Urinary & Musculature",
+    "system": "pelvis",
+    "coords": [
+      0.0,
+      42.0,
+      -255.0
+    ],
+    "color": 14240751,
+    "hex": "#d946ef",
+    "side": "central",
+    "synonyms": [
+      "womb",
+      "uterine body",
+      "myometrium",
+      "female pelvis"
+    ]
+  },
+  {
+    "id": "ovary_left",
+    "slot": 118,
+    "name": "Left Ovary",
+    "category": "Pelvis, Urinary & Musculature",
+    "system": "pelvis",
+    "coords": [
+      -35.0,
+      38.0,
+      -250.0
+    ],
+    "color": 15485337,
+    "hex": "#ec4899",
+    "side": "lateral",
+    "synonyms": [
+      "ovarium sinistrum",
+      "left adnexa",
+      "female gonad"
+    ]
+  },
+  {
+    "id": "ovary_right",
+    "slot": 119,
+    "name": "Right Ovary",
+    "category": "Pelvis, Urinary & Musculature",
+    "system": "pelvis",
+    "coords": [
+      35.0,
+      38.0,
+      -250.0
+    ],
+    "color": 15485337,
+    "hex": "#ec4899",
+    "side": "lateral",
+    "synonyms": [
+      "ovarium dextrum",
+      "right adnexa",
+      "female gonad"
+    ]
+  },
+  {
+    "id": "vagina",
+    "slot": 120,
+    "name": "Vagina",
+    "category": "Pelvis, Urinary & Musculature",
+    "system": "pelvis",
+    "coords": [
+      0.0,
+      30.0,
+      -290.0
+    ],
+    "color": 13459146,
+    "hex": "#cd32ca",
+    "side": "central",
+    "synonyms": [
+      "vaginal canal",
+      "birth canal",
+      "colpos"
+    ]
   }
 ];

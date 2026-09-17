@@ -77,7 +77,8 @@ async def get_targets():
 async def predict(
     surface_file: Optional[UploadFile] = File(None),
     target: str = Form("spleen"),
-    model_variant: str = Form("phase10r")
+    model_variant: str = Form("phase10r"),
+    sex: str = Form("auto")
 ):
     """
     Locates a single requested internal anatomical target from uploaded 3D surface scan.
@@ -106,7 +107,8 @@ async def predict(
             pts_norm=prep["pts_norm"],
             c_external=prep["c_external"],
             targets=[canon_name],
-            model_variant=model_variant
+            model_variant=model_variant,
+            sex=sex
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference error: {str(e)}")
@@ -135,7 +137,8 @@ async def predict(
 async def predict_multiple(
     surface_file: Optional[UploadFile] = File(None),
     targets: str = Form("liver,spleen,kidney_left,kidney_right"),
-    model_variant: str = Form("phase10r")
+    model_variant: str = Form("phase10r"),
+    sex: str = Form("auto")
 ):
     """
     Locates multiple internal anatomical targets from uploaded 3D surface in a SINGLE model pass.
@@ -160,7 +163,8 @@ async def predict_multiple(
             pts_norm=prep["pts_norm"],
             c_external=prep["c_external"],
             targets=target_list,
-            model_variant=model_variant
+            model_variant=model_variant,
+            sex=sex
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference error: {str(e)}")

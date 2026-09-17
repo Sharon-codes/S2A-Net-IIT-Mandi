@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { Play, Pause, RotateCcw, Activity, ShieldCheck, Cpu } from "lucide-react";
+import { Play, Pause, Activity, ShieldCheck, Cpu, Sparkles, ChevronRight } from "lucide-react";
 
 export function RoboticArmScanner() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -18,6 +18,7 @@ export function RoboticArmScanner() {
   const armWristRef = useRef<THREE.Group | null>(null);
   const scannerHeadRef = useRef<THREE.Group | null>(null);
   const scanBeamRef = useRef<THREE.Mesh | null>(null);
+  const scanFanRef = useRef<THREE.Mesh | null>(null);
   const scanLineRef = useRef<THREE.Mesh | null>(null);
 
   // Organ centroid meshes for illumination during sweep
@@ -26,6 +27,7 @@ export function RoboticArmScanner() {
   const [isAutoScanning, setIsAutoScanning] = useState(true);
   const [scanProgress, setScanProgress] = useState(0.2); // 0 = head, 1 = feet
   const [activeZone, setActiveZone] = useState<string>("Thorax / Heart");
+  const [activeTargetLock, setActiveTargetLock] = useState<string>("Heart & Aorta");
 
   // Camera Orbit
   const isDraggingRef = useRef(false);
@@ -68,19 +70,19 @@ export function RoboticArmScanner() {
     container.appendChild(renderer.domElement);
 
     // Studio Lighting
-    const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambLight = new THREE.AmbientLight(0xffffff, 0.95);
     scene.add(ambLight);
 
     const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.85);
     dirLight1.position.set(200, 400, 300);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0xc8d8e8, 0.4);
+    const dirLight2 = new THREE.DirectionalLight(0xc8d8e8, 0.45);
     dirLight2.position.set(-200, 150, -200);
     scene.add(dirLight2);
 
-    // Grid Floor
-    const gridHelper = new THREE.GridHelper(800, 32, 0xd0dbe5, 0xe2e8f0);
+    // High-tech Floor Grid
+    const gridHelper = new THREE.GridHelper(800, 32, 0x0284c7, 0xe2e8f0);
     gridHelper.position.y = -65;
     scene.add(gridHelper);
 
@@ -102,11 +104,11 @@ export function RoboticArmScanner() {
     railMesh.position.set(0, -5, 0);
     bedGroup.add(railMesh);
 
-    // Patient Couch Mattress (White Upholstery)
+    // Patient Couch Mattress (Clean Medical White)
     const matGeo = new THREE.BoxGeometry(340, 12, 75);
     const matMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      roughness: 0.5,
+      roughness: 0.4,
       metalness: 0.05,
     });
     const mattress = new THREE.Mesh(matGeo, matMaterial);
@@ -128,81 +130,93 @@ export function RoboticArmScanner() {
     // ==========================================
     const patientGroup = new THREE.Group();
     const patientMat = new THREE.MeshStandardMaterial({
-      color: 0x93b4c9,
+      color: 0x7dd3fc,
       transparent: true,
-      opacity: 0.18,
-      roughness: 0.2,
-      metalness: 0.1,
+      opacity: 0.22,
+      roughness: 0.15,
+      metalness: 0.2,
       depthWrite: false,
     });
 
     // Cranium / Head
     const pHeadGeo = new THREE.SphereGeometry(22, 24, 20);
+    pHeadGeo.scale(1.15, 1.0, 1.0);
     const pHead = new THREE.Mesh(pHeadGeo, patientMat);
     pHead.position.set(-135, 24, 0);
-    pHead.scale.set(1.1, 0.9, 0.95);
     patientGroup.add(pHead);
 
     // Neck
-    const pNeckGeo = new THREE.CylinderGeometry(11, 13, 16, 16);
+    const pNeckGeo = new THREE.CylinderGeometry(10, 11, 14, 16);
+    pNeckGeo.rotateZ(Math.PI / 2);
     const pNeck = new THREE.Mesh(pNeckGeo, patientMat);
-    pNeck.rotation.z = Math.PI / 2;
-    pNeck.position.set(-112, 20, 0);
+    pNeck.position.set(-114, 21, 0);
     patientGroup.add(pNeck);
 
-    // Torso (Chest & Abdomen)
-    const pTorsoGeo = new THREE.CylinderGeometry(28, 26, 110, 24);
-    const pTorso = new THREE.Mesh(pTorsoGeo, patientMat);
-    pTorso.rotation.z = Math.PI / 2;
-    pTorso.scale.set(0.75, 1.0, 1.15); // Flattened on bed
-    pTorso.position.set(-50, 23, 0);
-    patientGroup.add(pTorso);
+    // Thorax / Chest
+    const pChestGeo = new THREE.CylinderGeometry(23, 25, 48, 20);
+    pChestGeo.rotateZ(Math.PI / 2);
+    pChestGeo.scale(1.0, 0.7, 1.25);
+    const pChest = new THREE.Mesh(pChestGeo, patientMat);
+    pChest.position.set(-84, 23, 0);
+    patientGroup.add(pChest);
 
-    // Pelvis
-    const pPelvisGeo = new THREE.CylinderGeometry(26, 24, 45, 20);
+    // Abdomen
+    const pAbdomenGeo = new THREE.CylinderGeometry(24, 22, 45, 20);
+    pAbdomenGeo.rotateZ(Math.PI / 2);
+    pAbdomenGeo.scale(1.0, 0.68, 1.2);
+    const pAbdomen = new THREE.Mesh(pAbdomenGeo, patientMat);
+    pAbdomen.position.set(-40, 22, 0);
+    patientGroup.add(pAbdomen);
+
+    // Pelvis Basin
+    const pPelvisGeo = new THREE.CylinderGeometry(22, 21, 40, 20);
+    pPelvisGeo.rotateZ(Math.PI / 2);
+    pPelvisGeo.scale(1.0, 0.72, 1.3);
     const pPelvis = new THREE.Mesh(pPelvisGeo, patientMat);
-    pPelvis.rotation.z = Math.PI / 2;
-    pPelvis.scale.set(0.75, 1.0, 1.12);
-    pPelvis.position.set(25, 22, 0);
+    pPelvis.position.set(0, 21, 0);
     patientGroup.add(pPelvis);
 
-    // Left & Right Thighs
-    const pThighGeo = new THREE.CapsuleGeometry(12, 65, 12, 16);
+    // Thighs
+    const pThighGeo = new THREE.CylinderGeometry(11, 9, 65, 16);
+    pThighGeo.rotateZ(Math.PI / 2);
+
     const pThighL = new THREE.Mesh(pThighGeo, patientMat);
-    pThighL.rotation.z = Math.PI / 2;
-    pThighL.position.set(75, 20, 14);
+    pThighL.position.set(50, 19, 14);
     patientGroup.add(pThighL);
 
     const pThighR = new THREE.Mesh(pThighGeo, patientMat);
-    pThighR.rotation.z = Math.PI / 2;
-    pThighR.position.set(75, 20, -14);
+    pThighR.position.set(50, 19, -14);
     patientGroup.add(pThighR);
 
     // Calves
-    const pCalfGeo = new THREE.CapsuleGeometry(9, 60, 12, 16);
+    const pCalfGeo = new THREE.CylinderGeometry(8.5, 6.5, 60, 16);
+    pCalfGeo.rotateZ(Math.PI / 2);
+
     const pCalfL = new THREE.Mesh(pCalfGeo, patientMat);
-    pCalfL.rotation.z = Math.PI / 2;
-    pCalfL.position.set(135, 17, 14);
+    pCalfL.position.set(110, 17, 14);
     patientGroup.add(pCalfL);
 
     const pCalfR = new THREE.Mesh(pCalfGeo, patientMat);
-    pCalfR.rotation.z = Math.PI / 2;
-    pCalfR.position.set(135, 17, -14);
+    pCalfR.position.set(110, 17, -14);
     patientGroup.add(pCalfR);
 
     // Internal Holographic Organ Centroids (Inside Patient Body)
+    // Includes Brain, Heart, Liver, Kidneys, Bladder, Uterus & Ovaries
     const organs = [
       { id: "brain", pos: [-135, 24, 0], color: 0x06b6d4, name: "Brain" },
       { id: "heart", pos: [-80, 24, -5], color: 0xf43f5e, name: "Heart" },
       { id: "liver", pos: [-45, 23, 10], color: 0x10b981, name: "Liver" },
       { id: "kidney_left", pos: [-35, 17, -14], color: 0x10b981, name: "Left Kidney" },
       { id: "kidney_right", pos: [-35, 17, 14], color: 0x10b981, name: "Right Kidney" },
-      { id: "bladder", pos: [20, 18, 0], color: 0x8b5cf6, name: "Urinary Bladder" },
+      { id: "uterus", pos: [-5, 19, 0], color: 0xd946ef, name: "Uterus" },
+      { id: "ovary_left", pos: [-8, 18, -12], color: 0xec4899, name: "Left Ovary" },
+      { id: "ovary_right", pos: [-8, 18, 12], color: 0xec4899, name: "Right Ovary" },
+      { id: "bladder", pos: [15, 18, 0], color: 0x8b5cf6, name: "Urinary Bladder" },
     ];
 
     const organMeshes: Record<string, THREE.Mesh> = {};
     organs.forEach((org) => {
-      const geo = new THREE.SphereGeometry(4.5, 16, 16);
+      const geo = new THREE.SphereGeometry(4.8, 16, 16);
       const mat = new THREE.MeshStandardMaterial({
         color: org.color,
         emissive: org.color,
@@ -220,7 +234,7 @@ export function RoboticArmScanner() {
 
     // ==========================================
     // 3. ARTICULATED 6-DOF ROBOTIC SCANNER ARM (CAIR IIT MANDI)
-    // Mounted at Z = -75 beside the bed
+    // Mounted at Z = -70 beside the bed
     // ==========================================
     const robotGroup = new THREE.Group();
     robotGroup.position.set(-50, -65, -70); // Base position
@@ -231,161 +245,206 @@ export function RoboticArmScanner() {
     const rBase = new THREE.Mesh(rBaseGeo, rBaseMat);
     rBase.position.y = 12.5;
     robotGroup.add(rBase);
-    robotBaseRef.current = robotGroup;
 
-    // Joint 1: Shoulder Turntable
+    // J1: Waist / Shoulder Turntable Group (Rotates around Y)
     const shoulderGroup = new THREE.Group();
     shoulderGroup.position.set(0, 25, 0);
-    robotGroup.add(shoulderGroup);
-    armShoulderRef.current = shoulderGroup;
 
-    const shoulderTurntableGeo = new THREE.CylinderGeometry(20, 20, 18, 20);
-    const rAccentMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.2 });
-    const shoulderTurntable = new THREE.Mesh(shoulderTurntableGeo, rAccentMat);
-    shoulderTurntable.position.y = 9;
-    shoulderGroup.add(shoulderTurntable);
+    const shoulderJointGeo = new THREE.CylinderGeometry(22, 22, 28, 24);
+    const robotSilverMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2, metalness: 0.8 });
+    const robotAccentMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3, metalness: 0.5 }); // CAIR Sky Blue
 
-    // Link 1: Upper Arm (Height ~110mm)
-    const upperArmGeo = new THREE.CylinderGeometry(12, 14, 110, 16);
-    const rArmMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.3 });
-    const upperArm = new THREE.Mesh(upperArmGeo, rArmMat);
-    upperArm.position.set(0, 65, 0);
-    upperArm.rotation.z = -0.35; // Leaning over patient
-    shoulderGroup.add(upperArm);
+    const shoulderHousing = new THREE.Mesh(shoulderJointGeo, robotSilverMat);
+    shoulderHousing.position.y = 14;
+    shoulderGroup.add(shoulderHousing);
 
-    // Joint 2: Elbow
+    // Link 1: Upper Arm (Shoulder to Elbow)
+    const upperArmGroup = new THREE.Group();
+    upperArmGroup.position.set(0, 28, 0);
+
+    const uArmGeo = new THREE.CylinderGeometry(11, 13, 100, 20);
+    const uArm = new THREE.Mesh(uArmGeo, robotSilverMat);
+    uArm.position.y = 50;
+    upperArmGroup.add(uArm);
+
+    // Accent Ring on Upper Arm
+    const uRingGeo = new THREE.CylinderGeometry(13.2, 13.2, 12, 20);
+    const uRing = new THREE.Mesh(uRingGeo, robotAccentMat);
+    uRing.position.y = 50;
+    upperArmGroup.add(uRing);
+
+    // J2: Elbow Group
     const elbowGroup = new THREE.Group();
-    elbowGroup.position.set(35, 115, 0);
-    shoulderGroup.add(elbowGroup);
-    armElbowRef.current = elbowGroup;
+    elbowGroup.position.set(0, 100, 0);
 
-    const elbowBallGeo = new THREE.SphereGeometry(15, 16, 16);
-    const elbowBall = new THREE.Mesh(elbowBallGeo, rAccentMat);
-    elbowGroup.add(elbowBall);
+    const elbowJointGeo = new THREE.SphereGeometry(18, 20, 16);
+    const elbowHousing = new THREE.Mesh(elbowJointGeo, robotSilverMat);
+    elbowGroup.add(elbowHousing);
 
-    // Link 2: Forearm (Length ~95mm)
-    const foreArmGeo = new THREE.CylinderGeometry(9, 11, 95, 16);
-    const foreArm = new THREE.Mesh(foreArmGeo, rArmMat);
-    foreArm.position.set(30, -35, 20);
-    foreArm.rotation.x = 0.55;
-    foreArm.rotation.z = 0.85;
-    elbowGroup.add(foreArm);
+    // Link 2: Forearm (Elbow to Wrist)
+    const forearmGroup = new THREE.Group();
+    const fArmGeo = new THREE.CylinderGeometry(9, 11, 95, 20);
+    const fArm = new THREE.Mesh(fArmGeo, robotSilverMat);
+    fArm.position.y = 47.5;
+    forearmGroup.add(fArm);
 
-    // Joint 3: Wrist & Optical Scanner Head
+    // J3: Wrist Group
     const wristGroup = new THREE.Group();
-    wristGroup.position.set(60, -70, 42);
-    elbowGroup.add(wristGroup);
-    armWristRef.current = wristGroup;
+    wristGroup.position.set(0, 95, 0);
 
-    // Optical Scanner End-Effector Head
-    const headGroup = new THREE.Group();
-    const headBoxGeo = new THREE.BoxGeometry(28, 22, 36);
-    const scannerMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 });
-    const headBox = new THREE.Mesh(headBoxGeo, scannerMat);
-    headGroup.add(headBox);
+    const wristJointGeo = new THREE.CylinderGeometry(11, 11, 18, 16);
+    wristJointGeo.rotateX(Math.PI / 2);
+    const wristHousing = new THREE.Mesh(wristJointGeo, robotAccentMat);
+    wristGroup.add(wristHousing);
 
-    // Optical Lens / Depth Sensor Ring (Glowing Cyan)
+    // End-Effector: 3D Optical Scanner Head
+    const scannerHead = new THREE.Group();
+    scannerHead.position.set(0, 12, 0);
+
+    const headGeo = new THREE.BoxGeometry(26, 16, 44);
+    const headMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.9 });
+    const headMesh = new THREE.Mesh(headGeo, headMat);
+    scannerHead.add(headMesh);
+
+    // Optical Lens Aperture
     const lensGeo = new THREE.CylinderGeometry(8, 8, 4, 20);
-    const lensMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const lensMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      emissive: 0x38bdf8,
+      emissiveIntensity: 0.9,
+      roughness: 0.1,
+    });
     const lens = new THREE.Mesh(lensGeo, lensMat);
-    lens.position.y = -12;
-    headGroup.add(lens);
+    lens.position.set(0, -8, 0);
+    scannerHead.add(lens);
 
-    wristGroup.add(headGroup);
-    scannerHeadRef.current = headGroup;
-
-    // ==========================================
-    // 4. ANIMATED HOLOGRAPHIC SCANNING BEAM & LASER FAN
-    // ==========================================
-    const beamGeo = new THREE.ConeGeometry(38, 70, 24, 1, true);
-    const beamMat = new THREE.MeshBasicMaterial({
+    // Sweeping Optical Laser Conical Fan
+    const fanGeo = new THREE.ConeGeometry(50, 120, 32, 1, true);
+    fanGeo.translate(0, -60, 0);
+    const fanMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
       opacity: 0.28,
       side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    const scanBeam = new THREE.Mesh(beamGeo, beamMat);
-    scanBeam.rotation.x = Math.PI;
-    scanBeam.position.y = -45;
-    headGroup.add(scanBeam);
-    scanBeamRef.current = scanBeam;
+    const scanFan = new THREE.Mesh(fanGeo, fanMat);
+    scanFan.scale.set(0.8, 1.0, 1.6);
+    scannerHead.add(scanFan);
+    scanFanRef.current = scanFan;
 
-    // Laser scanning line on body surface
-    const lineGeo = new THREE.RingGeometry(2, 36, 32);
+    // Projected Laser Scan Line On Patient Body
+    const lineGeo = new THREE.PlaneGeometry(6, 68);
+    lineGeo.rotateX(-Math.PI / 2);
     const lineMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      side: THREE.DoubleSide,
+      color: 0x00e5ff,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
     });
     const scanLine = new THREE.Mesh(lineGeo, lineMat);
-    scanLine.rotation.x = Math.PI / 2;
-    scanLine.position.y = -78;
-    headGroup.add(scanLine);
+    scene.add(scanLine);
     scanLineRef.current = scanLine;
+
+    // Assemble Hierarchical Kinematic Tree
+    wristGroup.add(scannerHead);
+    forearmGroup.add(wristGroup);
+    elbowGroup.add(forearmGroup);
+    upperArmGroup.add(elbowGroup);
+    shoulderGroup.add(upperArmGroup);
+    robotGroup.add(shoulderGroup);
 
     scene.add(robotGroup);
 
+    // Save refs for animation loop
+    robotBaseRef.current = robotGroup;
+    armShoulderRef.current = shoulderGroup;
+    armElbowRef.current = upperArmGroup;
+    armWristRef.current = forearmGroup;
+    scannerHeadRef.current = scannerHead;
+
     // ==========================================
-    // 5. ANIMATION LOOP & KINEMATICS
+    // 4. ANIMATION & KINEMATIC SIMULATION LOOP
     // ==========================================
-    let scanT = 0.2;
-    let scanDirection = 1;
+    let clock = new THREE.Clock();
 
     const animate = () => {
       reqIdRef.current = requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
 
+      // Determine active scan parameter t (0 = head, 1 = feet)
+      let scanT = scanProgress;
       if (isAutoScanning) {
-        scanT += 0.0035 * scanDirection;
-        if (scanT >= 0.85) {
-          scanT = 0.85;
-          scanDirection = -1;
-        } else if (scanT <= 0.05) {
-          scanT = 0.05;
-          scanDirection = 1;
-        }
+        // Smooth continuous sweeping oscillation
+        scanT = (Math.sin(elapsed * 0.7) + 1) / 2;
         setScanProgress(scanT);
       }
 
-      // Update Kinematic Position based on scanT
-      // Patient span: X = -135 (head) to X = +40 (pelvis)
-      const targetX = -140 + scanT * 180;
-      if (robotGroup) {
-        robotGroup.position.x = targetX * 0.75; // Robot tracks along bed
+      // Map scanT to physical patient X coordinate (-135 mm to +40 mm)
+      const minX = -135;
+      const maxX = 35;
+      const beamX = minX + scanT * (maxX - minX);
+
+      // 6-DOF Inverse Kinematic Reach
+      if (robotBaseRef.current) {
+        robotBaseRef.current.position.x = beamX * 0.7 - 20;
       }
 
-      // Rotate scanner toolhead downward with slight organic breathing motion
-      if (headGroup) {
-        headGroup.rotation.z = Math.sin(scanT * Math.PI) * 0.15;
+      if (armShoulderRef.current) {
+        armShoulderRef.current.rotation.y = Math.sin(beamX * 0.015) * 0.25;
       }
 
-      // Pulse scan beam opacity
-      if (beamMat) {
-        beamMat.opacity = 0.2 + 0.12 * Math.sin(Date.now() * 0.008);
+      if (armElbowRef.current) {
+        armElbowRef.current.rotation.z = -0.45 + Math.sin(elapsed * 1.5) * 0.02;
+        armElbowRef.current.rotation.x = 0.35;
       }
 
-      // Light up organ centroids when scanner beam is over them
-      const beamX = targetX;
+      if (armWristRef.current) {
+        armWristRef.current.rotation.z = 0.85;
+        armWristRef.current.rotation.x = -0.3;
+      }
+
+      if (scannerHeadRef.current) {
+        scannerHeadRef.current.position.y = 12 + Math.sin(elapsed * 3) * 1.2;
+      }
+
+      // Position optical scan line on patient body surface
+      if (scanLineRef.current) {
+        scanLineRef.current.position.set(beamX, 26, 0);
+        scanLineRef.current.rotation.y = Math.sin(elapsed * 4) * 0.04;
+      }
+
+      // Dynamic Organ Centroid Illumination Beacons
       Object.entries(organMeshesRef.current).forEach(([orgId, mesh]) => {
         const orgX = mesh.position.x;
         const dist = Math.abs(beamX - orgX);
         const mat = mesh.material as THREE.MeshStandardMaterial;
 
-        if (dist < 28) {
-          mat.emissiveIntensity = 1.6;
-          mesh.scale.set(1.35, 1.35, 1.35);
+        if (dist < 26) {
+          mat.emissiveIntensity = 1.8 + Math.sin(elapsed * 8) * 0.4;
+          mesh.scale.set(1.4, 1.4, 1.4);
         } else {
-          mat.emissiveIntensity = 0.45;
+          mat.emissiveIntensity = 0.4;
           mesh.scale.set(1.0, 1.0, 1.0);
         }
       });
 
-      // Update zone label
-      if (scanT < 0.2) setActiveZone("Cranial Vault (Brain & Skull)");
-      else if (scanT < 0.45) setActiveZone("Thoracic Cavity (Heart & Lungs)");
-      else if (scanT < 0.7) setActiveZone("Abdominal Viscera (Liver, Spleen & Kidneys)");
-      else setActiveZone("Pelvic Basin (Urinary Bladder)");
+      // Update zone & target lock labels
+      if (scanT < 0.22) {
+        setActiveZone("Cranial Vault (Head)");
+        setActiveTargetLock("Brain & Skull (±5.5mm)");
+      } else if (scanT < 0.45) {
+        setActiveZone("Thoracic Cavity (Chest)");
+        setActiveTargetLock("Heart, Aorta & Lungs");
+      } else if (scanT < 0.68) {
+        setActiveZone("Abdominal Viscera");
+        setActiveTargetLock("Liver, Spleen & Kidneys");
+      } else {
+        setActiveZone("Pelvic Basin");
+        setActiveTargetLock("Uterus / Ovaries & Bladder");
+      }
 
       renderer.render(scene, camera);
     };
@@ -425,10 +484,72 @@ export function RoboticArmScanner() {
       updateCamera();
     };
 
+    // Touch Navigation Controls for Mobile Phones & Tablets
+    let initialPinchDist = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isDraggingRef.current = true;
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        isDraggingRef.current = false;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialPinchDist = Math.hypot(dx, dy);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1 && isDraggingRef.current) {
+        const deltaX = e.touches[0].clientX - previousMousePositionRef.current.x;
+        const deltaY = e.touches[0].clientY - previousMousePositionRef.current.y;
+
+        cameraSphericalRef.current.theta -= deltaX * 0.008;
+        cameraSphericalRef.current.phi = Math.max(
+          0.1,
+          Math.min(Math.PI / 2.05, cameraSphericalRef.current.phi - deltaY * 0.008)
+        );
+
+        previousMousePositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        updateCamera();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const currentDist = Math.hypot(dx, dy);
+        const pinchDelta = initialPinchDist - currentDist;
+
+        cameraSphericalRef.current.radius = Math.max(
+          300,
+          Math.min(1200, cameraSphericalRef.current.radius + pinchDelta * 1.2)
+        );
+        initialPinchDist = currentDist;
+        updateCamera();
+      }
+    };
+
+    const onTouchEnd = () => {
+      isDraggingRef.current = false;
+    };
+
+    // Attach event listeners
     container.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     container.addEventListener("wheel", onWheel, { passive: false });
+
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    // Handle container resize
+    const handleResize = () => {
+      if (!container || !camera || !renderer) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
@@ -436,6 +557,12 @@ export function RoboticArmScanner() {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
       container.removeEventListener("wheel", onWheel);
+
+      container.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("resize", handleResize);
+
       renderer.dispose();
     };
   }, [isAutoScanning]);
@@ -445,94 +572,100 @@ export function RoboticArmScanner() {
     if (zone === "head") setScanProgress(0.1);
     else if (zone === "chest") setScanProgress(0.35);
     else if (zone === "abdomen") setScanProgress(0.58);
-    else setScanProgress(0.8);
+    else setScanProgress(0.85);
   };
 
   return (
-    <div className="relative w-full h-[480px] lg:h-[540px] rounded-3xl overflow-hidden border border-slate-200 bg-slate-50/50 shadow-lg">
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[540px] rounded-3xl overflow-hidden border border-slate-200 bg-slate-50/50 shadow-lg select-none">
+      <div
+        ref={mountRef}
+        className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
+      />
 
-      {/* Top Overlay: Live Telemetry & CAIR Medical Robotics HUD */}
-      <div className="absolute top-4 left-4 flex flex-col gap-1.5 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-200 shadow-sm z-10 max-w-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-            CAIR Autonomous Robotic Scanner
-          </span>
+      {/* Top HUD Overlay: Live Telemetry & CAIR Medical Robotics Status */}
+      <div className="absolute top-3 left-3 right-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2 pointer-events-none z-10">
+        {/* Left Telemetry Box */}
+        <div className="flex flex-col gap-1 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-slate-200 shadow-sm pointer-events-auto max-w-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] sm:text-xs font-bold text-slate-900 uppercase tracking-wide">
+              CAIR Autonomous Scanner
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 font-mono">
+            <Cpu className="w-3 h-3 text-sky-600 shrink-0" />
+            <span>6-DOF Articulated Kinematics</span>
+          </div>
+          <div className="text-[11px] sm:text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+            <Activity className="w-3.5 h-3.5 text-primary shrink-0" />
+            <span>Target:</span>
+            <span className="text-primary font-bold">{activeTargetLock}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
-          <Cpu className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-          <span>6-DOF Articulated Kinematic Pose</span>
-        </div>
-        <div className="text-xs font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
-          <Activity className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span>Active Scan Zone:</span>
-          <span className="text-primary-dark font-bold">{activeZone}</span>
+
+        {/* Right Steer Buttons */}
+        <div className="flex flex-wrap items-center gap-1 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-2xl border border-slate-200 shadow-sm pointer-events-auto text-xs font-medium text-slate-700 self-start">
+          <button
+            onClick={() => setIsAutoScanning(!isAutoScanning)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl font-semibold text-xs transition-all ${
+              isAutoScanning
+                ? "bg-primary text-white shadow-xs"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-800"
+            }`}
+          >
+            {isAutoScanning ? (
+              <>
+                <Pause className="w-3 h-3" />
+                <span>Scanning</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-3 h-3" />
+                <span>Auto Sweep</span>
+              </>
+            )}
+          </button>
+
+          <div className="h-3 w-px bg-slate-200 mx-0.5 hidden sm:block" />
+
+          {/* Quick Zone Presets */}
+          <button
+            onClick={() => setPresetZone("head")}
+            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+          >
+            Head
+          </button>
+          <button
+            onClick={() => setPresetZone("chest")}
+            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+          >
+            Chest
+          </button>
+          <button
+            onClick={() => setPresetZone("abdomen")}
+            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+          >
+            Abdomen
+          </button>
+          <button
+            onClick={() => setPresetZone("pelvis")}
+            className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
+          >
+            Pelvis (Uterus)
+          </button>
         </div>
       </div>
 
-      {/* Top Right: Interactive Robotic Arm Controls */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-3 py-2 rounded-2xl border border-slate-200 shadow-sm z-10 text-xs font-medium text-slate-700">
-        <button
-          onClick={() => setIsAutoScanning(!isAutoScanning)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all ${
-            isAutoScanning
-              ? "bg-primary text-white shadow-xs"
-              : "bg-slate-100 hover:bg-slate-200 text-slate-800"
-          }`}
-        >
-          {isAutoScanning ? (
-            <>
-              <Pause className="w-3.5 h-3.5" />
-              <span>Scanning</span>
-            </>
-          ) : (
-            <>
-              <Play className="w-3.5 h-3.5" />
-              <span>Auto Sweep</span>
-            </>
-          )}
-        </button>
-
-        <div className="h-4 w-px bg-slate-200 mx-1" />
-
-        {/* Anatomical Zone Preset Jump Buttons */}
-        <button
-          onClick={() => setPresetZone("head")}
-          className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
-        >
-          Head (Brain)
-        </button>
-        <button
-          onClick={() => setPresetZone("chest")}
-          className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
-        >
-          Chest (Heart)
-        </button>
-        <button
-          onClick={() => setPresetZone("abdomen")}
-          className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
-        >
-          Abdomen (Liver)
-        </button>
-        <button
-          onClick={() => setPresetZone("pelvis")}
-          className="px-2 py-1 rounded-lg hover:bg-slate-100 text-[11px] transition-colors"
-        >
-          Pelvis
-        </button>
-      </div>
-
-      {/* Bottom Overlay: Zero-Radiation Optical Scanning Callout */}
-      <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm z-10 text-xs text-slate-600">
+      {/* Bottom Overlay: Non-Invasive Optical Scanning Guarantee */}
+      <div className="absolute bottom-3 left-3 right-3 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-3 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-2 rounded-2xl border border-slate-200 shadow-sm z-10 text-[11px] sm:text-xs text-slate-600 pointer-events-none">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>
-            <strong>Zero Ionizing Radiation:</strong> Optical laser & depth scanning replaces ionizing CT/X-ray scans with non-invasive surface geometry photogrammetry.
+            <strong>Zero Radiation:</strong> Optical laser & depth scanning replaces ionizing CT with surface geometry photogrammetry.
           </span>
         </div>
-        <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 whitespace-nowrap">
-          <span>Centre for AI & Robotics (CAIR) &bull; IIT Mandi</span>
+        <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500 whitespace-nowrap">
+          <span>CAIR &bull; IIT Mandi</span>
         </div>
       </div>
     </div>

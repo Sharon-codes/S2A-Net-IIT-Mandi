@@ -26,10 +26,15 @@ CANONICAL_TARGET_NAMES = [
     "rib_left_8", "rib_left_9", "rib_left_10", "rib_left_11", "rib_left_12", "rib_right_1",
     "rib_right_2", "rib_right_3", "rib_right_4", "rib_right_5", "rib_right_6", "rib_right_7",
     "rib_right_8", "rib_right_9", "rib_right_10", "rib_right_11", "rib_right_12", "sternum",
-    "costal_cartilages"
+    "costal_cartilages",
+    # Female Reproductive Pelvic Anatomy (Slots 117-120)
+    "uterus", "ovary_left", "ovary_right", "vagina"
 ]
 
 TARGET_NAME_TO_INDEX: Dict[str, int] = {name: i for i, name in enumerate(CANONICAL_TARGET_NAMES)}
+
+MALE_TARGETS = {"prostate"}
+FEMALE_TARGETS = {"uterus", "ovary_left", "ovary_right", "vagina"}
 
 TARGET_CATEGORIES: Dict[str, List[str]] = {
     "Abdominal": [
@@ -50,8 +55,9 @@ TARGET_CATEGORIES: Dict[str, List[str]] = {
         "portal_vein_and_splenic_vein", "iliac_artery_left", "iliac_artery_right",
         "iliac_vena_left", "iliac_vena_right"
     ],
-    "Pelvis": [
-        "urinary_bladder", "prostate", "sacrum", "hip_left", "hip_right",
+    "Pelvis & Reproductive": [
+        "urinary_bladder", "prostate", "uterus", "ovary_left", "ovary_right", "vagina",
+        "sacrum", "hip_left", "hip_right",
         "femur_left", "femur_right", "gluteus_maximus_left", "gluteus_maximus_right",
         "gluteus_medius_left", "gluteus_medius_right", "gluteus_minimus_left",
         "gluteus_minimus_right", "iliopsoas_left", "iliopsoas_right"
@@ -91,6 +97,12 @@ SYNONYMS: Dict[str, str] = {
     "gallbladder": "gallbladder", "gall bladder": "gallbladder", "cholecyst": "gallbladder",
     "urinary bladder": "urinary_bladder", "bladder": "urinary_bladder",
     "prostate": "prostate", "prostate gland": "prostate",
+    # Female reproductive organs
+    "uterus": "uterus", "womb": "uterus", "uterine": "uterus",
+    "left ovary": "ovary_left", "ovary left": "ovary_left", "l ovary": "ovary_left",
+    "right ovary": "ovary_right", "ovary right": "ovary_right", "r ovary": "ovary_right",
+    "ovary": "ovary_left", "ovaries": "ovary_left",
+    "vagina": "vagina", "vaginal canal": "vagina", "vaginal": "vagina",
     "brain": "brain", "cerebrum": "brain", "head": "brain",
     "skull": "skull", "cranium": "skull",
     "heart": "heart", "cardiac": "heart", "myocardium": "heart",

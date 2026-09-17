@@ -74,6 +74,10 @@ const ALL_CATEGORIES: Record<string, CategoryData> = {
     targets: [
       { slot: 20, name: "urinary_bladder", synonyms: ["vesica urinaria", "bladder"] },
       { slot: 21, name: "prostate", synonyms: ["prostatic gland"] },
+      { slot: 117, name: "uterus", synonyms: ["womb", "uterine body", "myometrium", "female pelvis"] },
+      { slot: 118, name: "ovary_left", synonyms: ["left adnexa", "ovarium sinistrum", "female gonad"] },
+      { slot: 119, name: "ovary_right", synonyms: ["right adnexa", "ovarium dextrum", "female gonad"] },
+      { slot: 120, name: "vagina", synonyms: ["vaginal canal", "female birth canal", "colpos"] },
       { slot: 24, name: "sacrum", synonyms: ["sacral bone", "sacral vertebra"] },
       { slot: 76, name: "hip_left", synonyms: ["left os coxae", "left ilium"] },
       { slot: 77, name: "hip_right", synonyms: ["right os coxae", "right ilium"] },
@@ -202,19 +206,19 @@ export default function TargetsPage() {
       <div>
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary-dark border border-primary/20">
-            107 Canonical Landmarks Active
+            111 Canonical Landmarks Active
           </span>
           <span className="text-xs font-mono text-slate-500">
-            Cranial • Thorax • Spine • Abdomen • Pelvis • Skeleton
+            Cranial • Thorax • Spine • Abdomen • Pelvic & Reproductive • Skeleton
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-text-main mt-2">107 Anatomical Target Catalog</h1>
-        <p className="text-sm text-text-muted mt-2 max-w-3xl leading-relaxed">
-          Interactive 3D body map and complete scientific directory of 107 internal anatomical targets, including cranial vault (Brain, Skull), cervical/thoracic/lumbar spine vertebrae, major cardiovascular vessels, visceral organs, and musculature. Orbit 360° around the mannequin to view all anterior and posterior landmarks.
+        <h1 className="text-2xl sm:text-3xl font-bold text-text-main mt-2">111 Anatomical Target Catalog</h1>
+        <p className="text-xs sm:text-sm text-text-muted mt-2 max-w-3xl leading-relaxed">
+          Interactive 3D body map and complete scientific directory of 111 internal anatomical targets, including female reproductive anatomy (Uterus, Ovaries, Vagina), male Prostate, cranial vault (Brain, Skull), cervical/thoracic/lumbar spine vertebrae, major cardiovascular vessels, visceral organs, and musculature. Orbit 360° around the mannequin to view all anterior and posterior landmarks.
         </p>
       </div>
 
-      {/* Interactive 3D Mannequin Body Map with all 107 targets */}
+      {/* Interactive 3D Mannequin Body Map with all 111 targets */}
       <TargetBodyMap
         onSelectTarget={handlePinSelect}
         selectedTarget={selectedPin}
