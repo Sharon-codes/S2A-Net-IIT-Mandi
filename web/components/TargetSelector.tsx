@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Mic, MicOff, Check, Sparkles, User, Lock, ShieldCheck } from "lucide-react";
+import { Search, Check, Sparkles, User, Lock, ShieldCheck } from "lucide-react";
+
 
 interface TargetSelectorProps {
   selectedTargets: string[];
@@ -51,8 +52,6 @@ export function TargetSelector({
 }: TargetSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [allTargets, setAllTargets] = useState<string[]>([]);
-  const [isListening, setIsListening] = useState(false);
-  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
 
   // Fetch targets from API catalog
   useEffect(() => {
@@ -74,69 +73,8 @@ export function TargetSelector({
       });
   }, []);
 
-  // Web Speech API Voice Recognition
-  const startVoiceInput = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setVoiceNotice("Web Speech API not supported in this browser.");
-      setTimeout(() => setVoiceNotice(null), 3000);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        setVoiceNotice("Listening... Say an anatomical organ (e.g. 'uterus', 'liver', 'brain')");
-      };
-
-      recognition.onresult = (event: any) => {
-        const spokenText = event.results[0][0].transcript.toLowerCase().trim();
-        setVoiceNotice(`Heard: "${spokenText}"`);
-        handleSpokenTarget(spokenText);
-      };
-
-      recognition.onerror = (event: any) => {
-        setVoiceNotice(`Speech error: ${event.error}`);
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-        setTimeout(() => setVoiceNotice(null), 3000);
-      };
-
-      recognition.start();
-    } catch (err: any) {
-      setVoiceNotice(`Voice search error: ${err.message}`);
-      setIsListening(false);
-    }
-  };
-
-  const handleSpokenTarget = (spoken: string) => {
-    let matched = spoken.replace(/\s+/g, "_");
-    if (matched.includes("kidney")) {
-      matched = matched.includes("right") ? "kidney_right" : "kidney_left";
-    } else if (matched.includes("uterus") || matched.includes("womb")) {
-      matched = "uterus";
-    } else if (matched.includes("ovary") || matched.includes("ovaries")) {
-      matched = matched.includes("right") ? "ovary_right" : "ovary_left";
-    } else if (matched.includes("bladder")) {
-      matched = "urinary_bladder";
-    }
-
-    if (!selectedTargets.includes(matched)) {
-      onToggleTarget(matched);
-    }
-  };
-
   const filteredTargets = allTargets.filter((t) =>
+
     t.toLowerCase().replace(/_/g, " ").includes(searchQuery.toLowerCase().trim())
   );
 
@@ -219,38 +157,26 @@ export function TargetSelector({
         </div>
       </div>
 
-      {/* Target Search & Voice Input */}
-      <div className="flex gap-2 items-center">
-        <div className="relative flex-grow">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-text-muted" />
-          <input
-            type="text"
-            placeholder="Search 121 organs (e.g. uterus, liver, aorta, brain)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={startVoiceInput}
-          title="Voice Search via Web Speech API"
-          className={`p-2 rounded-xl border transition-all flex items-center justify-center ${
-            isListening
-              ? "bg-accent-red text-white border-accent-red animate-pulse"
-              : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-          }`}
-        >
-          {isListening ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5 text-text-muted" />}
-        </button>
+      {/* Target Search */}
+      <div className="relative w-full">
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+        <input
+          type="text"
+          placeholder="Search 121 organs (e.g. uterus, liver, aorta, brain)..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-9 pr-8 py-2 text-sm rounded-xl border border-border bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
-      {voiceNotice && (
-        <div className="text-xs font-mono px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary-dark">
-          🎙️ {voiceNotice}
-        </div>
-      )}
 
       {/* Quick Select Common Benchmark Organ Chips (Styled with Olive Green - NO Dark Blue!) */}
       <div>
